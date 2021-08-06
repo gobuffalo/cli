@@ -1,6 +1,7 @@
 builds:
   -
     main: ./cmd/buffalo/main.go
+    binary: buffalo
     env:
       - CGO_ENABLED=0
     ldflags:
