@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/cli/internal/cmd/plugins"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -18,9 +18,10 @@ var RootCmd = &cobra.Command{
 	Use:           "buffalo",
 	Short:         "Build Buffalo applications with ease",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		if err := buffalo.LoadPlugins(); err != nil {
+		if err := plugins.Load(); err != nil {
 			return err
 		}
+
 		isFreeCommand := false
 		for _, freeCmd := range anywhereCommands {
 			if freeCmd == cmd.Name() {

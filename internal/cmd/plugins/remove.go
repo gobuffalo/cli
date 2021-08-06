@@ -6,7 +6,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/gobuffalo/buffalo/plugins/plugdeps"
+	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
 	"github.com/gobuffalo/cli/internal/takeon/github.com/markbates/errx"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"

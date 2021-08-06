@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gobuffalo/buffalo/genny/actions"
+	"gobuffalo/cli/internal/genny/actions"
+
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/logger"
 	"github.com/spf13/cobra"

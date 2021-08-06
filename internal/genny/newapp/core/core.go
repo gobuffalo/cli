@@ -1,12 +1,13 @@
 package core
 
 import (
+	"gobuffalo/cli/internal/genny/ci"
+	"gobuffalo/cli/internal/genny/docker"
+	"gobuffalo/cli/internal/genny/plugins/install"
+	"gobuffalo/cli/internal/genny/refresh"
+
 	pop "github.com/gobuffalo/buffalo-pop/v2/genny/newapp"
-	"github.com/gobuffalo/buffalo/genny/ci"
-	"github.com/gobuffalo/buffalo/genny/docker"
-	"github.com/gobuffalo/buffalo/genny/plugins/install"
-	"github.com/gobuffalo/buffalo/genny/refresh"
-	"github.com/gobuffalo/buffalo/plugins/plugdeps"
+	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
 	"github.com/gobuffalo/cli/internal/takeon/github.com/markbates/errx"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"

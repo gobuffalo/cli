@@ -5,11 +5,12 @@ import (
 	"regexp"
 	"strings"
 
+	"gobuffalo/cli/internal/genny/ci"
+	"gobuffalo/cli/internal/genny/docker"
+	"gobuffalo/cli/internal/genny/refresh"
+	"gobuffalo/cli/internal/genny/vcs"
+
 	"github.com/gobuffalo/buffalo-pop/v2/genny/newapp"
-	"github.com/gobuffalo/buffalo/genny/ci"
-	"github.com/gobuffalo/buffalo/genny/docker"
-	"github.com/gobuffalo/buffalo/genny/refresh"
-	"github.com/gobuffalo/buffalo/genny/vcs"
 	"github.com/gobuffalo/cli/internal/runtime"
 	"github.com/gobuffalo/meta"
 )

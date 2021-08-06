@@ -14,7 +14,7 @@ import (
 var YesToAll bool
 
 var replace = map[string]string{
-	"github.com/gobuffalo/buffalo-plugins":         "github.com/gobuffalo/buffalo/plugins",
+	"github.com/gobuffalo/buffalo-plugins":         "github.com/gobuffalo/cli/internal/plugins",
 	"github.com/gobuffalo/genny":                   "github.com/gobuffalo/genny/v2",
 	"github.com/gobuffalo/pop":                     "github.com/gobuffalo/pop/v5",
 	"github.com/gobuffalo/pop/nulls":               "github.com/gobuffalo/nulls",

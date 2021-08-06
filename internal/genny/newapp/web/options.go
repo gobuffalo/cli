@@ -3,9 +3,9 @@ package web
 import (
 	"fmt"
 
-	"github.com/gobuffalo/buffalo/genny/assets/standard"
-	"github.com/gobuffalo/buffalo/genny/assets/webpack"
-	"github.com/gobuffalo/buffalo/genny/newapp/core"
+	"gobuffalo/cli/internal/genny/assets/standard"
+	"gobuffalo/cli/internal/genny/assets/webpack"
+	"gobuffalo/cli/internal/genny/newapp/core"
 )
 
 // Options for a web app

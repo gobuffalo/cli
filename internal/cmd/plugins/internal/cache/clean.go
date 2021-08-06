@@ -3,7 +3,7 @@ package cache
 import (
 	"os"
 
-	"github.com/gobuffalo/buffalo/plugins"
+	"github.com/gobuffalo/cli/internal/plugins"
 	"github.com/spf13/cobra"
 )
 

@@ -5,7 +5,8 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/gobuffalo/buffalo/genny/info"
+	"gobuffalo/cli/internal/genny/info"
+
 	"github.com/gobuffalo/clara/v2/genny/rx"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"

@@ -90,7 +90,6 @@ var _ = func() error {
 	}
 	g.DefaultResolver = hgr
 
-
 	func() {
 		b := packr.New("buffalo:genny:assets:standard", "../standard/templates")
 		b.SetResolver("public/assets/application.css.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "b67ab648f40407d018954f7deaa931e8"})
@@ -171,7 +170,7 @@ var _ = func() error {
 	}()
 
 	func() {
-		b := packr.New("github.com/gobuffalo/buffalo/genny/actions/templates", "../actions/templates")
+		b := packr.New("gobuffalo/cli/internal/genny/actions/templates", "../actions/templates")
 		b.SetResolver("actions.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "022f7e3c2b71d56a8ee1afd96d5330f9"})
 		b.SetResolver("actions_header.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "610fcef78d274967f17cdf72d80a6a4c"})
 		b.SetResolver("test.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "6e046c195c1437c3f5dfdd4a30851859"})
@@ -180,7 +179,7 @@ var _ = func() error {
 	}()
 
 	func() {
-		b := packr.New("github.com/gobuffalo/buffalo/genny/assets/webpack", "../webpack/templates")
+		b := packr.New("gobuffalo/cli/internal/genny/assets/webpack", "../webpack/templates")
 		b.SetResolver("-dot-babelrc.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "3e9292a8b15e5fdd17d612113cf54654"})
 		b.SetResolver("assets/css/_buffalo.scss.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "e13055479a9e4e6467e0417d03e75408"})
 		b.SetResolver("assets/css/application.scss.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "deb9e2faf0204d1c40696d56e83333ab"})
@@ -194,7 +193,7 @@ var _ = func() error {
 	}()
 
 	func() {
-		b := packr.New("github.com/gobuffalo/buffalo/genny/mail/init/templates", "../mail/init/templates")
+		b := packr.New("gobuffalo/cli/internal/genny/mail/init/templates", "../mail/init/templates")
 		b.SetResolver("mailers/mailers.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "c57d6634ae3bb0d72f8d9b65dae98dc4"})
 		b.SetResolver("templates/mail/layout.plush.html.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "7ffec554c860f6fb6262c98823e783f1"})
 	}()
