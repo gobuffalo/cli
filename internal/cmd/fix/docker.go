@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/gobuffalo/buffalo/runtime"
+	"github.com/gobuffalo/cli/internal/runtime"
 	"github.com/gobuffalo/genny/v2"
 )
 

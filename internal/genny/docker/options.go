@@ -3,7 +3,7 @@ package docker
 import (
 	"fmt"
 
-	"github.com/gobuffalo/buffalo/runtime"
+	"github.com/gobuffalo/cli/internal/runtime"
 	"github.com/gobuffalo/meta"
 )
 

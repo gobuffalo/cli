@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/gobuffalo/buffalo/runtime"
 	"github.com/gobuffalo/cli/internal/cmd/fix"
+	"github.com/gobuffalo/cli/internal/runtime"
 	"github.com/spf13/cobra"
 )
 

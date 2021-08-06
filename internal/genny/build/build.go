@@ -3,7 +3,7 @@ package build
 import (
 	"time"
 
-	"github.com/gobuffalo/buffalo/runtime"
+	"github.com/gobuffalo/cli/internal/runtime"
 
 	"github.com/gobuffalo/events"
 	"github.com/gobuffalo/genny/v2"

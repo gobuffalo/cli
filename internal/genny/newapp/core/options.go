@@ -10,7 +10,7 @@ import (
 	"github.com/gobuffalo/buffalo/genny/docker"
 	"github.com/gobuffalo/buffalo/genny/refresh"
 	"github.com/gobuffalo/buffalo/genny/vcs"
-	"github.com/gobuffalo/buffalo/runtime"
+	"github.com/gobuffalo/cli/internal/runtime"
 	"github.com/gobuffalo/meta"
 )
 

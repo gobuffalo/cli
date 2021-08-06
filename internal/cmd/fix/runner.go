@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/gobuffalo/buffalo/runtime"
+	"github.com/gobuffalo/cli/internal/runtime"
 	"github.com/gobuffalo/meta"
 )
 
