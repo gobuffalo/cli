@@ -19,7 +19,7 @@ builds:
       - 6
       - 7
 archives:
-  -
+  - name_template: "buffalo_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     replacements:
       '386': i386
       darwin: Darwin
