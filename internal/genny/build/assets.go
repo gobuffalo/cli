@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"gobuffalo/cli/internal/genny/assets/webpack"
+	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
 
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/genny/v2"

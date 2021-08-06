@@ -7,7 +7,7 @@ import (
 	"path"
 	"strings"
 
-	"gobuffalo/cli/internal/genny/plugins/install"
+	"github.com/gobuffalo/cli/internal/genny/plugins/install"
 
 	cmdPlugins "github.com/gobuffalo/cli/internal/cmd/plugins"
 	"github.com/gobuffalo/cli/internal/plugins"

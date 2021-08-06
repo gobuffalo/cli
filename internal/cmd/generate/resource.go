@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"gobuffalo/cli/internal/genny/resource"
+	"github.com/gobuffalo/cli/internal/genny/resource"
 
 	"github.com/gobuffalo/attrs"
 	"github.com/gobuffalo/genny/v2"

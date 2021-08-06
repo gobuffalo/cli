@@ -43,7 +43,7 @@ func New(opts *Options) (*genny.Group, error) {
 func initGenerator(opts *Options) (*genny.Generator, error) {
 	g := genny.New()
 
-	g.Box(packr.New("gobuffalo/cli/internal/genny/mail/init/templates", "../mail/init/templates"))
+	g.Box(packr.New("github.com/gobuffalo/cli/internal/genny/mail/init/templates", "../mail/init/templates"))
 	h := template.FuncMap{}
 	data := map[string]interface{}{
 		"opts": opts,

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"gobuffalo/cli/internal/genny/actions"
+	"github.com/gobuffalo/cli/internal/genny/actions"
 
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/logger"

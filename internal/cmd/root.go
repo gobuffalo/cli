@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gobuffalo/cli/internal/cmd/plugins"
+	"github.com/gobuffalo/cli/internal/plugins"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

@@ -1,10 +1,10 @@
 package core
 
 import (
-	"gobuffalo/cli/internal/genny/ci"
-	"gobuffalo/cli/internal/genny/docker"
-	"gobuffalo/cli/internal/genny/plugins/install"
-	"gobuffalo/cli/internal/genny/refresh"
+	"github.com/gobuffalo/cli/internal/genny/ci"
+	"github.com/gobuffalo/cli/internal/genny/docker"
+	"github.com/gobuffalo/cli/internal/genny/plugins/install"
+	"github.com/gobuffalo/cli/internal/genny/refresh"
 
 	pop "github.com/gobuffalo/buffalo-pop/v2/genny/newapp"
 	"github.com/gobuffalo/cli/internal/plugins/plugdeps"

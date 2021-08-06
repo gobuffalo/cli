@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"gobuffalo/cli/internal/genny/assets/webpack"
+	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
 )
 
 // WebpackCheck will compare the current default Buffalo
