@@ -90,6 +90,7 @@ var _ = func() error {
 	}
 	g.DefaultResolver = hgr
 
+
 	func() {
 		b := packr.New("buffalo:genny:assets:standard", "../standard/templates")
 		b.SetResolver("public/assets/application.css.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "b67ab648f40407d018954f7deaa931e8"})
@@ -170,35 +171,6 @@ var _ = func() error {
 	}()
 
 	func() {
-		b := packr.New("github.com/gobuffalo/cli/internal/genny/actions/templates", "../actions/templates")
-		b.SetResolver("actions.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "022f7e3c2b71d56a8ee1afd96d5330f9"})
-		b.SetResolver("actions_header.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "610fcef78d274967f17cdf72d80a6a4c"})
-		b.SetResolver("test.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "6e046c195c1437c3f5dfdd4a30851859"})
-		b.SetResolver("tests_header.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "e89b551d27237132fa5b9743feec4493"})
-		b.SetResolver("view.plush.html.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "baebb2aeb608e8e6f1a3254ebac7f9ec"})
-	}()
-
-	func() {
-		b := packr.New("github.com/gobuffalo/cli/internal/genny/assets/webpack", "../webpack/templates")
-		b.SetResolver("-dot-babelrc.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "3e9292a8b15e5fdd17d612113cf54654"})
-		b.SetResolver("assets/css/_buffalo.scss.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "e13055479a9e4e6467e0417d03e75408"})
-		b.SetResolver("assets/css/application.scss.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "deb9e2faf0204d1c40696d56e83333ab"})
-		b.SetResolver("assets/images/favicon.ico.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "36c89f89f2f1770b67e09d96d939bf83"})
-		b.SetResolver("assets/images/logo.svg", packr.Pointer{ForwardBox: gk, ForwardPath: "b1a5dd2eb23779a9c9758e1fb689cbfd"})
-		b.SetResolver("assets/js/application.js.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "32aff774d80bb07cde071e78941245b3"})
-		b.SetResolver("package.json.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "e1e4fac264693f7c77cee9867d738890"})
-		b.SetResolver("postcss.config.js.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "3d01ebcf5f9dcd2fa0a66be0ab0fb3e8"})
-		b.SetResolver("public/assets/-dot-keep.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "ff44cce7d5938cc82a378ae69a0c5ff6"})
-		b.SetResolver("webpack.config.js.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "171e4314c14c880820ee45f1d604bbb6"})
-	}()
-
-	func() {
-		b := packr.New("github.com/gobuffalo/cli/internal/genny/mail/init/templates", "../mail/init/templates")
-		b.SetResolver("mailers/mailers.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "c57d6634ae3bb0d72f8d9b65dae98dc4"})
-		b.SetResolver("templates/mail/layout.plush.html.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "7ffec554c860f6fb6262c98823e783f1"})
-	}()
-
-	func() {
 		b := packr.New("github.com/gobuffalo/buffalo/multi", "../docker/templates/multi")
 		b.SetResolver("Dockerfile.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "106d6939ccd47a704e4561d4191d0785"})
 	}()
@@ -226,6 +198,35 @@ var _ = func() error {
 		b.SetResolver("a/aa.go.plush", packr.Pointer{ForwardBox: gk, ForwardPath: "ca51b7980ceae6b9b12cc465cfa7dab3"})
 		b.SetResolver("buffalo_build_main.go.plush", packr.Pointer{ForwardBox: gk, ForwardPath: "7818f415d79ce7ba4116f2594c505744"})
 		b.SetResolver("migrations/-dot-pop-tmp.md", packr.Pointer{ForwardBox: gk, ForwardPath: "9db1fb94dd86cb68cef2f9be67611cb1"})
+	}()
+
+	func() {
+		b := packr.New("github.com/gobuffalo/cli/internal/genny/actions/templates", "../actions/templates")
+		b.SetResolver("actions.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "022f7e3c2b71d56a8ee1afd96d5330f9"})
+		b.SetResolver("actions_header.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "610fcef78d274967f17cdf72d80a6a4c"})
+		b.SetResolver("test.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "6e046c195c1437c3f5dfdd4a30851859"})
+		b.SetResolver("tests_header.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "e89b551d27237132fa5b9743feec4493"})
+		b.SetResolver("view.plush.html.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "baebb2aeb608e8e6f1a3254ebac7f9ec"})
+	}()
+
+	func() {
+		b := packr.New("github.com/gobuffalo/cli/internal/genny/assets/webpack", "../webpack/templates")
+		b.SetResolver("-dot-babelrc.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "3e9292a8b15e5fdd17d612113cf54654"})
+		b.SetResolver("assets/css/_buffalo.scss.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "e13055479a9e4e6467e0417d03e75408"})
+		b.SetResolver("assets/css/application.scss.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "deb9e2faf0204d1c40696d56e83333ab"})
+		b.SetResolver("assets/images/favicon.ico.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "36c89f89f2f1770b67e09d96d939bf83"})
+		b.SetResolver("assets/images/logo.svg", packr.Pointer{ForwardBox: gk, ForwardPath: "b1a5dd2eb23779a9c9758e1fb689cbfd"})
+		b.SetResolver("assets/js/application.js.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "32aff774d80bb07cde071e78941245b3"})
+		b.SetResolver("package.json.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "e1e4fac264693f7c77cee9867d738890"})
+		b.SetResolver("postcss.config.js.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "3d01ebcf5f9dcd2fa0a66be0ab0fb3e8"})
+		b.SetResolver("public/assets/-dot-keep.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "ff44cce7d5938cc82a378ae69a0c5ff6"})
+		b.SetResolver("webpack.config.js.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "171e4314c14c880820ee45f1d604bbb6"})
+	}()
+
+	func() {
+		b := packr.New("github.com/gobuffalo/cli/internal/genny/mail/init/templates", "../mail/init/templates")
+		b.SetResolver("mailers/mailers.go.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "c57d6634ae3bb0d72f8d9b65dae98dc4"})
+		b.SetResolver("templates/mail/layout.plush.html.tmpl", packr.Pointer{ForwardBox: gk, ForwardPath: "7ffec554c860f6fb6262c98823e783f1"})
 	}()
 	return nil
 }()
