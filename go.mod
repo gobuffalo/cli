@@ -1,6 +1,6 @@
 module github.com/gobuffalo/cli
 
-go 1.16
+go 1.15
 
 require (
 	github.com/BurntSushi/toml v0.4.1
