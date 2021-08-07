@@ -6,15 +6,16 @@ require (
 	github.com/BurntSushi/toml v0.4.1
 	github.com/fatih/color v1.12.0
 	github.com/gobuffalo/attrs v1.0.0
-	github.com/gobuffalo/buffalo v0.16.27
 	github.com/gobuffalo/buffalo-pop/v2 v2.3.0
 	github.com/gobuffalo/clara/v2 v2.0.2
 	github.com/gobuffalo/envy v1.9.0
 	github.com/gobuffalo/events v1.4.1
 	github.com/gobuffalo/flect v0.2.3
 	github.com/gobuffalo/genny/v2 v2.0.6
+	github.com/gobuffalo/helpers v0.6.2 // indirect
 	github.com/gobuffalo/logger v1.0.4
 	github.com/gobuffalo/meta v0.3.0
+	github.com/gobuffalo/nulls v0.4.0 // indirect
 	github.com/gobuffalo/packd v1.0.0
 	github.com/gobuffalo/packr/v2 v2.8.1
 	github.com/gobuffalo/plush/v4 v4.1.5
