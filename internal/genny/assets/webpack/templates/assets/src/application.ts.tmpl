@@ -1,0 +1,21 @@
+
+import { Tooltip, Toast } from 'bootstrap';
+
+import { ClickConfirm } from './buffalo/ujs/click_confirm';
+import { ClickMethod } from './buffalo/ujs/click_method';
+
+window.onload = () => {
+    new ClickMethod();
+    new ClickConfirm();
+};
+
+[].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).map(function (tooltip: any) {
+    return new Tooltip(tooltip)
+});
+
+[].slice.call(document.querySelectorAll('.toast')).map(function (toast: any) {
+    return new Toast(toast).show();
+});
+
+
+// WRITE YOUR CODE HERE

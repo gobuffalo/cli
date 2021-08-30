@@ -1,17 +1,18 @@
 const Webpack = require("webpack");
 const Glob = require("glob");
+const path = require('path');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const ManifestPlugin = require("webpack-manifest-plugin");
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const CleanObsoleteChunks = require("webpack-clean-obsolete-chunks");
 const TerserPlugin = require("terser-webpack-plugin");
-const LiveReloadPlugin = require("webpack-livereload-plugin");
+const LiveReloadPlugin = require('@kooneko/livereload-webpack-plugin');
+const PnpWebpackPlugin = require('pnp-webpack-plugin');
 
 const configurator = {
   entries: function(){
     var entries = {
       application: [
-        './node_modules/jquery-ujs/src/rails.js',
         './assets/css/application.scss',
       ],
     }
@@ -37,12 +38,13 @@ const configurator = {
   },
 
   plugins() {
+    var static_file_mapping = {};
+
     var plugins = [
-      new Webpack.ProvidePlugin({$: "jquery",jQuery: "jquery"}),
       new MiniCssExtractPlugin({filename: "[name].[contenthash].css"}),
       new CopyWebpackPlugin([{from: "./assets",to: ""}], {copyUnmodified: true,ignore: ["css/**", "js/**", "src/**"] }),
       new Webpack.LoaderOptionsPlugin({minimize: true,debug: false}),
-      new ManifestPlugin({fileName: "manifest.json"}),
+      new WebpackManifestPlugin({fileName: "manifest.json", seed: static_file_mapping}),
       new CleanObsoleteChunks()
     ];
 
@@ -55,17 +57,19 @@ const configurator = {
         {
           test: /\.s[ac]ss$/,
           use: [
-            MiniCssExtractPlugin.loader,
+            { loader: MiniCssExtractPlugin.loader, options: {publicPath: ''} },
             { loader: "css-loader", options: {sourceMap: true}},
             { loader: "postcss-loader", options: {sourceMap: true}},
             { loader: "sass-loader", options: {sourceMap: true}}
           ]
         },
-        { test: /\.tsx?$/, use: "ts-loader", exclude: /node_modules/},
-        { test: /\.jsx?$/,loader: "babel-loader",exclude: /node_modules/ },
-        { test: /\.(woff|woff2|ttf|svg)(\?v=\d+\.\d+\.\d+)?$/,use: "url-loader"},
-        { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,use: "file-loader" },
-        { test: require.resolve("jquery"),use: "expose-loader?jQuery!expose-loader?$"},
+        {
+          test: /\.tsx?$/,
+          use: [{ loader: "ts-loader", options: PnpWebpackPlugin.tsLoaderOptions() }],
+          exclude: /node_modules/
+        },
+        { test: /\.jsx?$/, loader: "babel-loader", exclude: /node_modules/ },
+        { test: /\.(eot|woff|woff2|ttf|svg|png)(\?v=\d+\.\d+\.\d+)?$/, type: 'asset/resource' },
         { test: /\.go$/, use: "gopherjs-loader"}
       ]
     }
@@ -80,16 +84,20 @@ const configurator = {
     var config = {
       mode: env,
       entry: configurator.entries(),
-      output: {filename: "[name].[hash].js", path: `${__dirname}/public/assets`},
+      output: {
+        filename: "[name].[contenthash].js",
+        path: `${__dirname}/public/assets`,
+        publicPath: ''
+      },
       plugins: configurator.plugins(),
       module: configurator.moduleOptions(),
       resolve: {
-        extensions: ['.ts', '.js', '.json']
+        extensions: ['.ts', '.tsx', '.js', '.json']
       }
     }
 
     if( env === "development" ){
-      config.plugins.push(new LiveReloadPlugin({appendScriptTag: true}))
+      config.plugins.push(new LiveReloadPlugin({appendScript: true}))
       return config
     }
 

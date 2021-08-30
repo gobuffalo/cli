@@ -3,10 +3,7 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8">
-    <title>Buffalo - {{ .opts.App.Name.Titleize }}</title>
-  {{- if not .opts.App.WithWebpack }}
-    <%= stylesheetTag("buffalo.css") %>
-  {{- end }}
+    <title>Buffalo - Std11</title>
     <%= stylesheetTag("application.css") %>
     <meta name="csrf-param" content="authenticity_token" />
     <meta name="csrf-token" content="<%= authenticity_token %>" />
@@ -17,6 +14,7 @@
     <div class="container">
       <%= partial("flash.html") %>
       <%= yield %>
+      <%= partial("modals.html") %>
     </div>
 
     <%= javascriptTag("application.js") %>
