@@ -12,13 +12,11 @@ require (
 	github.com/gobuffalo/events v1.4.1
 	github.com/gobuffalo/flect v0.2.3
 	github.com/gobuffalo/genny/v2 v2.0.6
-	github.com/gobuffalo/helpers v0.6.2 // indirect
 	github.com/gobuffalo/logger v1.0.4
 	github.com/gobuffalo/meta v0.3.0
-	github.com/gobuffalo/nulls v0.4.0 // indirect
 	github.com/gobuffalo/packd v1.0.0
 	github.com/gobuffalo/packr/v2 v2.8.1
-	github.com/gobuffalo/plush/v4 v4.1.5
+	github.com/gobuffalo/plush/v4 v4.1.6
 	github.com/gobuffalo/pop/v5 v5.3.4
 	github.com/google/go-cmp v0.5.6
 	github.com/karrick/godirwalk v1.16.1
