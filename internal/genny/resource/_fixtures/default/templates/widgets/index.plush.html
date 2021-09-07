@@ -1,6 +1,6 @@
 <div class="py-4 mb-2">
   <h3 class="d-inline-block">Widgets</h3>
-  <div class="float-right">
+  <div class="float-end">
     <%= linkTo(newWidgetsPath(), {class: "btn btn-primary"}) { %>
       Create New Widget
     <% } %>
@@ -17,7 +17,7 @@
       <tr>
         <td class="align-middle"><%= widget.Name %></td>
         <td>
-          <div class="float-right">
+          <div class="float-end">
             <%= linkTo(widgetPath({ widget_id: widget.ID }), {class: "btn btn-info", body: "View"}) %>
             <%= linkTo(editWidgetPath({ widget_id: widget.ID }), {class: "btn btn-warning", body: "Edit"}) %>
             <%= linkTo(widgetPath({ widget_id: widget.ID }), {class: "btn btn-danger", "data-method": "DELETE", "data-confirm": "Are you sure?", body: "Destroy"}) %>
