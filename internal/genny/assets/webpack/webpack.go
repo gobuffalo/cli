@@ -22,7 +22,7 @@ var BinPath = func() string {
 
 // Templates used for generating webpack
 // (exported mostly for the "fix" command)
-var Templates = packr.New("github.com/gobuffalo/cli/internal/genny/assets/webpack", "../webpack/templates")
+var Templates *packr.Box
 
 // New generator for creating webpack asset files
 func New(opts *Options) (*genny.Generator, error) {
@@ -44,6 +44,12 @@ func New(opts *Options) (*genny.Generator, error) {
 		}
 		return nil
 	})
+
+	if opts.WithTypeScript {
+		Templates = packr.New("github.com/gobuffalo/cli/internal/genny/assets/webpack/typescript", "../webpack/templates/typescript")
+	} else {
+		Templates = packr.New("github.com/gobuffalo/cli/internal/genny/assets/webpack/jquery", "../webpack/templates/jquery")
+	}
 
 	g.Box(Templates)
 

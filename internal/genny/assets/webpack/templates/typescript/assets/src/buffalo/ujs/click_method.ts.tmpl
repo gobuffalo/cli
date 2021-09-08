@@ -1,0 +1,96 @@
+import { CSRF } from "..//utils/csrf";
+import { LiteAjax } from "..//utils/liteajax";
+
+export class ClickMethod {
+  constructor()
+  {
+    document.addEventListener('click', function(event) {
+      var element, url, method, data, handler;
+  
+      // Only left click allowed. Firefox triggers click event on right click/contextmenu.
+      if (event.button !== 0) {
+        return;
+      }
+
+      element = (event.target as HTMLLIElement);
+
+      if (element.hasAttribute("data-modal-delete") || element.hasAttribute("data-modal-confirm")) {
+        return;
+      }
+  
+      url = element.getAttribute('href');
+      if (!url) {
+        return
+      }
+  
+      method = element.getAttribute('data-method') || getMethod(element);
+  
+      function getMethod (el: any) {
+        const url = new URL(el);
+        const method = url.searchParams.get("method");
+        return method;
+      }
+  
+      if (method) {
+        method = method.toUpperCase();
+        let data: { [name: string]: string } = {};
+  
+        if (CSRF.Param() && CSRF.Token()) {
+          data[CSRF.Param()] = CSRF.Token();
+        }
+  
+        if (element.matches('a[data-remote]')) {
+          handler = xhr;
+        } else {
+          handler = submit;
+        }
+  
+        if (handler({ url: url, method: method, data: data, target: element })) {
+          event.preventDefault();
+        } else {
+          return true;
+        }
+      }
+  
+      function submit(options: any) {
+        var form, input, param;
+  
+        if (options.method == 'GET') {
+          return false;
+        }
+  
+        form = document.createElement('form');
+        form.method = 'POST';
+        form.action = options.url;
+        form.style.display = 'none';
+  
+        for (param in options.data) {
+          if (Object.prototype.hasOwnProperty.call(options.data, param)) {
+            input = document.createElement('input');
+            input.setAttribute('type', 'hidden');
+            input.setAttribute('name', param);
+            input.setAttribute('value', options.data[param]);
+            form.appendChild(input);
+          }
+        }
+  
+        if (options.method != 'POST') {
+          input = document.createElement('input');
+          input.setAttribute('type', 'hidden');
+          input.setAttribute('name', '_method');
+          input.setAttribute('value', options.method);
+          form.appendChild(input);
+        }
+  
+        document.body.appendChild(form);
+        form.submit();
+        return true;
+      }
+
+      function xhr(options:any ) {
+        LiteAjax.Ajax(null, options);
+        return true;
+      }
+    }, false);
+  }
+}

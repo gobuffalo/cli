@@ -38,11 +38,12 @@ import (
 )
 
 type newAppOptions struct {
-	Options *core.Options
-	Module  string
-	Force   bool
-	Verbose bool
-	DryRun  bool
+	Options        *core.Options
+	Module         string
+	Force          bool
+	Verbose        bool
+	WithTypeScript bool
+	DryRun         bool
 }
 
 func parseNewOptions(args []string) (newAppOptions, error) {
@@ -90,6 +91,8 @@ func parseNewOptions(args []string) (newAppOptions, error) {
 	app.WithYarn = !viper.GetBool("skip-yarn")
 	app.WithNodeJs = app.WithWebpack
 	app.AsWeb = !app.AsAPI
+
+	nopts.WithTypeScript = viper.GetBool("with-typescript")
 
 	if app.AsAPI {
 		app.WithWebpack = false
@@ -190,7 +193,10 @@ var newCmd = &cobra.Command{
 				Options: opts,
 			}
 			if app.WithWebpack {
-				wo.Webpack = &webpack.Options{}
+				wo.Webpack = &webpack.Options{
+					WithTypeScript: nopts.WithTypeScript,
+				}
+
 			} else {
 				wo.Standard = &standard.Options{}
 			}
@@ -302,6 +308,7 @@ func init() {
 	newCmd.Flags().BoolP("force", "f", false, "delete and remake if the app already exists")
 	newCmd.Flags().BoolP("dry-run", "d", false, "dry run")
 	newCmd.Flags().BoolP("verbose", "v", false, "verbosely print out the go get commands")
+	newCmd.Flags().Bool("with-typescript", false, "Use TypeScript instead of jQuery")
 	newCmd.Flags().Bool("skip-pop", false, "skips adding pop/soda to your app")
 	newCmd.Flags().Bool("skip-webpack", false, "skips adding Webpack to your app")
 	newCmd.Flags().Bool("skip-yarn", false, "use npm instead of yarn for frontend dependencies management")

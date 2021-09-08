@@ -7,6 +7,7 @@ import (
 // Options for creating a new webpack setup
 type Options struct {
 	meta.App
+	WithTypeScript bool
 }
 
 // Validate options

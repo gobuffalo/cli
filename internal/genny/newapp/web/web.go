@@ -33,7 +33,7 @@ func New(opts *Options) (*genny.Group, error) {
 
 	t := gogen.TemplateTransformer(data, helpers)
 	g.Transformer(t)
-	g.Box(packr.New("github.com/gobuffalo/buffalo:genny/newapp/web", "../web/templates"))
+	g.Box(packr.New("github.com/gobuffalo/buffalo:genny/newapp/web", "../web/templates/common"))
 
 	gg.Add(g)
 
@@ -43,6 +43,11 @@ func New(opts *Options) (*genny.Group, error) {
 		if err != nil {
 			return gg, err
 		}
+
+		if opts.Webpack.WithTypeScript {
+			g.Box(packr.New("github.com/gobuffalo/buffalo:genny/newapp/web/typescript", "../web/templates/typescript"))
+		}
+
 		gg.Add(g)
 	}
 

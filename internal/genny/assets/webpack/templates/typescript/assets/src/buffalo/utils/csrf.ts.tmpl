@@ -1,0 +1,59 @@
+export class CSRF {
+
+    public static Token(){
+      var token = document.querySelector('meta[name="csrf-token"]');
+      return token && token.getAttribute('content');  
+    }
+  
+    public static Param()
+    {
+      var param = document.querySelector('meta[name="csrf-param"]');
+      return param && param.getAttribute('content');
+    }
+  
+    public static SameOrigin(url: string)
+    {
+      var a = document.createElement('a'), origin;
+      a.href = url;
+      origin = a.href.split('/', 3).join('/');
+  
+      return window.location.href.indexOf(origin) === 0;
+    }
+  
+    public Init()
+    {
+  
+      document.addEventListener('ajax:before', function (e) {
+        var token = CSRF.Token(), xhr = (e as any).detail;
+        if (token)
+          xhr.setRequestHeader('X-CSRF-Token', token);
+      });
+      
+      document.addEventListener('submit', function (e) {
+        var token = CSRF.Token(),
+            param = CSRF.Param(),
+            form  = (e.target as HTMLFormElement);
+      
+        if (form.matches('form')) {
+          if (form.matches('form[data-remote]'))
+            return true;
+          if (!form.method || form.method.toUpperCase() == 'GET')
+            return true;
+          if (!CSRF.SameOrigin(form.action))
+            return true;
+      
+          if (param && token && !form.querySelector('input[name='+param+']')) {
+            var input = document.createElement('input');
+            input.setAttribute('type', 'hidden');
+            input.setAttribute('name', param);
+            input.setAttribute('value', token);
+      
+            form.appendChild(input);
+          }
+      
+          return true;
+        }
+      });
+  
+    }
+  }

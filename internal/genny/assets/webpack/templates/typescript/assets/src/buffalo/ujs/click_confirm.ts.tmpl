@@ -1,0 +1,81 @@
+import { Modal } from 'bootstrap';
+
+export class ClickConfirm {
+
+  constructor()
+  {
+
+    document.addEventListener('click', function (evt) {
+
+
+  
+      if ((evt.target as HTMLElement).matches('a[data-modal-confirm], button[data-modal-confirm], input[data-modal-confirm]')) {
+
+        evt.preventDefault();
+        evt.stopPropagation();
+        evt.stopImmediatePropagation();
+
+        let element = (evt.target as HTMLElement);
+
+        let message = element.getAttribute('data-modal-confirm');
+        let link = element.getAttribute("href");
+        
+        let infoModalElement = document.getElementById('confirm--modal--info');
+
+        infoModalElement.addEventListener('show.bs.modal', function (bsEvent) {
+            (bsEvent.currentTarget as HTMLParagraphElement).querySelector(".confirm--modal--message").innerHTML = message;
+            (bsEvent.currentTarget as HTMLLinkElement).querySelector(".confirm--modal--button").setAttribute("href", link);
+
+            if (element.hasAttribute("data-method")){
+              (bsEvent.currentTarget as HTMLLinkElement).querySelector(".confirm--modal--button").setAttribute("data-method", element.getAttribute("data-method"));
+            }
+
+        });
+
+        /*
+        infoModalElement.addEventListener('hide.bs.modal', function (bsEvent) {
+          (bsEvent.currentTarget as HTMLParagraphElement).querySelector(".confirm--modal--message").innerHTML = "";
+          (bsEvent.currentTarget as HTMLDivElement).querySelector(".confirm--modal--button").removeAttribute("href");
+        });
+        */
+        
+        new Modal(infoModalElement).show();
+
+      } else if ((evt.target as HTMLElement).matches('a[data-modal-delete], button[data-modal-delete], input[data-modal-delete]')) {
+
+        evt.stopPropagation();
+        evt.stopImmediatePropagation();
+        evt.preventDefault();
+
+        let element = (evt.target as HTMLElement);
+
+        let message = element.getAttribute('data-modal-delete');
+        let link = element.getAttribute("href");
+        
+        
+        let deleteModalElement = document.getElementById('confirm--modal--delete');
+
+        
+        deleteModalElement.addEventListener('show.bs.modal', function (bsEvent) {
+            (bsEvent.currentTarget as HTMLParagraphElement).querySelector(".confirm--modal--message").innerHTML = message;
+            (bsEvent.currentTarget as HTMLDivElement).querySelector(".confirm--modal--button").setAttribute("href", link);
+
+            if (element.hasAttribute("data-method")){
+              (bsEvent.currentTarget as HTMLLinkElement).querySelector(".confirm--modal--button").setAttribute("data-method", element.getAttribute("data-method"));
+            }
+        });
+        
+        /*
+        deleteModalElement.addEventListener('hide.bs.modal', function (bsEvent) {
+          (bsEvent.currentTarget as HTMLParagraphElement).querySelector(".confirm--modal--message").innerHTML = "";
+          (bsEvent.currentTarget as HTMLDivElement).querySelector(".confirm--modal--button").removeAttribute("href");
+        });
+        */
+        
+        new Modal(deleteModalElement).show();
+      
+      } 
+
+    });
+  }
+}
