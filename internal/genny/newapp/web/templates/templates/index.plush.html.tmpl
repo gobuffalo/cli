@@ -43,10 +43,10 @@
                 <%= r.Method %>
               </td>
               <td>
-                <%= if (r.Method != "GET" || r.Path ~= "{") {
-                  return r.Path
-                } else {
-                  return linkTo(r.Path, {body: r.Path})
+                <%= if (r.Method != "GET" || r.Path ~= "{") { %><%=
+                  r.Path %><%
+                } else { %><%=
+                  linkTo(r.Path, {body: r.Path}) %><%
                 } %>
               </td>
               <td>
