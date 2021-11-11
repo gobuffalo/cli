@@ -12,7 +12,7 @@ import (
 
 var heroku = Plugin{
 	Binary: "buffalo-heroku",
-	GoGet:  "github.com/gobuffalo/buffalo-heroku",
+	GoGet:  "github.com/gobuffalo/buffalo-heroku@latest",
 	Commands: []Command{
 		{Name: "deploy", Flags: []string{"-v"}},
 	},
@@ -64,7 +64,7 @@ const eToml = `[[plugin]]
 
 [[plugin]]
   binary = "buffalo-heroku"
-  go_get = "github.com/gobuffalo/buffalo-heroku"
+  go_get = "github.com/gobuffalo/buffalo-heroku@latest"
   tags = ["foo", "bar"]
 
   [[plugin.command]]
@@ -73,5 +73,5 @@ const eToml = `[[plugin]]
 
 [[plugin]]
   binary = "buffalo-pop"
-  go_get = "github.com/gobuffalo/buffalo-pop/v2"
+  go_get = "github.com/gobuffalo/buffalo-pop/v2@latest"
 `

@@ -41,7 +41,7 @@ func New(opts *Options) (*genny.Group, error) {
 		if len(p.Tags) > 0 {
 			args = append(args, "-tags", p.Tags.String())
 		}
-		bargs := []string{"get"}
+		bargs := []string{"install"}
 		bargs = append(bargs, args...)
 		bargs = append(bargs, p.GoGet)
 		g.Command(exec.Command("go", bargs...))

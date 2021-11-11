@@ -2,5 +2,5 @@ package plugdeps
 
 var pop = Plugin{
 	Binary: "buffalo-pop",
-	GoGet:  "github.com/gobuffalo/buffalo-pop/v2",
+	GoGet:  "github.com/gobuffalo/buffalo-pop/v2@latest",
 }
