@@ -51,7 +51,7 @@ func New(opts *Options) (*genny.Group, error) {
 		// add the plugin
 		plugs.Add(plugdeps.Plugin{
 			Binary: "buffalo-pop",
-			GoGet:  "github.com/gobuffalo/buffalo-pop/v2",
+			GoGet:  "github.com/gobuffalo/buffalo-pop/v2@latest",
 		})
 	}
 
