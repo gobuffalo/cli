@@ -2,6 +2,8 @@ module github.com/gobuffalo/cli
 
 go 1.16
 
+replace github.com/microcosm-cc/bluemonday => github.com/microcosm-cc/bluemonday v1.0.16
+
 require (
 	github.com/BurntSushi/toml v0.4.1
 	github.com/fatih/color v1.12.0
