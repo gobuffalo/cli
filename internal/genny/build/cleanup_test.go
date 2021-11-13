@@ -27,7 +27,7 @@ func Test_WithDeps(t *testing.T) {
 	opts.rollback = &emptyMap
 
 	f := Cleanup(opts)
-	f(run)
+	r.NoError(f(run))
 
 	results := run.Results()
 
@@ -54,7 +54,7 @@ func Test_WithoutDeps(t *testing.T) {
 	opts.rollback = &emptyMap
 
 	f := Cleanup(opts)
-	f(run)
+	r.NoError(f(run))
 
 	results := run.Results()
 
