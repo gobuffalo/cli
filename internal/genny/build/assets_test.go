@@ -21,9 +21,9 @@ func Test_assets(t *testing.T) {
 	}
 
 	run := cokeRunner()
-	run.WithNew(assets(opts))
+	r.NoError(run.WithNew(assets(opts)))
 
-	envy.MustSet("NODE_ENV", "")
+	r.NoError(envy.MustSet("NODE_ENV", ""))
 	ne := envy.Get("NODE_ENV", "")
 	r.Empty(ne)
 	r.NoError(run.Run())
@@ -52,7 +52,7 @@ func Test_assets_Archived(t *testing.T) {
 
 	run := cokeRunner()
 	opts.Root = run.Root
-	run.WithNew(assets(opts))
+	r.NoError(run.WithNew(assets(opts)))
 	r.NoError(run.Run())
 
 	res := run.Results()

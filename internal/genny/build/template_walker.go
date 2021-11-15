@@ -46,11 +46,10 @@ func (d dirWalker) Walk(fn packd.WalkFunc) error {
 		return fn(path, f)
 	}
 
-	godirwalk.Walk(d.dir, &godirwalk.Options{
+	return godirwalk.Walk(d.dir, &godirwalk.Options{
 		FollowSymbolicLinks: true,
 		Callback:            callback,
 	})
-	return nil
 }
 
 func templateWalker(app meta.App) packd.Walkable {

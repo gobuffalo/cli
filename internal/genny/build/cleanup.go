@@ -5,7 +5,6 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/packr/v2/jam"
 )
@@ -36,12 +35,12 @@ func Cleanup(opts *Options) genny.RunFn {
 				// Keep this file
 				continue
 			}
-			r.Disk.Delete(f.Name())
-		}
-		if envy.Mods() && opts.WithBuildDeps {
-			if err := r.Exec(exec.Command("go", "mod", "tidy")); err != nil {
+			if err := r.Disk.Delete(f.Name()); err != nil {
 				return err
 			}
+		}
+		if opts.WithBuildDeps {
+			return r.Exec(exec.Command("go", "mod", "tidy"))
 		}
 		return nil
 	}

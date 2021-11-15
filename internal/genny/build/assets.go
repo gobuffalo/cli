@@ -24,8 +24,7 @@ func assets(opts *Options) (*genny.Generator, error) {
 	if opts.App.WithNodeJs || opts.App.WithWebpack {
 		if opts.CleanAssets {
 			g.RunFn(func(r *genny.Runner) error {
-				r.Delete(filepath.Join(opts.App.Root, "public", "assets"))
-				return nil
+				return r.Delete(filepath.Join(opts.App.Root, "public", "assets"))
 			})
 		}
 		g.RunFn(func(r *genny.Runner) error {
