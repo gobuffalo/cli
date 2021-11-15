@@ -28,8 +28,7 @@ func New(opts *Options) (*genny.Generator, error) {
 	}
 
 	g.RunFn(func(r *genny.Runner) error {
-		events.EmitPayload(EvtBuildStart, events.Payload{"opts": opts})
-		return nil
+		return events.EmitPayload(EvtBuildStart, events.Payload{"opts": opts})
 	})
 
 	g.Transformer(genny.Dot())
@@ -91,8 +90,7 @@ func New(opts *Options) (*genny.Generator, error) {
 
 	g.Command(c)
 	g.RunFn(func(r *genny.Runner) error {
-		events.EmitPayload(EvtBuildStop, events.Payload{"opts": opts})
-		return nil
+		return events.EmitPayload(EvtBuildStop, events.Payload{"opts": opts})
 	})
 
 	g.RunFn(Cleanup(opts))

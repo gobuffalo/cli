@@ -2,23 +2,21 @@ module github.com/gobuffalo/cli
 
 go 1.16
 
-replace github.com/microcosm-cc/bluemonday => github.com/microcosm-cc/bluemonday v1.0.16
-
 require (
 	github.com/BurntSushi/toml v0.4.1
 	github.com/fatih/color v1.13.0
-	github.com/gobuffalo/attrs v1.0.0
+	github.com/gobuffalo/attrs v1.0.1
 	github.com/gobuffalo/buffalo-pop/v2 v2.3.0
 	github.com/gobuffalo/clara/v2 v2.0.2
-	github.com/gobuffalo/envy v1.9.0
-	github.com/gobuffalo/events v1.4.1
-	github.com/gobuffalo/flect v0.2.3
+	github.com/gobuffalo/envy v1.10.1
+	github.com/gobuffalo/events v1.4.2
+	github.com/gobuffalo/flect v0.2.4
 	github.com/gobuffalo/genny/v2 v2.0.6
-	github.com/gobuffalo/logger v1.0.4
-	github.com/gobuffalo/meta v0.3.0
-	github.com/gobuffalo/packd v1.0.0
+	github.com/gobuffalo/logger v1.0.6
+	github.com/gobuffalo/meta v0.3.1
+	github.com/gobuffalo/packd v1.0.1
 	github.com/gobuffalo/packr/v2 v2.8.1
-	github.com/gobuffalo/plush/v4 v4.1.6
+	github.com/gobuffalo/plush/v4 v4.1.8
 	github.com/gobuffalo/pop/v5 v5.3.4
 	github.com/google/go-cmp v0.5.6
 	github.com/karrick/godirwalk v1.16.1
