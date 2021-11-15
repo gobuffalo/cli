@@ -1,6 +1,5 @@
 builds:
-  -
-    main: ./cmd/buffalo/main.go
+  - main: ./cmd/buffalo/main.go
     binary: buffalo
     env:
       - CGO_ENABLED=0
@@ -37,8 +36,7 @@ changelog:
       - '^docs:'
       - '^test:'
 brews:
-  -
-    name: 'buffalo'
+  - name: 'buffalo'
     tap:
       owner: 'gobuffalo'
       name: 'homebrew-tap'
