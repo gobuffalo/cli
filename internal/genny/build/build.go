@@ -1,6 +1,7 @@
 package build
 
 import (
+	"os"
 	"time"
 
 	"github.com/gobuffalo/cli/internal/runtime"
@@ -34,7 +35,7 @@ func New(opts *Options) (*genny.Generator, error) {
 	g.Transformer(genny.Dot())
 
 	// validate templates
-	g.RunFn(ValidateTemplates(templateWalker(opts.App), opts.TemplateValidators))
+	g.RunFn(ValidateTemplates(os.DirFS(opts.App.Root), opts.TemplateValidators))
 
 	// rename main() to originalMain()
 	g.RunFn(transformMain(opts))

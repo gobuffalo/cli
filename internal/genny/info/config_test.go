@@ -5,9 +5,7 @@ import (
 	"testing"
 
 	"github.com/gobuffalo/clara/v2/genny/rx"
-
-	"github.com/gobuffalo/packd"
-
+	"github.com/gobuffalo/cli/internal/genny/info/testtemplate"
 	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/gobuffalo/meta"
 	"github.com/stretchr/testify/require"
@@ -26,11 +24,7 @@ func Test_configs(t *testing.T) {
 		Out: rx.NewWriter(bb),
 	}
 
-	box := packd.NewMemoryBox()
-	box.AddString("buffalo-app.toml", "app")
-	box.AddString("buffalo-plugins.toml", "plugins")
-	run.WithRun(configs(opts, box))
-
+	run.WithRun(configs(opts, testtemplate.Config()))
 	r.NoError(run.Run())
 
 	x := bb.String()
