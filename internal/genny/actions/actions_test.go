@@ -2,12 +2,13 @@ package actions
 
 import (
 	"fmt"
+	"io/fs"
+	"os"
 	"strings"
 	"testing"
 
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/gentest"
-	packr "github.com/gobuffalo/packr/v2"
 	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/require"
 )
@@ -28,7 +29,7 @@ func compare(a, b string) bool {
 
 func runner() *genny.Runner {
 	run := gentest.NewRunner()
-	run.Disk.AddBox(packr.New("actions/start/test", "../actions/_fixtures/inputs/clean"))
+	run.Disk.AddFS(os.DirFS("../actions/_fixtures/inputs/clean"))
 	return run
 }
 
@@ -42,26 +43,25 @@ func Test_New(t *testing.T) {
 	r.NoError(err)
 
 	run := runner()
-	run.With(g)
+	r.NoError(run.With(g))
 
 	r.NoError(run.Run())
 
 	res := run.Results()
 
 	r.Len(res.Commands, 0)
-	// r.Len(res.Files, 4)
+	r.Len(res.Files, 4)
 
-	box := packr.New("genny/actions/Test_New", "../actions/_fixtures/outputs/clean")
-
+	fsys := os.DirFS("../actions/_fixtures/outputs/clean")
 	files := []string{"actions/user.go.tmpl", "actions/app.go.tmpl", "actions/user_test.go.tmpl", "templates/user/index.plush.html"}
 
 	for _, s := range files {
-		x, err := box.FindString(s)
+		x, err := fs.ReadFile(fsys, s)
 		r.NoError(err)
 		f, err := res.Find(strings.TrimSuffix(s, ".tmpl"))
 		r.NoError(err)
 		fmt.Printf("\nfile %s", s)
-		r.True(compare(x, f.String()))
+		r.True(compare(string(x), f.String()))
 	}
 }
 
@@ -75,26 +75,23 @@ func Test_New_Multi(t *testing.T) {
 	r.NoError(err)
 
 	run := runner()
-	run.With(g)
-
-	err = run.Run()
-	r.NoError(err)
+	r.NoError(run.With(g))
+	r.NoError(run.Run())
 
 	res := run.Results()
 
 	r.Len(res.Commands, 0)
 
-	box := packr.New("genny/actions/Test_New_Multi", "../actions/_fixtures/outputs/multi")
-
+	fsys := os.DirFS("../actions/_fixtures/outputs/multi")
 	files := []string{"actions/user.go.tmpl", "actions/app.go.tmpl", "actions/user_test.go.tmpl", "templates/user/show.plush.html", "templates/user/edit.plush.html"}
 
 	for _, s := range files {
-		x, err := box.FindString(s)
+		x, err := fs.ReadFile(fsys, s)
 		r.NoError(err)
 		f, err := res.Find(strings.TrimSuffix(s, ".tmpl"))
 		r.NoError(err)
 		fmt.Printf("\nfile %s", f)
-		r.True(compare(x, f.String()))
+		r.True(compare(string(x), f.String()))
 	}
 }
 
@@ -108,32 +105,37 @@ func Test_New_Multi_Existing(t *testing.T) {
 	r.NoError(err)
 
 	run := gentest.NewRunner()
-	ins := packr.New("Test_New_Multi_Existing_input", "../actions/_fixtures/inputs/existing")
-	for _, n := range ins.List() {
-		x, err := ins.FindString(n)
+	ins := os.DirFS("../actions/_fixtures/inputs/existing")
+	err = fs.WalkDir(ins, ".", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+		x, err := fs.ReadFile(ins, path)
 		r.NoError(err)
-		n = strings.TrimSuffix(n, ".tmpl")
-		run.Disk.Add(genny.NewFileS(n, x))
-	}
-	run.With(g)
-
-	err = run.Run()
+		path = strings.TrimSuffix(path, ".tmpl")
+		run.Disk.Add(genny.NewFileS(path, string(x)))
+		return nil
+	})
 	r.NoError(err)
+	r.NoError(run.With(g))
+	r.NoError(run.Run())
 
 	res := run.Results()
 
 	r.Len(res.Commands, 0)
 
-	box := packr.New("genny/actions/Test_New_Multi_Existing", "../actions/_fixtures/outputs/existing")
-
+	fsys := os.DirFS("../actions/_fixtures/outputs/existing")
 	files := []string{"actions/user.go.tmpl", "actions/app.go.tmpl", "actions/user_test.go.tmpl", "templates/user/show.plush.html", "templates/user/edit.plush.html"}
 
 	for _, s := range files {
-		x, err := box.FindString(s)
+		x, err := fs.ReadFile(fsys, s)
 		r.NoError(err)
 		f, err := res.Find(strings.TrimSuffix(s, ".tmpl"))
 		r.NoError(err)
-		r.True(compare(x, f.String()))
+		r.True(compare(string(x), f.String()))
 	}
 }
 

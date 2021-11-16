@@ -2,6 +2,7 @@ package actions
 
 import (
 	"fmt"
+	"io/fs"
 	"strings"
 
 	"github.com/gobuffalo/flect/name"
@@ -34,16 +35,16 @@ func buildNewActions(fn string, pres *presenter) genny.RunFn {
 			pres.Actions = append(pres.Actions, name.New(a))
 		}
 
-		h, err := box.FindString("actions_header.go.tmpl")
+		h, err := fs.ReadFile(templates(), "actions_header.go.tmpl")
 		if err != nil {
 			return err
 		}
-		a, err := box.FindString("actions.go.tmpl")
+		a, err := fs.ReadFile(templates(), "actions.go.tmpl")
 		if err != nil {
 			return err
 		}
 
-		f := genny.NewFileS(fn+".tmpl", h+a)
+		f := genny.NewFileS(fn+".tmpl", string(h)+string(a))
 
 		f, err = transform(pres, f)
 		if err != nil {
@@ -67,12 +68,12 @@ func appendActions(f genny.File, pres *presenter) genny.RunFn {
 			pres.Actions = append(pres.Actions, a)
 		}
 
-		a, err := box.FindString("actions.go.tmpl")
+		a, err := fs.ReadFile(templates(), "actions.go.tmpl")
 		if err != nil {
 			return err
 		}
 
-		f = genny.NewFileS(f.Name()+".tmpl", f.String()+a)
+		f = genny.NewFileS(f.Name()+".tmpl", f.String()+string(a))
 
 		f, err = transform(pres, f)
 		if err != nil {

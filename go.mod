@@ -14,7 +14,6 @@ require (
 	github.com/gobuffalo/genny/v2 v2.0.6
 	github.com/gobuffalo/logger v1.0.6
 	github.com/gobuffalo/meta v0.3.1
-	github.com/gobuffalo/packd v1.0.1
 	github.com/gobuffalo/packr/v2 v2.8.1
 	github.com/gobuffalo/plush/v4 v4.1.8
 	github.com/gobuffalo/pop/v5 v5.3.4
@@ -34,3 +33,5 @@ require (
 	golang.org/x/tools v0.1.7
 	gopkg.in/yaml.v2 v2.4.0
 )
+
+replace github.com/gobuffalo/genny/v2 v2.0.6 => github.com/fasmat/genny/v2 v2.0.7-0.20211116135808-94c7662ac05b

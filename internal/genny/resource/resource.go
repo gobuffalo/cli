@@ -1,14 +1,14 @@
 package resource
 
 import (
+	"io/fs"
 	"text/template"
 
+	"github.com/gobuffalo/cli/internal/genny/resource/templates"
 	"github.com/gobuffalo/flect"
 	"github.com/gobuffalo/flect/name"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/gogen"
-	"github.com/gobuffalo/packd"
-	"github.com/gobuffalo/packr/v2"
 )
 
 // New resource generator
@@ -20,21 +20,19 @@ func New(opts *Options) (*genny.Generator, error) {
 	}
 
 	if !opts.SkipTemplates {
-		core := packr.New("github.com/gobuffalo/buffalo/@v0.15.4/genny/resource/templates/core", "../resource/templates/core")
-
-		if err := g.Box(core); err != nil {
+		if err := g.FS(templates.Core()); err != nil {
 			return g, err
 		}
 	}
 
-	var abox packd.Box
+	var aFS fs.FS
 	if opts.SkipModel {
-		abox = packr.New("github.com/gobuffalo/buffalo/@v0.15.4/genny/resource/templates/standard", "../resource/templates/standard")
+		aFS = templates.Standard()
 	} else {
-		abox = packr.New("github.com/gobuffalo/buffalo/@v0.15.4/genny/resource/templates/use_model", "../resource/templates/use_model")
+		aFS = templates.UseModel()
 	}
 
-	if err := g.Box(abox); err != nil {
+	if err := g.FS(aFS); err != nil {
 		return g, err
 	}
 

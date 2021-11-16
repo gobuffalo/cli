@@ -54,7 +54,7 @@ func Test_New(t *testing.T) {
 			r.NoError(err)
 
 			run := runner()
-			run.With(g)
+			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
 			res := run.Results()
@@ -75,8 +75,6 @@ func Test_New(t *testing.T) {
 			}
 
 			exp := packr.Folder(filepath.Join("_fixtures", tt.Name))
-			gentest.CompareFiles(exp.List(), res.Files)
-
 			for _, n := range exp.List() {
 				n = strings.Replace(n, "\\", "/", -1)
 				f, err := res.Find(strings.TrimSuffix(n, ".tmpl"))
@@ -93,7 +91,6 @@ func Test_New(t *testing.T) {
 				}
 				r.Equal(clean(s), clean(f.String()))
 			}
-
 		})
 	}
 }
@@ -120,7 +117,7 @@ func Test_New_SkipTemplates(t *testing.T) {
 			r.NoError(err)
 
 			run := runner()
-			run.With(g)
+			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
 			res := run.Results()
@@ -160,7 +157,7 @@ func Test_New_API(t *testing.T) {
 			r.NoError(err)
 
 			run := runner()
-			run.With(g)
+			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
 			res := run.Results()
@@ -198,7 +195,7 @@ func Test_New_UseModel(t *testing.T) {
 	r.NoError(err)
 
 	run := runner()
-	run.With(g)
+	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
 	res := run.Results()
@@ -238,7 +235,7 @@ func Test_New_SkipModel(t *testing.T) {
 	r.NoError(err)
 
 	run := runner()
-	run.With(g)
+	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
 	res := run.Results()

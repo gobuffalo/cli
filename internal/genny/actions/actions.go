@@ -1,16 +1,26 @@
 package actions
 
 import (
+	"embed"
 	"fmt"
+	"io/fs"
 	"strings"
 
 	"github.com/gobuffalo/flect/name"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/gogen"
-	"github.com/gobuffalo/packr/v2"
 )
 
-var box = packr.New("github.com/gobuffalo/cli/internal/genny/actions/templates", "../actions/templates")
+//go:embed templates/*
+var templateFS embed.FS
+
+func templates() fs.FS {
+	sub, err := fs.Sub(templateFS, "templates")
+	if err != nil {
+		return nil
+	}
+	return sub
+}
 
 // New returns a new generator for build actions on a Buffalo app
 func New(opts *Options) (*genny.Generator, error) {

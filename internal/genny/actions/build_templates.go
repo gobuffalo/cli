@@ -2,20 +2,21 @@ package actions
 
 import (
 	"fmt"
+	"io/fs"
 
 	"github.com/gobuffalo/genny/v2"
 )
 
 func buildTemplates(pres *presenter) genny.RunFn {
 	return func(r *genny.Runner) error {
-		f, err := box.FindString("view.plush.html.tmpl")
+		f, err := fs.ReadFile(templates(), "view.plush.html.tmpl")
 		if err != nil {
 			return err
 		}
 		for _, a := range pres.Actions {
 			pres.Data["action"] = a
 			fn := fmt.Sprintf("templates/%s/%s.plush.html.tmpl", pres.Name.Folder(), a.File())
-			xf := genny.NewFileS(fn, f)
+			xf := genny.NewFileS(fn, string(f))
 			xf, err = transform(pres, xf)
 			if err != nil {
 				return err
