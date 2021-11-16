@@ -2,10 +2,10 @@ package info
 
 import (
 	"bytes"
+	"os"
 	"testing"
 
 	"github.com/gobuffalo/clara/v2/genny/rx"
-	"github.com/gobuffalo/cli/internal/genny/info/testtemplate"
 	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/gobuffalo/meta"
 	"github.com/stretchr/testify/require"
@@ -24,7 +24,7 @@ func Test_configs(t *testing.T) {
 		Out: rx.NewWriter(bb),
 	}
 
-	run.WithRun(configs(opts, testtemplate.Config()))
+	run.WithRun(configs(opts, os.DirFS("../info/testtemplate/config")))
 	r.NoError(run.Run())
 
 	x := bb.String()

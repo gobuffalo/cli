@@ -7,18 +7,18 @@ import (
 	"github.com/gobuffalo/genny/v2"
 )
 
-func configs(opts *Options, dir fs.FS) genny.RunFn {
+func configs(opts *Options, fsys fs.FS) genny.RunFn {
 	return func(r *genny.Runner) error {
-		return fs.WalkDir(dir, ".", func(p string, entry fs.DirEntry, err error) error {
+		return fs.WalkDir(fsys, ".", func(p string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
 
-			if entry.IsDir() {
+			if d.IsDir() {
 				return nil
 			}
 
-			b, err := fs.ReadFile(dir, p)
+			b, err := fs.ReadFile(fsys, p)
 			if err != nil {
 				return err
 			}

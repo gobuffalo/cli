@@ -7,10 +7,10 @@ import (
 	"github.com/gobuffalo/genny/v2"
 )
 
-func pkgChecks(opts *Options, dir fs.FS) genny.RunFn {
+func pkgChecks(opts *Options, fsys fs.FS) genny.RunFn {
 	return func(r *genny.Runner) error {
 		for _, x := range []string{"go.mod"} {
-			f, err := dir.Open(x)
+			f, err := fsys.Open(x)
 			if err != nil {
 				return nil
 			}

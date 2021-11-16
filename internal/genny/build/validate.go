@@ -20,7 +20,7 @@ type TemplateValidator func(f genny.File) error
 // ValidateTemplates returns a genny.RunFn that will walk the
 // given box and run each of the files found through each of the
 // template validators
-func ValidateTemplates(dir fs.FS, tvs []TemplateValidator) genny.RunFn {
+func ValidateTemplates(fsys fs.FS, tvs []TemplateValidator) genny.RunFn {
 	if len(tvs) == 0 {
 		return func(r *genny.Runner) error {
 			return nil
@@ -28,16 +28,16 @@ func ValidateTemplates(dir fs.FS, tvs []TemplateValidator) genny.RunFn {
 	}
 	return func(r *genny.Runner) error {
 		var errs []string
-		err := fs.WalkDir(dir, ".", func(path string, entry fs.DirEntry, err error) error {
+		err := fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
 
-			if entry.IsDir() {
+			if d.IsDir() {
 				return nil
 			}
 
-			b, err := fs.ReadFile(dir, path)
+			b, err := fs.ReadFile(fsys, path)
 			if err != nil {
 				return err
 			}
