@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"bytes"
 	"fmt"
 	"io/fs"
 	"strings"
@@ -44,8 +45,7 @@ func buildNewActions(fn string, pres *presenter) genny.RunFn {
 			return err
 		}
 
-		f := genny.NewFileS(fn+".tmpl", string(h)+string(a))
-
+		f := genny.NewFileB(fn+".tmpl", append(h, a...))
 		f, err = transform(pres, f)
 		if err != nil {
 			return err
@@ -73,7 +73,9 @@ func appendActions(f genny.File, pres *presenter) genny.RunFn {
 			return err
 		}
 
-		f = genny.NewFileS(f.Name()+".tmpl", f.String()+string(a))
+		buf := bytes.NewBufferString(f.String())
+		buf.Write(a)
+		f = genny.NewFile(f.Name()+".tmpl", buf)
 
 		f, err = transform(pres, f)
 		if err != nil {

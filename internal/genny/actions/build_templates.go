@@ -16,7 +16,7 @@ func buildTemplates(pres *presenter) genny.RunFn {
 		for _, a := range pres.Actions {
 			pres.Data["action"] = a
 			fn := fmt.Sprintf("templates/%s/%s.plush.html.tmpl", pres.Name.Folder(), a.File())
-			xf := genny.NewFileS(fn, string(f))
+			xf := genny.NewFileB(fn, f)
 			xf, err = transform(pres, xf)
 			if err != nil {
 				return err

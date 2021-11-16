@@ -116,7 +116,7 @@ func Test_New_Multi_Existing(t *testing.T) {
 		x, err := fs.ReadFile(ins, path)
 		r.NoError(err)
 		path = strings.TrimSuffix(path, ".tmpl")
-		run.Disk.Add(genny.NewFileS(path, string(x)))
+		run.Disk.Add(genny.NewFileB(path, x))
 		return nil
 	})
 	r.NoError(err)
