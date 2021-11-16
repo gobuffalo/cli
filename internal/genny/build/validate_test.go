@@ -1,9 +1,9 @@
 package build
 
 import (
+	"os"
 	"testing"
 
-	"github.com/gobuffalo/cli/internal/genny/build/_fixtures/testtemplate"
 	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/stretchr/testify/require"
 )
@@ -14,7 +14,7 @@ func Test_TemplateValidator_Good(t *testing.T) {
 	tvs := []TemplateValidator{PlushValidator}
 
 	run := gentest.NewRunner()
-	run.WithRun(ValidateTemplates(testtemplate.Good(), tvs))
+	run.WithRun(ValidateTemplates(os.DirFS("../build/_fixtures/template_validator/good"), tvs))
 	r.NoError(run.Run())
 }
 
@@ -24,7 +24,7 @@ func Test_TemplateValidator_Bad(t *testing.T) {
 	tvs := []TemplateValidator{PlushValidator}
 
 	run := gentest.NewRunner()
-	run.WithRun(ValidateTemplates(testtemplate.Bad(), tvs))
+	run.WithRun(ValidateTemplates(os.DirFS("../build/_fixtures/template_validator/bad"), tvs))
 
 	err := run.Run()
 	r.Error(err)
