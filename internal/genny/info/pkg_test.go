@@ -23,7 +23,7 @@ func Test_pkgChecks(t *testing.T) {
 		Out: rx.NewWriter(bb),
 	}
 
-	run.WithRun(pkgChecks(opts, os.DirFS("../info/testtemplate/module")))
+	run.WithRun(pkgChecks(opts, os.DirFS("../info/templates/module")))
 	r.NoError(run.Run())
 
 	res := bb.String()

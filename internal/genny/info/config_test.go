@@ -24,7 +24,7 @@ func Test_configs(t *testing.T) {
 		Out: rx.NewWriter(bb),
 	}
 
-	run.WithRun(configs(opts, os.DirFS("../info/testtemplate/config")))
+	run.WithRun(configs(opts, os.DirFS("../info/templates/config")))
 	r.NoError(run.Run())
 
 	x := bb.String()

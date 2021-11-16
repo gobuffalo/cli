@@ -17,7 +17,6 @@ func Test_buildDeps(t *testing.T) {
 
 	run := gentest.NewRunner()
 	r.NoError(run.WithNew(buildDeps(opts)))
-
 	r.NoError(run.Run())
 
 	res := run.Results()

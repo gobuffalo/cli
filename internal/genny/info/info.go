@@ -18,7 +18,11 @@ func New(opts *Options) (*genny.Generator, error) {
 
 	g.RunFn(appDetails(opts))
 
-	configFS := os.DirFS(filepath.Join(opts.App.Root, "config"))
+	path := filepath.Join(opts.App.Root, "config")
+	if err := os.MkdirAll(path, 0755); err != nil {
+		return g, err
+	}
+	configFS := os.DirFS(path)
 	g.RunFn(configs(opts, configFS))
 
 	aFS := os.DirFS(opts.App.Root)

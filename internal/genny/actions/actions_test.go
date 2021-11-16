@@ -44,7 +44,6 @@ func Test_New(t *testing.T) {
 
 	run := runner()
 	r.NoError(run.With(g))
-
 	r.NoError(run.Run())
 
 	res := run.Results()
@@ -150,7 +149,7 @@ func Test_New_SkipTemplates(t *testing.T) {
 	r.NoError(err)
 
 	run := runner()
-	run.With(g)
+	r.NoError(run.With(g))
 
 	r.NoError(run.Run())
 
