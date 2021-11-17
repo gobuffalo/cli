@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io/fs"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -89,12 +88,7 @@ func PackageJSONCheck(r *Runner) error {
 		return err
 	}
 
-	f, err := fs.ReadFile(templates, "package.json.tmpl")
-	if err != nil {
-		return err
-	}
-
-	tmpl, err := template.New("package.json").Parse(string(f))
+	tmpl, err := template.New("package.json").ParseFS(templates, "package.json.tmpl")
 	if err != nil {
 		return err
 	}
