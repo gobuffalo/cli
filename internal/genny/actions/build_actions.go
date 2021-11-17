@@ -1,8 +1,8 @@
 package actions
 
 import (
-	"bytes"
 	"fmt"
+	"io"
 	"io/fs"
 	"strings"
 
@@ -41,16 +41,16 @@ func buildNewActions(fn string, pres *presenter) genny.RunFn {
 			return err
 		}
 
-		h, err := fs.ReadFile(sub, "actions_header.go.tmpl")
+		h, err := sub.Open("actions_header.go.tmpl")
 		if err != nil {
 			return err
 		}
-		a, err := fs.ReadFile(sub, "actions.go.tmpl")
+		a, err := sub.Open("actions.go.tmpl")
 		if err != nil {
 			return err
 		}
 
-		f := genny.NewFileB(fn+".tmpl", append(h, a...))
+		f := genny.NewFile(fn+".tmpl", io.MultiReader(h, a))
 		f, err = transform(pres, f)
 		if err != nil {
 			return err
@@ -78,15 +78,12 @@ func appendActions(f genny.File, pres *presenter) genny.RunFn {
 			return err
 		}
 
-		a, err := fs.ReadFile(sub, "actions.go.tmpl")
+		a, err := sub.Open("actions.go.tmpl")
 		if err != nil {
 			return err
 		}
 
-		buf := bytes.NewBufferString(f.String())
-		buf.Write(a)
-		f = genny.NewFile(f.Name()+".tmpl", buf)
-
+		f = genny.NewFile(f.Name()+".tmpl", io.MultiReader(f, a))
 		f, err = transform(pres, f)
 		if err != nil {
 			return err

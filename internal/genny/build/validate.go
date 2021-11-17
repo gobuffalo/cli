@@ -1,7 +1,6 @@
 package build
 
 import (
-	"bytes"
 	"fmt"
 	"html/template"
 	"io/fs"
@@ -37,11 +36,11 @@ func ValidateTemplates(fsys fs.FS, tvs []TemplateValidator) genny.RunFn {
 				return nil
 			}
 
-			b, err := fs.ReadFile(fsys, path)
+			b, err := fsys.Open(path)
 			if err != nil {
 				return err
 			}
-			f := genny.NewFile(path, bytes.NewBuffer(b))
+			f := genny.NewFile(path, b)
 			for _, tv := range tvs {
 				err := safe.Run(func() {
 					if err := tv(f); err != nil {

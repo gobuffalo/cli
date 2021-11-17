@@ -47,7 +47,6 @@ func Test_New(t *testing.T) {
 	r.NoError(run.Run())
 
 	res := run.Results()
-
 	r.Len(res.Commands, 0)
 	r.Len(res.Files, 4)
 
@@ -86,7 +85,7 @@ func Test_New_Multi(t *testing.T) {
 		r.NoError(err)
 		f, err := res.Find(strings.TrimSuffix(s, ".tmpl"))
 		r.NoError(err)
-		fmt.Printf("\nfile %s", f)
+		fmt.Printf("\nfile %s\n", f.Name())
 		r.True(compare(string(x), f.String()))
 	}
 }
@@ -109,10 +108,10 @@ func Test_New_Multi_Existing(t *testing.T) {
 		if d.IsDir() {
 			return nil
 		}
-		x, err := fs.ReadFile(ins, path)
+		f, err := ins.Open(path)
 		r.NoError(err)
 		path = strings.TrimSuffix(path, ".tmpl")
-		run.Disk.Add(genny.NewFileB(path, x))
+		run.Disk.Add(genny.NewFile(path, f))
 		return nil
 	})
 	r.NoError(err)

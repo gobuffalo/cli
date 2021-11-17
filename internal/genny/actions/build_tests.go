@@ -1,8 +1,8 @@
 package actions
 
 import (
-	"bytes"
 	"fmt"
+	"io"
 	"io/fs"
 
 	"github.com/gobuffalo/genny/v2"
@@ -31,16 +31,16 @@ func buildNewTests(fn string, pres *presenter) genny.RunFn {
 			return err
 		}
 
-		h, err := fs.ReadFile(sub, "tests_header.go.tmpl")
+		h, err := sub.Open("tests_header.go.tmpl")
 		if err != nil {
 			return err
 		}
-		a, err := fs.ReadFile(sub, "test.go.tmpl")
+		a, err := sub.Open("test.go.tmpl")
 		if err != nil {
 			return err
 		}
 
-		f := genny.NewFileB(fn+".tmpl", append(h, a...))
+		f := genny.NewFile(fn+".tmpl", io.MultiReader(h, a))
 		f, err = transform(pres, f)
 		if err != nil {
 			return err
@@ -58,13 +58,12 @@ func appendTests(f genny.File, pres *presenter) genny.RunFn {
 			return err
 		}
 
-		a, err := fs.ReadFile(sub, "test.go.tmpl")
+		a, err := sub.Open("test.go.tmpl")
 		if err != nil {
 			return err
 		}
-		buf := bytes.NewBufferString(f.String())
-		buf.Write(a)
-		f := genny.NewFile(f.Name()+".tmpl", buf)
+
+		f := genny.NewFile(f.Name()+".tmpl", io.MultiReader(f, a))
 		f, err = transform(pres, f)
 		if err != nil {
 			return err

@@ -1,7 +1,6 @@
 package build
 
 import (
-	"io/fs"
 	"testing"
 
 	"github.com/gobuffalo/genny/v2"
@@ -13,10 +12,10 @@ func Test_transformMain(t *testing.T) {
 	r := require.New(t)
 
 	run := gentest.NewRunner()
-	b, err := fs.ReadFile(coke, "main.go")
+	b, err := coke.Open("main.go")
 	r.NoError(err)
 
-	run.Disk.Add(genny.NewFileB("main.go", b))
+	run.Disk.Add(genny.NewFile("main.go", b))
 
 	opts := &Options{}
 	run.WithRun(transformMain(opts))

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"io/fs"
 	"io/ioutil"
 	"os"
 
@@ -27,12 +26,7 @@ func WebpackCheck(r *Runner) error {
 		return err
 	}
 
-	f, err := fs.ReadFile(templates, "webpack.config.js.tmpl")
-	if err != nil {
-		return err
-	}
-
-	tmpl, err := template.New("webpack").Parse(string(f))
+	tmpl, err := template.New("webpack").ParseFS(templates, "webpack.config.js.tmpl")
 	if err != nil {
 		return err
 	}
