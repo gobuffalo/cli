@@ -12,7 +12,7 @@ import (
 	"github.com/gobuffalo/genny/v2/gogen"
 )
 
-//go:embed templates/* templates/assets/css/_buffalo.scss.tmpl
+//go:embed templates/* templates/assets/css/_buffalo.scss.tmpl templates/public/assets/-dot-keep.tmpl templates/-dot-babelrc.tmpl
 var templates embed.FS
 
 // Templates used for generating webpack

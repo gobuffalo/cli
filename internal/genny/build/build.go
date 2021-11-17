@@ -14,7 +14,7 @@ import (
 	"github.com/gobuffalo/plush/v4"
 )
 
-//go:embed templates/*
+//go:embed templates/* templates/migrations/-dot-pop-tmp.md
 var templates embed.FS
 
 // New generator for building a Buffalo application
