@@ -26,11 +26,16 @@ func buildTests(pres *presenter) genny.RunFn {
 // and files it with tests
 func buildNewTests(fn string, pres *presenter) genny.RunFn {
 	return func(r *genny.Runner) error {
-		h, err := fs.ReadFile(templates(), "tests_header.go.tmpl")
+		sub, err := fs.Sub(templates, "templates")
 		if err != nil {
 			return err
 		}
-		a, err := fs.ReadFile(templates(), "test.go.tmpl")
+
+		h, err := fs.ReadFile(sub, "tests_header.go.tmpl")
+		if err != nil {
+			return err
+		}
+		a, err := fs.ReadFile(sub, "test.go.tmpl")
 		if err != nil {
 			return err
 		}
@@ -48,7 +53,12 @@ func buildNewTests(fn string, pres *presenter) genny.RunFn {
 // actions/foo_test.go. if the test already exists it is not touched.
 func appendTests(f genny.File, pres *presenter) genny.RunFn {
 	return func(r *genny.Runner) error {
-		a, err := fs.ReadFile(templates(), "test.go.tmpl")
+		sub, err := fs.Sub(templates, "templates")
+		if err != nil {
+			return err
+		}
+
+		a, err := fs.ReadFile(sub, "test.go.tmpl")
 		if err != nil {
 			return err
 		}

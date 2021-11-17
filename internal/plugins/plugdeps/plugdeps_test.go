@@ -50,7 +50,8 @@ func Test_List_On(t *testing.T) {
 	r.NoError(os.MkdirAll(filepath.Dir(p), 0755))
 	f, err := os.Create(p)
 	r.NoError(err)
-	f.WriteString(eToml)
+	_, err = f.WriteString(eToml)
+	r.NoError(err)
 	r.NoError(f.Close())
 
 	plugs, err := List(app)

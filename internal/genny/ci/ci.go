@@ -1,13 +1,17 @@
 package ci
 
 import (
+	"embed"
 	"fmt"
 	"html/template"
+	"io/fs"
 
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/gogen"
-	"github.com/gobuffalo/packr/v2"
 )
+
+//go:embed templates/*
+var templates embed.FS
 
 // New generator for adding travis, gitlab, or circleci
 func New(opts *Options) (*genny.Generator, error) {
@@ -19,8 +23,6 @@ func New(opts *Options) (*genny.Generator, error) {
 
 	g.Transformer(genny.Replace("-no-pop", ""))
 	g.Transformer(genny.Dot())
-
-	box := packr.New("buffalo:genny:ci", "../ci/templates")
 
 	var fname string
 	switch opts.Provider {
@@ -38,12 +40,17 @@ func New(opts *Options) (*genny.Generator, error) {
 		return g, fmt.Errorf("could not find a template for %s", opts.Provider)
 	}
 
-	f, err := box.FindString(fname)
+	sub, err := fs.Sub(templates, "templates")
 	if err != nil {
 		return g, err
 	}
 
-	g.File(genny.NewFileS(fname, f))
+	f, err := sub.Open(fname)
+	if err != nil {
+		return g, err
+	}
+
+	g.File(genny.NewFile(fname, f))
 
 	data := map[string]interface{}{
 		"opts": opts,

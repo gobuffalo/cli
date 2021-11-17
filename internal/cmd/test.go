@@ -38,7 +38,10 @@ var testCmd = &cobra.Command{
 			}
 
 			// drop the test db:
-			test.Dialect.DropDB()
+			err = test.Dialect.DropDB()
+			if err != nil {
+				return err
+			}
 
 			// create the test db:
 			err = test.Dialect.CreateDB()

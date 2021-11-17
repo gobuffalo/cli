@@ -9,7 +9,12 @@ import (
 
 func buildTemplates(pres *presenter) genny.RunFn {
 	return func(r *genny.Runner) error {
-		f, err := fs.ReadFile(templates(), "view.plush.html.tmpl")
+		sub, err := fs.Sub(templates, "templates")
+		if err != nil {
+			return err
+		}
+
+		f, err := fs.ReadFile(sub, "view.plush.html.tmpl")
 		if err != nil {
 			return err
 		}

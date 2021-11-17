@@ -1,11 +1,15 @@
 package refresh
 
 import (
+	"embed"
+
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/plushgen"
-	"github.com/gobuffalo/packr/v2"
 	"github.com/gobuffalo/plush/v4"
 )
+
+//go:embed templates/*
+var templates embed.FS
 
 // New generator to generate refresh templates
 func New(opts *Options) (*genny.Generator, error) {
@@ -13,7 +17,10 @@ func New(opts *Options) (*genny.Generator, error) {
 	if err := opts.Validate(); err != nil {
 		return g, err
 	}
-	g.Box(packr.New("buffalo:genny:refresh", "../refresh/templates"))
+
+	if err := g.FS(templates); err != nil {
+		return g, err
+	}
 
 	ctx := plush.NewContext()
 	ctx.Set("app", opts.App)

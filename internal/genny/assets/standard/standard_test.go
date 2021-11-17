@@ -20,8 +20,7 @@ func Test_New(t *testing.T) {
 		return s, nil
 	}
 
-	run.With(g)
-
+	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
 	res := run.Results()
@@ -41,9 +40,8 @@ func Test_New(t *testing.T) {
 		r.Equal(files[i], f.Name())
 	}
 
-	layout, ferr := res.Find("templates/application.plush.html")
-	r.NoError(ferr)
-
+	layout, err := res.Find("templates/application.plush.html")
+	r.NoError(err)
 	r.Contains(layout.String(), "href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\"")
 }
 

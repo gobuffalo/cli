@@ -1,15 +1,18 @@
 package resource
 
 import (
+	"embed"
 	"io/fs"
 	"text/template"
 
-	"github.com/gobuffalo/cli/internal/genny/resource/templates"
 	"github.com/gobuffalo/flect"
 	"github.com/gobuffalo/flect/name"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/gogen"
 )
+
+//go:embed templates/* templates/core/templates/folder-name/_form.plush.html.tmpl
+var templates embed.FS
 
 // New resource generator
 func New(opts *Options) (*genny.Generator, error) {
@@ -20,16 +23,24 @@ func New(opts *Options) (*genny.Generator, error) {
 	}
 
 	if !opts.SkipTemplates {
-		if err := g.FS(templates.Core()); err != nil {
+		core, err := fs.Sub(templates, "templates/core")
+		if err != nil {
+			return g, err
+		}
+
+		if err := g.FS(core); err != nil {
 			return g, err
 		}
 	}
 
-	var aFS fs.FS
+	sub := "templates/use_model"
 	if opts.SkipModel {
-		aFS = templates.Standard()
-	} else {
-		aFS = templates.UseModel()
+		sub = "templates/standard"
+	}
+
+	aFS, err := fs.Sub(templates, sub)
+	if err != nil {
+		return g, err
 	}
 
 	if err := g.FS(aFS); err != nil {

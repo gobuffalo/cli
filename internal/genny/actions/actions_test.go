@@ -27,9 +27,9 @@ func compare(a, b string) bool {
 	return res
 }
 
-func runner() *genny.Runner {
+func runner(r *require.Assertions) *genny.Runner {
 	run := gentest.NewRunner()
-	run.Disk.AddFS(os.DirFS("../actions/_fixtures/inputs/clean"))
+	r.NoError(run.Disk.AddFS(os.DirFS("../actions/_fixtures/inputs/clean")))
 	return run
 }
 
@@ -42,7 +42,7 @@ func Test_New(t *testing.T) {
 	})
 	r.NoError(err)
 
-	run := runner()
+	run := runner(r)
 	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
@@ -53,7 +53,6 @@ func Test_New(t *testing.T) {
 
 	fsys := os.DirFS("../actions/_fixtures/outputs/clean")
 	files := []string{"actions/user.go.tmpl", "actions/app.go.tmpl", "actions/user_test.go.tmpl", "templates/user/index.plush.html"}
-
 	for _, s := range files {
 		x, err := fs.ReadFile(fsys, s)
 		r.NoError(err)
@@ -73,17 +72,15 @@ func Test_New_Multi(t *testing.T) {
 	})
 	r.NoError(err)
 
-	run := runner()
+	run := runner(r)
 	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
 	res := run.Results()
-
 	r.Len(res.Commands, 0)
 
 	fsys := os.DirFS("../actions/_fixtures/outputs/multi")
 	files := []string{"actions/user.go.tmpl", "actions/app.go.tmpl", "actions/user_test.go.tmpl", "templates/user/show.plush.html", "templates/user/edit.plush.html"}
-
 	for _, s := range files {
 		x, err := fs.ReadFile(fsys, s)
 		r.NoError(err)
@@ -123,12 +120,10 @@ func Test_New_Multi_Existing(t *testing.T) {
 	r.NoError(run.Run())
 
 	res := run.Results()
-
 	r.Len(res.Commands, 0)
 
 	fsys := os.DirFS("../actions/_fixtures/outputs/existing")
 	files := []string{"actions/user.go.tmpl", "actions/app.go.tmpl", "actions/user_test.go.tmpl", "templates/user/show.plush.html", "templates/user/edit.plush.html"}
-
 	for _, s := range files {
 		x, err := fs.ReadFile(fsys, s)
 		r.NoError(err)
@@ -148,17 +143,14 @@ func Test_New_SkipTemplates(t *testing.T) {
 	})
 	r.NoError(err)
 
-	run := runner()
+	run := runner(r)
 	r.NoError(run.With(g))
-
 	r.NoError(run.Run())
 
 	res := run.Results()
-
 	r.Len(res.Commands, 0)
 
 	files := []string{"templates/user/index.html"}
-
 	for _, s := range files {
 		_, err := res.Find(s)
 		r.Error(err)

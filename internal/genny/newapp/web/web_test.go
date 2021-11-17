@@ -34,7 +34,6 @@ func Test_New(t *testing.T) {
 
 	run := gentest.NewRunner()
 	run.WithGroup(gg)
-
 	r.NoError(run.Run())
 
 	res := run.Results()

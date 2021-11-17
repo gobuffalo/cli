@@ -75,15 +75,15 @@ func pRun(proot string, p plugdeps.Plugin) genny.RunFn {
 		}
 
 		pbp := filepath.Join(proot, p.Binary)
-		r.Disk.Delete(pbp)
+		if err := r.Disk.Delete(pbp); err != nil {
+			return err
+		}
 
 		df := genny.NewFile(pbp, sf)
 		if err := r.File(df); err != nil {
 			return err
 		}
 
-		os.Chmod(pbp, 0555)
-
-		return nil
+		return os.Chmod(pbp, 0555)
 	}
 }

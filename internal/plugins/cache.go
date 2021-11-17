@@ -63,7 +63,9 @@ func saveCache() error {
 	}
 	cacheMoot.Lock()
 	defer cacheMoot.Unlock()
-	os.MkdirAll(filepath.Dir(CachePath), 0744)
+	if err := os.MkdirAll(filepath.Dir(CachePath), 0744); err != nil {
+		return err
+	}
 	f, err := os.Create(CachePath)
 	if err != nil {
 		return err

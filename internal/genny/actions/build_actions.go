@@ -36,11 +36,16 @@ func buildNewActions(fn string, pres *presenter) genny.RunFn {
 			pres.Actions = append(pres.Actions, name.New(a))
 		}
 
-		h, err := fs.ReadFile(templates(), "actions_header.go.tmpl")
+		sub, err := fs.Sub(templates, "templates")
 		if err != nil {
 			return err
 		}
-		a, err := fs.ReadFile(templates(), "actions.go.tmpl")
+
+		h, err := fs.ReadFile(sub, "actions_header.go.tmpl")
+		if err != nil {
+			return err
+		}
+		a, err := fs.ReadFile(sub, "actions.go.tmpl")
 		if err != nil {
 			return err
 		}
@@ -68,7 +73,12 @@ func appendActions(f genny.File, pres *presenter) genny.RunFn {
 			pres.Actions = append(pres.Actions, a)
 		}
 
-		a, err := fs.ReadFile(templates(), "actions.go.tmpl")
+		sub, err := fs.Sub(templates, "templates")
+		if err != nil {
+			return err
+		}
+
+		a, err := fs.ReadFile(sub, "actions.go.tmpl")
 		if err != nil {
 			return err
 		}

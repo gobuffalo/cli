@@ -31,6 +31,5 @@ func Listen(e events.Event) error {
 		events.EmitError(plugins.EvtSetupErr, err, payload)
 		return err
 	}
-	events.EmitPayload(plugins.EvtSetupFinished, payload)
-	return nil
+	return events.EmitPayload(plugins.EvtSetupFinished, payload)
 }

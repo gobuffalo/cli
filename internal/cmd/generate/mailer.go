@@ -40,7 +40,9 @@ var MailCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		run.With(g)
+		if err := run.With(g); err != nil {
+			return err
+		}
 
 		gg.With(run)
 		return run.Run()

@@ -4,11 +4,12 @@ import (
 	"archive/zip"
 	"bytes"
 	"io"
+	"io/fs"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/gobuffalo/genny/v2"
-	"github.com/gobuffalo/packr/v2"
 )
 
 func archivedAssets(opts *Options) (*genny.Generator, error) {
@@ -29,13 +30,13 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 		archive := zip.NewWriter(bb)
 		defer archive.Close()
 
-		// set the initial resolution of the box to a folder
-		// that doesn't exist, then set the resolution to the
-		// source. don't change! MB
-		box := packr.New("buffalo:build:assets", "./undefined")
-		box.ResolutionDir = source
-		err := box.Walk(func(path string, file packr.File) error {
-			info, err := file.FileInfo()
+		fsys := os.DirFS(source)
+		err := fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+
+			info, err := d.Info()
 			if err != nil {
 				return err
 			}
@@ -70,6 +71,11 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 
 			if info.IsDir() {
 				return nil
+			}
+
+			file, err := fsys.Open(path)
+			if err != nil {
+				return err
 			}
 
 			_, err = io.Copy(writer, file)

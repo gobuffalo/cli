@@ -3,7 +3,6 @@ package actions
 import (
 	"embed"
 	"fmt"
-	"io/fs"
 	"strings"
 
 	"github.com/gobuffalo/flect/name"
@@ -12,15 +11,7 @@ import (
 )
 
 //go:embed templates/*
-var templateFS embed.FS
-
-func templates() fs.FS {
-	sub, err := fs.Sub(templateFS, "templates")
-	if err != nil {
-		return nil
-	}
-	return sub
-}
+var templates embed.FS
 
 // New returns a new generator for build actions on a Buffalo app
 func New(opts *Options) (*genny.Generator, error) {

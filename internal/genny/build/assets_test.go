@@ -63,8 +63,6 @@ func Test_assets_Archived(t *testing.T) {
 		r.Equal(cmds[i], strings.Join(c.Args, " "))
 	}
 
-	// r.Len(res.Files, 1)
-
 	f, err := res.Find("actions/app.go")
 	r.NoError(err)
 	r.Contains(f.String(), `// app.ServeFiles("/"`)

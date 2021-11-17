@@ -1,6 +1,8 @@
 package build
 
 import (
+	"embed"
+	"io/fs"
 	"os"
 	"time"
 
@@ -9,10 +11,11 @@ import (
 	"github.com/gobuffalo/events"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/plushgen"
-	"github.com/gobuffalo/packr/v2"
-	"github.com/gobuffalo/packr/v2/jam"
 	"github.com/gobuffalo/plush/v4"
 )
+
+//go:embed templates/*
+var templates embed.FS
 
 // New generator for building a Buffalo application
 // This powers the `buffalo build` command and can be
@@ -41,8 +44,12 @@ func New(opts *Options) (*genny.Generator, error) {
 	g.RunFn(transformMain(opts))
 
 	// add any necessary templates for the build
-	box := packr.New("github.com/gobuffalo/buffalo@v0.15.6/genny/build", "../build/templates")
-	if err := g.Box(box); err != nil {
+	sub, err := fs.Sub(templates, "templates")
+	if err != nil {
+		return g, err
+	}
+
+	if err := g.FS(sub); err != nil {
 		return g, err
 	}
 
@@ -78,10 +85,6 @@ func New(opts *Options) (*genny.Generator, error) {
 		}
 		g.Merge(dg)
 	}
-
-	g.RunFn(func(r *genny.Runner) error {
-		return jam.Pack(jam.PackOptions{})
-	})
 
 	// create the final go build command
 	c, err := buildCmd(opts)
