@@ -2,6 +2,7 @@ package refresh
 
 import (
 	"embed"
+	"io/fs"
 	"strings"
 
 	"github.com/gobuffalo/genny/v2"
@@ -19,7 +20,12 @@ func New(opts *Options) (*genny.Generator, error) {
 		return g, err
 	}
 
-	if err := g.FS(templates); err != nil {
+	sub, err := fs.Sub(templates, "templates")
+	if err != nil {
+		return g, err
+	}
+
+	if err := g.FS(sub); err != nil {
 		return g, err
 	}
 
