@@ -3,7 +3,6 @@ package actions
 import (
 	"fmt"
 	"io"
-	"io/fs"
 
 	"github.com/gobuffalo/genny/v2"
 )
@@ -26,16 +25,11 @@ func buildTests(pres *presenter) genny.RunFn {
 // and files it with tests
 func buildNewTests(fn string, pres *presenter) genny.RunFn {
 	return func(r *genny.Runner) error {
-		sub, err := fs.Sub(templates, "templates")
+		h, err := templates.Open("templates/tests_header.go.tmpl")
 		if err != nil {
 			return err
 		}
-
-		h, err := sub.Open("tests_header.go.tmpl")
-		if err != nil {
-			return err
-		}
-		a, err := sub.Open("test.go.tmpl")
+		a, err := templates.Open("templates/test.go.tmpl")
 		if err != nil {
 			return err
 		}
@@ -53,12 +47,7 @@ func buildNewTests(fn string, pres *presenter) genny.RunFn {
 // actions/foo_test.go. if the test already exists it is not touched.
 func appendTests(f genny.File, pres *presenter) genny.RunFn {
 	return func(r *genny.Runner) error {
-		sub, err := fs.Sub(templates, "templates")
-		if err != nil {
-			return err
-		}
-
-		a, err := sub.Open("test.go.tmpl")
+		a, err := templates.Open("templates/test.go.tmpl")
 		if err != nil {
 			return err
 		}
