@@ -3,6 +3,7 @@ package docker
 import (
 	"embed"
 	"io/fs"
+	"strings"
 	"text/template"
 
 	"github.com/gobuffalo/genny/v2"
@@ -57,5 +58,17 @@ func New(opts *Options) (*genny.Generator, error) {
 	t := gogen.TemplateTransformer(data, helpers)
 	g.Transformer(t)
 	g.Transformer(genny.Dot())
+
+	// TODO: workaround for 1.16, remove when we upgrade to 1.17 and rename "dot-*" files back to "-dot-*"
+	g.Transformer(genny.NewTransformer("*", func(f genny.File) (genny.File, error) {
+		name := f.Name()
+		if strings.HasPrefix(name, "dot-") {
+			name = strings.TrimPrefix(name, "dot-")
+			name = "." + name
+		}
+		return genny.NewFile(name, f), nil
+	}))
+	g.Transformer(genny.Replace("/dot-", "/."))
+
 	return g, nil
 }

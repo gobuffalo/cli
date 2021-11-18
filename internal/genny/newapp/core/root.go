@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"io/fs"
 	"os/exec"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/gobuffalo/genny/v2"
@@ -24,6 +25,17 @@ func rootGenerator(opts *Options) (*genny.Generator, error) {
 
 	g.Command(exec.Command("go", "mod", "init", opts.App.PackagePkg))
 	g.Transformer(genny.Dot())
+
+	// TODO: workaround for 1.16, remove when we upgrade to 1.17 and rename "dot-*" files back to "-dot-*"
+	g.Transformer(genny.NewTransformer("*", func(f genny.File) (genny.File, error) {
+		name := f.Name()
+		if strings.HasPrefix(name, "dot-") {
+			name = strings.TrimPrefix(name, "dot-")
+			name = "." + name
+		}
+		return genny.NewFile(name, f), nil
+	}))
+	g.Transformer(genny.Replace("/dot-", "/."))
 
 	// add common templates
 	sub, err := fs.Sub(templates, "templates")

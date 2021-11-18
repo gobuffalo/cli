@@ -4,6 +4,7 @@ import (
 	"embed"
 	"io/fs"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gobuffalo/cli/internal/runtime"
@@ -14,7 +15,7 @@ import (
 	"github.com/gobuffalo/plush/v4"
 )
 
-//go:embed templates/* templates/migrations/-dot-pop-tmp.md
+//go:embed templates/* 
 var templates embed.FS
 
 // New generator for building a Buffalo application
@@ -36,6 +37,16 @@ func New(opts *Options) (*genny.Generator, error) {
 	})
 
 	g.Transformer(genny.Dot())
+	// TODO: workaround for 1.16, remove when we upgrade to 1.17 and rename "dot-*" files back to "-dot-*"
+	g.Transformer(genny.NewTransformer("*", func(f genny.File) (genny.File, error) {
+		name := f.Name()
+		if strings.HasPrefix(name, "dot-") {
+			name = strings.TrimPrefix(name, "dot-")
+			name = "." + name
+		}
+		return genny.NewFile(name, f), nil
+	}))
+	g.Transformer(genny.Replace("/dot-", "/."))
 
 	// validate templates
 	g.RunFn(ValidateTemplates(os.DirFS(opts.App.Root), opts.TemplateValidators))

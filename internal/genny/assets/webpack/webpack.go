@@ -7,12 +7,13 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/gogen"
 )
 
-//go:embed templates/* templates/assets/css/_buffalo.scss.tmpl templates/public/assets/-dot-keep.tmpl templates/-dot-babelrc.tmpl
+//go:embed templates/* templates/assets/css/_buffalo.scss.tmpl
 var templates embed.FS
 
 // Templates used for generating webpack
@@ -66,6 +67,17 @@ func New(opts *Options) (*genny.Generator, error) {
 	t := gogen.TemplateTransformer(data, gogen.TemplateHelpers)
 	g.Transformer(t)
 	g.Transformer(genny.Dot())
+
+	// TODO: workaround for 1.16, remove when we upgrade to 1.17 and rename "dot-*" files back to "-dot-*"
+	g.Transformer(genny.NewTransformer("*", func(f genny.File) (genny.File, error) {
+		name := f.Name()
+		if strings.HasPrefix(name, "dot-") {
+			name = strings.TrimPrefix(name, "dot-")
+			name = "." + name
+		}
+		return genny.NewFile(name, f), nil
+	}))
+	g.Transformer(genny.Replace("/dot-", "/."))
 
 	g.RunFn(func(r *genny.Runner) error {
 		return installPkgs(r, opts)
