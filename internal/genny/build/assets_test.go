@@ -1,6 +1,9 @@
 package build
 
 import (
+	"archive/zip"
+	"io"
+	"os"
 	"strings"
 	"testing"
 
@@ -66,4 +69,27 @@ func Test_assets_Archived(t *testing.T) {
 	f, err := res.Find("actions/app.go")
 	r.NoError(err)
 	r.Contains(f.String(), `// app.ServeFiles("/"`)
+
+	f, err = res.Find("bin/assets.zip")
+	r.NoError(err)
+
+	tmp, err := os.CreateTemp("", "assets-*.zip")
+	r.NoError(err)
+	t.Cleanup(func() {
+		os.Remove(tmp.Name())
+	})
+
+	_, err = io.Copy(tmp, f)
+	r.NoError(err)
+	r.NoError(tmp.Close())
+
+	archive, err := zip.OpenReader(tmp.Name())
+	r.NoError(err)
+
+	r.Len(archive.File, 2)
+
+	for _, e := range []string{".keep", "css/.keep"} {
+		_, err = archive.Open(e)
+		r.NoError(err)
+	}
 }

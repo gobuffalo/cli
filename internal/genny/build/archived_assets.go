@@ -19,10 +19,8 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 		return g, err
 	}
 
-	app := opts.App
-
-	target := filepath.Join(app.Bin, "assets.zip")
-	source := filepath.Join(app.Root, "public", "assets")
+	target := filepath.Join(filepath.Dir(opts.App.Bin), "assets.zip")
+	source := filepath.Join(opts.App.Root, "public", "assets")
 
 	g.RunFn(func(r *genny.Runner) error {
 		bb := &bytes.Buffer{}
