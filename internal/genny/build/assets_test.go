@@ -86,8 +86,6 @@ func Test_assets_Archived(t *testing.T) {
 	archive, err := zip.OpenReader(tmp.Name())
 	r.NoError(err)
 
-	r.Len(archive.File, 2)
-
 	for _, e := range []string{".keep", "css/.keep"} {
 		_, err = archive.Open(e)
 		r.NoError(err)

@@ -33,6 +33,10 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 				return err
 			}
 
+			if d.IsDir() {
+				return nil
+			}
+
 			info, err := d.Info()
 			if err != nil {
 				return err
@@ -42,32 +46,12 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 			if err != nil {
 				return err
 			}
-
-			var baseDir string
-			if info.IsDir() {
-				baseDir = filepath.Base(source)
-			}
-			if baseDir != "" {
-				rel, err := filepath.Rel(source, path)
-				if err != nil {
-					return err
-				}
-				header.Name = filepath.Join(baseDir, rel)
-			}
-
-			if info.IsDir() {
-				header.Name += "/"
-			} else {
-				header.Method = zip.Deflate
-			}
+			header.Name = path
+			header.Method = zip.Deflate
 
 			writer, err := archive.CreateHeader(header)
 			if err != nil {
 				return err
-			}
-
-			if info.IsDir() {
-				return nil
 			}
 
 			file, err := fsys.Open(path)
