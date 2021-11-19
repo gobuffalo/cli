@@ -1,10 +1,10 @@
 package add
 
 import (
+	"errors"
 	"os"
 
 	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
-	"github.com/gobuffalo/cli/internal/takeon/github.com/markbates/errx"
 	"github.com/gobuffalo/meta"
 )
 
@@ -26,7 +26,7 @@ func (opts *Options) Validate() error {
 	}
 	if len(opts.Plugins) == 0 {
 		plugs, err := plugdeps.List(opts.App)
-		if err != nil && (errx.Unwrap(err) != plugdeps.ErrMissingConfig) {
+		if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
 			return err
 		}
 		opts.Plugins = plugs.List()

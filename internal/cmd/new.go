@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -22,7 +23,6 @@ import (
 	"github.com/gobuffalo/cli/internal/genny/vcs"
 
 	pop "github.com/gobuffalo/buffalo-pop/v2/genny/newapp"
-	"github.com/gobuffalo/cli/internal/takeon/github.com/markbates/errx"
 	"github.com/gobuffalo/envy"
 	fname "github.com/gobuffalo/flect/name"
 	"github.com/gobuffalo/genny/v2"
@@ -193,7 +193,7 @@ var newCmd = &cobra.Command{
 			gg, err = web.New(wo)
 		}
 		if err != nil {
-			if errx.Unwrap(err) == core.ErrNotInGoPath {
+			if errors.Is(err, core.ErrNotInGoPath) {
 				return notInGoPath(app)
 			}
 			return err

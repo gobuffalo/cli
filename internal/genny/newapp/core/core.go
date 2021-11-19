@@ -1,6 +1,8 @@
 package core
 
 import (
+	"errors"
+
 	"github.com/gobuffalo/cli/internal/genny/ci"
 	"github.com/gobuffalo/cli/internal/genny/docker"
 	"github.com/gobuffalo/cli/internal/genny/plugins/install"
@@ -8,7 +10,6 @@ import (
 
 	pop "github.com/gobuffalo/buffalo-pop/v2/genny/newapp"
 	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
-	"github.com/gobuffalo/cli/internal/takeon/github.com/markbates/errx"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"
 )
@@ -27,7 +28,7 @@ func New(opts *Options) (*genny.Group, error) {
 	app := opts.App
 
 	plugs, err := plugdeps.List(app)
-	if err != nil && (errx.Unwrap(err) != plugdeps.ErrMissingConfig) {
+	if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
 		return nil, err
 	}
 
