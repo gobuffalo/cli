@@ -86,6 +86,7 @@ func Test_assets_Archived(t *testing.T) {
 	archive, err := zip.OpenReader(tmp.Name())
 	r.NoError(err)
 
+	r.Equal(1, len(archive.File))
 	for _, e := range []string{".keep"} {
 		_, err = archive.Open(e)
 		r.NoError(err)
