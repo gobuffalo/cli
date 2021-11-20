@@ -98,7 +98,10 @@ func parseNewOptions(args []string) (newAppOptions, error) {
 
 	opts := &core.Options{}
 
-	opts.Docker = &docker.Options{}
+	if x := viper.GetBool("skip-docker"); !x {
+		opts.Docker = &docker.Options{}
+	}
+
 	app.WithDocker = !viper.GetBool("skip-docker")
 
 	if x := viper.GetString("ci-provider"); len(x) > 0 && x != "none" {
