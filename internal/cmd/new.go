@@ -98,16 +98,10 @@ func parseNewOptions(args []string) (newAppOptions, error) {
 
 	opts := &core.Options{}
 
-	x := viper.GetString("docker")
-	if len(x) > 0 && x != "none" {
-		opts.Docker = &docker.Options{
-			Style: x,
-		}
-		app.WithDocker = true
-	}
+	opts.Docker = &docker.Options{}
+	app.WithDocker = !viper.GetBool("skip-docker")
 
-	x = viper.GetString("ci-provider")
-	if len(x) > 0 && x != "none" {
+	if x := viper.GetString("ci-provider"); len(x) > 0 && x != "none" {
 		opts.CI = &ci.Options{
 			Provider: x,
 			DBType:   viper.GetString("db-type"),
@@ -298,11 +292,13 @@ func init() {
 	newCmd.Flags().BoolP("force", "f", false, "delete and remake if the app already exists")
 	newCmd.Flags().BoolP("dry-run", "d", false, "dry run")
 	newCmd.Flags().BoolP("verbose", "v", false, "verbosely print out the go get commands")
+
 	newCmd.Flags().Bool("skip-pop", false, "skips adding pop/soda to your app")
 	newCmd.Flags().Bool("skip-webpack", false, "skips adding Webpack to your app")
 	newCmd.Flags().Bool("skip-yarn", false, "use npm instead of yarn for frontend dependencies management")
+	newCmd.Flags().Bool("skip-docker", false, "skips generating the Dockerfile")
+
 	newCmd.Flags().String("db-type", "postgres", fmt.Sprintf("specify the type of database you want to use [%s]", strings.Join(pop.AvailableDialects, ", ")))
-	newCmd.Flags().String("docker", "multi", "specify the type of Docker file to generate [none, multi, standard]")
 	newCmd.Flags().String("ci-provider", "none", "specify the type of ci file you would like buffalo to generate [none, travis, gitlab-ci, circleci]")
 	newCmd.Flags().String("vcs", "git", "specify the Version control system you would like to use [none, git, bzr]")
 	newCmd.Flags().String("module", "", "specify the root module (package) name. [defaults to 'automatic']")
