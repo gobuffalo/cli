@@ -21,6 +21,8 @@ func installTools(r *Runner) error {
 	for _, t := range rTools {
 		g.Command(exec.Command("go", "get", t))
 	}
-	run.With(g)
+	if err := run.With(g); err != nil {
+		return err
+	}
 	return run.Run()
 }

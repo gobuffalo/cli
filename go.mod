@@ -11,11 +11,9 @@ require (
 	github.com/gobuffalo/envy v1.10.1
 	github.com/gobuffalo/events v1.4.2
 	github.com/gobuffalo/flect v0.2.4
-	github.com/gobuffalo/genny/v2 v2.0.6
+	github.com/gobuffalo/genny/v2 v2.0.7
 	github.com/gobuffalo/logger v1.0.6
 	github.com/gobuffalo/meta v0.3.1
-	github.com/gobuffalo/packd v1.0.1
-	github.com/gobuffalo/packr/v2 v2.8.1
 	github.com/gobuffalo/plush/v4 v4.1.8
 	github.com/gobuffalo/pop/v5 v5.3.4
 	github.com/google/go-cmp v0.5.6

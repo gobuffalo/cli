@@ -2,6 +2,7 @@ package fix
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -12,7 +13,6 @@ import (
 	cmdPlugins "github.com/gobuffalo/cli/internal/cmd/plugins"
 	"github.com/gobuffalo/cli/internal/plugins"
 	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
-	"github.com/gobuffalo/cli/internal/takeon/github.com/markbates/errx"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"
 )
@@ -31,7 +31,7 @@ func (pf Plugins) CleanCache(r *Runner) error {
 //Reinstall installs latest versions of the plugins
 func (pf Plugins) Reinstall(r *Runner) error {
 	plugs, err := plugdeps.List(r.App)
-	if err != nil && (errx.Unwrap(err) != plugdeps.ErrMissingConfig) {
+	if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
 		return err
 	}
 
@@ -57,7 +57,7 @@ func (pf Plugins) RemoveOld(r *Runner) error {
 	run := genny.WetRunner(context.Background())
 	app := meta.New(".")
 	plugs, err := plugdeps.List(app)
-	if err != nil && (errx.Unwrap(err) != plugdeps.ErrMissingConfig) {
+	if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
 		return err
 	}
 

@@ -46,7 +46,9 @@ var ActionCmd = &cobra.Command{
 		}
 
 		opts := actionOptions.Options
-		run.WithNew(actions.New(opts))
+		if err := run.WithNew(actions.New(opts)); err != nil {
+			return err
+		}
 		return run.Run()
 	},
 }

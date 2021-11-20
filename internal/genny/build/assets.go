@@ -9,9 +9,6 @@ import (
 
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/genny/v2"
-
-	"github.com/gobuffalo/packr/v2/jam"
-	"github.com/gobuffalo/packr/v2/jam/parser"
 )
 
 func assets(opts *Options) (*genny.Generator, error) {
@@ -55,20 +52,6 @@ func assets(opts *Options) (*genny.Generator, error) {
 
 		})
 	}
-
-	g.RunFn(func(r *genny.Runner) error {
-		ro := &parser.RootsOptions{}
-
-		if !opts.WithAssets {
-			ro.Ignores = append(ro.Ignores, "public/assets")
-		}
-
-		opts := jam.PackOptions{
-			Roots:        []string{opts.App.Root},
-			RootsOptions: ro,
-		}
-		return jam.Pack(opts)
-	})
 
 	if opts.ExtractAssets && opts.WithAssets {
 		// mount the archived assets generator

@@ -1,12 +1,15 @@
 package vcs
 
 import (
+	"embed"
 	"fmt"
 	"os/exec"
 
 	"github.com/gobuffalo/genny/v2"
-	"github.com/gobuffalo/packr/v2"
 )
+
+//go:embed templates/*
+var templates embed.FS
 
 // New generator for adding VCS to an application
 func New(opts *Options) (*genny.Generator, error) {
@@ -20,15 +23,14 @@ func New(opts *Options) (*genny.Generator, error) {
 		return g, nil
 	}
 
-	box := packr.New("buffalo:genny:vcs", "../vcs/templates")
-	s, err := box.FindString("ignore.tmpl")
+	f, err := templates.Open("templates/ignore.tmpl")
 	if err != nil {
 		return g, err
 	}
 
 	p := opts.Provider
 	n := fmt.Sprintf(".%signore", p)
-	g.File(genny.NewFileS(n, s))
+	g.File(genny.NewFile(n, f))
 	g.Command(exec.Command(p, "init"))
 
 	args := []string{"add", "."}

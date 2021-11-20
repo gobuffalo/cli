@@ -57,7 +57,6 @@ var mr = MiddlewareTransformer{
 }
 
 var checks = []Check{
-	PackrClean,
 	ic.Process,
 	mr.transformPackages,
 	WebpackCheck,
@@ -78,7 +77,9 @@ func encodeApp(r *Runner) error {
 	if _, err := os.Stat(p); err == nil {
 		return nil
 	}
-	os.MkdirAll(filepath.Dir(p), 0755)
+	if err := os.MkdirAll(filepath.Dir(p), 0755); err != nil {
+		return err
+	}
 	f, err := os.Create(p)
 	if err != nil {
 		return err

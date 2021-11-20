@@ -1,7 +1,6 @@
 package grift
 
 import (
-	"strings"
 	"text/template"
 
 	"github.com/gobuffalo/genny/v2"
@@ -34,6 +33,6 @@ func genFile(r *genny.Runner, opts *Options) error {
 	if f, err := r.FindFile(path); err == nil {
 		header = f.String()
 	}
-	f := genny.NewFile(path, strings.NewReader(header+tmplBody))
+	f := genny.NewFileS(path, header+tmplBody)
 	return r.File(f)
 }

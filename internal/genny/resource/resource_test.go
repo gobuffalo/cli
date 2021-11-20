@@ -2,6 +2,8 @@ package resource
 
 import (
 	"fmt"
+	"io/fs"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -12,7 +14,6 @@ import (
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/gobuffalo/meta"
-	packr "github.com/gobuffalo/packr/v2"
 	"github.com/stretchr/testify/require"
 )
 
@@ -21,14 +22,26 @@ type pass struct {
 	Options Options
 }
 
-func runner() *genny.Runner {
+func runner(r *require.Assertions) *genny.Runner {
 	run := gentest.NewRunner()
-	box := packr.New("./_fixtures/coke", "./_fixtures/coke")
-	box.Walk(func(path string, file packr.File) error {
+	fsys := os.DirFS("./_fixtures/coke")
+	err := fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+
+		f, err := fsys.Open(path)
+		if err != nil {
+			return err
+		}
 		path = strings.TrimSuffix(path, ".tmpl")
-		run.Disk.Add(genny.NewFile(path, file))
+		run.Disk.Add(genny.NewFile(path, f))
 		return nil
 	})
+	r.NoError(err)
 	return run
 }
 
@@ -53,12 +66,11 @@ func Test_New(t *testing.T) {
 			g, err := New(&tt.Options)
 			r.NoError(err)
 
-			run := runner()
-			run.With(g)
+			run := runner(r)
+			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
 			res := run.Results()
-
 			r.Len(res.Commands, 1)
 
 			c := res.Commands[0]
@@ -74,14 +86,19 @@ func Test_New(t *testing.T) {
 				r.NoError(err)
 			}
 
-			exp := packr.Folder(filepath.Join("_fixtures", tt.Name))
-			gentest.CompareFiles(exp.List(), res.Files)
+			fsys := os.DirFS(filepath.Join("_fixtures", tt.Name))
+			err = fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
+				if err != nil {
+					return err
+				}
+				if d.IsDir() {
+					return nil
+				}
 
-			for _, n := range exp.List() {
-				n = strings.Replace(n, "\\", "/", -1)
-				f, err := res.Find(strings.TrimSuffix(n, ".tmpl"))
+				f, err := res.Find(strings.TrimSuffix(path, ".tmpl"))
 				r.NoError(err)
-				s, err := exp.FindString(n)
+
+				s, err := fs.ReadFile(fsys, path)
 				r.NoError(err)
 
 				clean := func(s string) string {
@@ -91,9 +108,10 @@ func Test_New(t *testing.T) {
 					s = strings.Replace(s, "\r", "", -1)
 					return s
 				}
-				r.Equal(clean(s), clean(f.String()))
-			}
-
+				r.Equal(clean(string(s)), clean(f.String()))
+				return nil
+			})
+			r.NoError(err)
 		})
 	}
 }
@@ -119,8 +137,8 @@ func Test_New_SkipTemplates(t *testing.T) {
 			g, err := New(&tt.Options)
 			r.NoError(err)
 
-			run := runner()
-			run.With(g)
+			run := runner(r)
+			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
 			res := run.Results()
@@ -159,8 +177,8 @@ func Test_New_API(t *testing.T) {
 			g, err := New(&tt.Options)
 			r.NoError(err)
 
-			run := runner()
-			run.With(g)
+			run := runner(r)
+			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
 			res := run.Results()
@@ -197,12 +215,11 @@ func Test_New_UseModel(t *testing.T) {
 	g, err := New(opts)
 	r.NoError(err)
 
-	run := runner()
-	run.With(g)
+	run := runner(r)
+	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
 	res := run.Results()
-
 	r.Len(res.Commands, 1)
 
 	c := res.Commands[0]
@@ -237,12 +254,11 @@ func Test_New_SkipModel(t *testing.T) {
 	g, err := New(opts)
 	r.NoError(err)
 
-	run := runner()
-	run.With(g)
+	run := runner(r)
+	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
 	res := run.Results()
-
 	r.Len(res.Commands, 0)
 	r.Len(res.Files, 9)
 
@@ -252,5 +268,4 @@ func Test_New_SkipModel(t *testing.T) {
 	for _, action := range actions {
 		r.Contains(f.String(), fmt.Sprintf("func (v WidgetsResource) %v(c buffalo.Context) error {", action))
 	}
-
 }

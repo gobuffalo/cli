@@ -14,14 +14,11 @@ func Test_New(t *testing.T) {
 	r.NoError(err)
 
 	run := gentest.NewRunner()
-	run.With(g)
-
+	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
 	res := run.Results()
-
 	r.Len(res.Commands, 0)
-
 	r.Len(res.Files, 2)
 
 	f := res.Files[0]
@@ -41,14 +38,11 @@ func Test_New_Standard(t *testing.T) {
 	r.NoError(err)
 
 	run := gentest.NewRunner()
-	run.With(g)
-
+	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
 	res := run.Results()
-
 	r.Len(res.Commands, 0)
-
 	r.Len(res.Files, 2)
 
 	f := res.Files[0]

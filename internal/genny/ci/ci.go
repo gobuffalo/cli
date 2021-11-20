@@ -1,13 +1,18 @@
 package ci
 
 import (
+	"embed"
 	"fmt"
 	"html/template"
+	"io/fs"
+	"strings"
 
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/gogen"
-	"github.com/gobuffalo/packr/v2"
 )
+
+//go:embed templates/*
+var templates embed.FS
 
 // New generator for adding travis, gitlab, or circleci
 func New(opts *Options) (*genny.Generator, error) {
@@ -20,30 +25,44 @@ func New(opts *Options) (*genny.Generator, error) {
 	g.Transformer(genny.Replace("-no-pop", ""))
 	g.Transformer(genny.Dot())
 
-	box := packr.New("buffalo:genny:ci", "../ci/templates")
+	// TODO: workaround for 1.16, remove when we upgrade to 1.17 and rename "dot-*" files back to "-dot-*"
+	g.Transformer(genny.NewTransformer("*", func(f genny.File) (genny.File, error) {
+		name := f.Name()
+		if strings.HasPrefix(name, "dot-") {
+			name = strings.TrimPrefix(name, "dot-")
+			name = "." + name
+		}
+		return genny.NewFile(name, f), nil
+	}))
+	g.Transformer(genny.Replace("/dot-", "/."))
 
 	var fname string
 	switch opts.Provider {
 	case "travis", "travis-ci":
-		fname = "-dot-travis.yml.tmpl"
+		fname = "dot-travis.yml.tmpl"
 	case "gitlab", "gitlab-ci":
 		if opts.App.WithPop {
-			fname = "-dot-gitlab-ci.yml.tmpl"
+			fname = "dot-gitlab-ci.yml.tmpl"
 		} else {
-			fname = "-dot-gitlab-ci-no-pop.yml.tmpl"
+			fname = "dot-gitlab-ci-no-pop.yml.tmpl"
 		}
 	case "circleci":
-		fname = "-dot-circleci/config.yml.tmpl"
+		fname = "dot-circleci/config.yml.tmpl"
 	default:
 		return g, fmt.Errorf("could not find a template for %s", opts.Provider)
 	}
 
-	f, err := box.FindString(fname)
+	sub, err := fs.Sub(templates, "templates")
 	if err != nil {
 		return g, err
 	}
 
-	g.File(genny.NewFileS(fname, f))
+	f, err := sub.Open(fname)
+	if err != nil {
+		return g, err
+	}
+
+	g.File(genny.NewFile(fname, f))
 
 	data := map[string]interface{}{
 		"opts": opts,

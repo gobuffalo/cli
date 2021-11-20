@@ -10,7 +10,7 @@ import (
 //ActionCmd destroys passed action file
 var ActionCmd = &cobra.Command{
 	Use: "action [name]",
-	//Example: "resource cars",
+	// Example: "resource cars",
 	Aliases: []string{"a"},
 	Short:   "Destroy action files",
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -20,10 +20,8 @@ var ActionCmd = &cobra.Command{
 
 		name := args[0]
 
-		//Generated actions keep the same name (not plural).
+		// Generated actions keep the same name (not plural).
 		fileName := flect.Underscore(name)
-
-		removeActions(fileName)
-		return nil
+		return removeActions(fileName)
 	},
 }

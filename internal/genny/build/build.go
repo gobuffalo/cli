@@ -1,6 +1,10 @@
 package build
 
 import (
+	"embed"
+	"io/fs"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/gobuffalo/cli/internal/runtime"
@@ -8,10 +12,11 @@ import (
 	"github.com/gobuffalo/events"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/plushgen"
-	"github.com/gobuffalo/packr/v2"
-	"github.com/gobuffalo/packr/v2/jam"
 	"github.com/gobuffalo/plush/v4"
 )
+
+//go:embed templates/* 
+var templates embed.FS
 
 // New generator for building a Buffalo application
 // This powers the `buffalo build` command and can be
@@ -32,16 +37,30 @@ func New(opts *Options) (*genny.Generator, error) {
 	})
 
 	g.Transformer(genny.Dot())
+	// TODO: workaround for 1.16, remove when we upgrade to 1.17 and rename "dot-*" files back to "-dot-*"
+	g.Transformer(genny.NewTransformer("*", func(f genny.File) (genny.File, error) {
+		name := f.Name()
+		if strings.HasPrefix(name, "dot-") {
+			name = strings.TrimPrefix(name, "dot-")
+			name = "." + name
+		}
+		return genny.NewFile(name, f), nil
+	}))
+	g.Transformer(genny.Replace("/dot-", "/."))
 
 	// validate templates
-	g.RunFn(ValidateTemplates(templateWalker(opts.App), opts.TemplateValidators))
+	g.RunFn(ValidateTemplates(os.DirFS(opts.App.Root), opts.TemplateValidators))
 
 	// rename main() to originalMain()
 	g.RunFn(transformMain(opts))
 
 	// add any necessary templates for the build
-	box := packr.New("github.com/gobuffalo/buffalo@v0.15.6/genny/build", "../build/templates")
-	if err := g.Box(box); err != nil {
+	sub, err := fs.Sub(templates, "templates")
+	if err != nil {
+		return g, err
+	}
+
+	if err := g.FS(sub); err != nil {
 		return g, err
 	}
 
@@ -77,10 +96,6 @@ func New(opts *Options) (*genny.Generator, error) {
 		}
 		g.Merge(dg)
 	}
-
-	g.RunFn(func(r *genny.Runner) error {
-		return jam.Pack(jam.PackOptions{})
-	})
 
 	// create the final go build command
 	c, err := buildCmd(opts)

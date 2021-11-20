@@ -2,6 +2,8 @@ package actions
 
 import (
 	"fmt"
+	"io"
+	"io/fs"
 	"strings"
 
 	"github.com/gobuffalo/flect/name"
@@ -34,17 +36,21 @@ func buildNewActions(fn string, pres *presenter) genny.RunFn {
 			pres.Actions = append(pres.Actions, name.New(a))
 		}
 
-		h, err := box.FindString("actions_header.go.tmpl")
-		if err != nil {
-			return err
-		}
-		a, err := box.FindString("actions.go.tmpl")
+		sub, err := fs.Sub(templates, "templates")
 		if err != nil {
 			return err
 		}
 
-		f := genny.NewFileS(fn+".tmpl", h+a)
+		h, err := sub.Open("actions_header.go.tmpl")
+		if err != nil {
+			return err
+		}
+		a, err := sub.Open("actions.go.tmpl")
+		if err != nil {
+			return err
+		}
 
+		f := genny.NewFile(fn+".tmpl", io.MultiReader(h, a))
 		f, err = transform(pres, f)
 		if err != nil {
 			return err
@@ -67,13 +73,17 @@ func appendActions(f genny.File, pres *presenter) genny.RunFn {
 			pres.Actions = append(pres.Actions, a)
 		}
 
-		a, err := box.FindString("actions.go.tmpl")
+		sub, err := fs.Sub(templates, "templates")
 		if err != nil {
 			return err
 		}
 
-		f = genny.NewFileS(f.Name()+".tmpl", f.String()+a)
+		a, err := sub.Open("actions.go.tmpl")
+		if err != nil {
+			return err
+		}
 
+		f = genny.NewFile(f.Name()+".tmpl", io.MultiReader(f, a))
 		f, err = transform(pres, f)
 		if err != nil {
 			return err

@@ -59,10 +59,12 @@ func AddPackageJSONScripts(r *Runner) error {
 	if needRewrite {
 		b, err = json.MarshalIndent(packageJSON, "", "  ")
 		if err != nil {
-			return fmt.Errorf("could not rewrite package.json: %s", err.Error())
+			return fmt.Errorf("could not rewrite package.json: %w", err)
 		}
 
-		ioutil.WriteFile("package.json", b, 0644)
+		if err := ioutil.WriteFile("package.json", b, 0644); err != nil {
+			return fmt.Errorf("could not rewrite package.json: %w", err)
+		}
 	} else {
 		fmt.Println("~~~ package.json doesn't need to be patched, skipping. ~~~")
 	}
@@ -81,14 +83,12 @@ func PackageJSONCheck(r *Runner) error {
 		return nil
 	}
 
-	box := webpack.Templates
-
-	f, err := box.FindString("package.json.tmpl")
+	templates, err := webpack.Templates()
 	if err != nil {
 		return err
 	}
 
-	tmpl, err := template.New("package.json").Parse(f)
+	tmpl, err := template.New("package.json").ParseFS(templates, "package.json.tmpl")
 	if err != nil {
 		return err
 	}

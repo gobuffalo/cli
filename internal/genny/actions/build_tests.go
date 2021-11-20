@@ -2,6 +2,7 @@ package actions
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/gobuffalo/genny/v2"
 )
@@ -24,17 +25,16 @@ func buildTests(pres *presenter) genny.RunFn {
 // and files it with tests
 func buildNewTests(fn string, pres *presenter) genny.RunFn {
 	return func(r *genny.Runner) error {
-		h, err := box.FindString("tests_header.go.tmpl")
+		h, err := templates.Open("templates/tests_header.go.tmpl")
 		if err != nil {
 			return err
 		}
-		a, err := box.FindString("test.go.tmpl")
+		a, err := templates.Open("templates/test.go.tmpl")
 		if err != nil {
 			return err
 		}
 
-		f := genny.NewFileS(fn+".tmpl", h+a)
-
+		f := genny.NewFile(fn+".tmpl", io.MultiReader(h, a))
 		f, err = transform(pres, f)
 		if err != nil {
 			return err
@@ -47,11 +47,12 @@ func buildNewTests(fn string, pres *presenter) genny.RunFn {
 // actions/foo_test.go. if the test already exists it is not touched.
 func appendTests(f genny.File, pres *presenter) genny.RunFn {
 	return func(r *genny.Runner) error {
-		a, err := box.FindString("test.go.tmpl")
+		a, err := templates.Open("templates/test.go.tmpl")
 		if err != nil {
 			return err
 		}
-		f := genny.NewFileS(f.Name()+".tmpl", f.String()+a)
+
+		f := genny.NewFile(f.Name()+".tmpl", io.MultiReader(f, a))
 		f, err = transform(pres, f)
 		if err != nil {
 			return err
