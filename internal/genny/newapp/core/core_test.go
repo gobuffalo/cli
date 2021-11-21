@@ -19,8 +19,6 @@ func init() {
 func Test_New(t *testing.T) {
 	r := require.New(t)
 	envy.Temp(func() {
-		envy.Set(envy.GO111MODULE, "on")
-
 		app := meta.Named("coke", ".")
 		(&app).PackageRoot("coke")
 		app.WithModules = true
@@ -60,7 +58,6 @@ func Test_New(t *testing.T) {
 			_, err = res.Find(u)
 			r.Error(err)
 		}
-
 	})
 }
 
@@ -90,16 +87,16 @@ func Test_New_Docker(t *testing.T) {
 }
 
 var commonExpected = []string{
-	"main.go",
-	"actions/app.go",
 	"actions/actions_test.go",
-	"actions/render.go",
+	"actions/app.go",
 	"actions/home.go",
 	"actions/home_test.go",
+	"actions/render.go",
 	"fixtures/sample.toml",
 	"grifts/init.go",
 	".codeclimate.yml",
 	".env",
 	"inflections.json",
+	"main.go",
 	"README.md",
 }

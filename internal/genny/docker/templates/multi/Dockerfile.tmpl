@@ -2,7 +2,6 @@
 # https://docs.docker.com/engine/userguide/eng-image/multistage-build/
 FROM gobuffalo/buffalo:{{.opts.Version}} as builder
 
-ENV GO111MODULE on
 ENV GOPROXY http://proxy.golang.org
 
 RUN mkdir -p /src/{{.opts.App.PackagePkg}}

@@ -32,5 +32,4 @@ func Test_Options_Validate(t *testing.T) {
 	opts.App.Name = name.New("coke")
 	err = opts.Validate()
 	r.NoError(err)
-
 }

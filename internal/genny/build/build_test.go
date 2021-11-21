@@ -63,7 +63,6 @@ func Test_New(t *testing.T) {
 
 func Test_NewWithoutBuildDeps(t *testing.T) {
 	envy.Temp(func() {
-		envy.Set(envy.GO111MODULE, "off")
 		r := require.New(t)
 
 		run := cokeRunner()

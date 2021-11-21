@@ -23,7 +23,6 @@ func Test_New(t *testing.T) {
 	app := meta.Named("web", ".")
 	(&app).PackageRoot("web")
 	app.WithModules = true
-	envy.Set(envy.GO111MODULE, "on")
 
 	gg, err := New(&Options{
 		Options: &core.Options{
@@ -56,7 +55,7 @@ func Test_New(t *testing.T) {
 	r.NoError(err)
 
 	body := f.String()
-	r.Contains(body, `TemplatesBox: packr.New("app:templates", "../templates"),`)
+	r.Contains(body, `TemplatesFS: templates.FS(),`)
 	r.NotContains(body, `DefaultContentType: "application/json",`)
 	unexpected := []string{
 		"Dockerfile",
@@ -75,21 +74,24 @@ func Test_New(t *testing.T) {
 }
 
 var commonExpected = []string{
-	"main.go",
-	"actions/app.go",
 	"actions/actions_test.go",
-	"actions/render.go",
+	"actions/app.go",
 	"actions/home.go",
 	"actions/home_test.go",
+	"actions/render.go",
 	"fixtures/sample.toml",
 	"grifts/init.go",
-	".codeclimate.yml",
-	".env",
-	"inflections.json",
-	"README.md",
 	"locales/all.en-us.yaml",
+	"locales/embed.go",
+	"public/embed.go",
 	"public/robots.txt",
 	"templates/_flash.plush.html",
 	"templates/application.plush.html",
+	"templates/embed.go",
 	"templates/index.plush.html",
+	".codeclimate.yml",
+	".env",
+	"inflections.json",
+	"main.go",
+	"README.md",
 }
