@@ -327,7 +327,7 @@ func initConfig(skipConfig *bool, cfgFile *string) func() {
 			viper.SetConfigFile(*cfgFile)
 			// Will error only if the --config flag is used
 			if err := viper.ReadInConfig(); err != nil {
-				log.Fatalf("failed to parse provided config: %s", err)
+				configError = err
 			}
 			return
 		}
@@ -335,9 +335,7 @@ func initConfig(skipConfig *bool, cfgFile *string) func() {
 		viper.SetConfigName(".buffalo") // name of config file (without extension)
 		viper.AddConfigPath("$HOME")    // adding home directory as first search path
 		viper.AutomaticEnv()            // read in environment variables that match
-		if err := viper.ReadInConfig(); err != nil {
-			log.Fatalf("failed to parse config: %s", err)
-		}
+		configError = viper.ReadInConfig()
 	}
 }
 
