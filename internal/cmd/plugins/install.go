@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/cli/internal/genny/plugins/install"
-
 	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/logger"

@@ -57,10 +57,7 @@ func Load() error {
 								fmt.Println("error trying to send event", strings.Join(cmd.Args, " "), err)
 							}
 						}
-						_, err := events.NamedListen(n, events.Filter(c.ListenFor, fn))
-						if err != nil {
-							return err
-						}
+						events.NamedListen(n, events.Filter(c.ListenFor, fn))
 						return nil
 					})
 				}(c)

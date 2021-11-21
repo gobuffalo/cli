@@ -1,0 +1,7 @@
+linters-settings:
+  errcheck:
+    exclude-functions:
+      - events.Emit
+      - events.EmitPayload
+      - events.EmitError
+      - events.NamedListen
