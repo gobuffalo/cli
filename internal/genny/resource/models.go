@@ -25,7 +25,7 @@ func installPop(opts *Options) genny.RunFn {
 			return nil
 		}
 		if _, err := r.LookPath("buffalo-pop"); err != nil {
-			c := exec.Command("go", "get", "github.com/gobuffalo/buffalo-pop/v2")
+			c := exec.Command("go", "get", "github.com/gobuffalo/buffalo-pop/v3")
 			if err := r.Exec(c); err != nil {
 				return err
 			}

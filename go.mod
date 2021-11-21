@@ -6,15 +6,15 @@ require (
 	github.com/BurntSushi/toml v0.4.1
 	github.com/fatih/color v1.13.0
 	github.com/gobuffalo/attrs v1.0.1
-	github.com/gobuffalo/buffalo-pop/v2 v2.3.0
+	github.com/gobuffalo/buffalo-pop/v3 v3.0.0
 	github.com/gobuffalo/clara/v2 v2.0.2
 	github.com/gobuffalo/envy v1.10.1
 	github.com/gobuffalo/events v1.4.2
 	github.com/gobuffalo/flect v0.2.4
-	github.com/gobuffalo/genny/v2 v2.0.7
+	github.com/gobuffalo/genny/v2 v2.0.8
 	github.com/gobuffalo/logger v1.0.6
 	github.com/gobuffalo/meta v0.3.1
-	github.com/gobuffalo/plush/v4 v4.1.8
+	github.com/gobuffalo/plush/v4 v4.1.9
 	github.com/gobuffalo/pop/v5 v5.3.4
 	github.com/google/go-cmp v0.5.6
 	github.com/karrick/godirwalk v1.16.1
@@ -31,4 +31,9 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/tools v0.1.7
 	gopkg.in/yaml.v2 v2.4.0
+)
+
+replace (
+	github.com/gobuffalo/buffalo-pop/v3 v3.0.0 => github.com/fasmat/buffalo-pop/v3 v3.0.0-20211121200722-a7fc8542fca5
+	github.com/gobuffalo/pop/v6 v6.0.0 => github.com/fasmat/pop/v6 v6.0.0-20211121195140-6d95c111f911
 )

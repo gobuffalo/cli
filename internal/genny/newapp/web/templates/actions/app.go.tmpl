@@ -3,11 +3,11 @@ package actions
 import (
 	"net/http"
 
-	"{{.opts.App.Name.File}}/locales"
+	"{{ .opts.App.PackagePkg }}/locales"
 	{{ if .opts.App.WithPop }}
-	"{{.opts.App.ModelsPkg}}"
+	"{{ .opts.App.ModelsPkg }}"
 	{{ end -}}
-	"{{.opts.App.Name.File}}/public"
+	"{{ .opts.App.PackagePkg }}/public"
 
 	"github.com/gobuffalo/buffalo"
 	{{ if .opts.App.WithPop }}

@@ -2,7 +2,6 @@ package a
 
 import (
 	"log"
-	"strings"
 
 	<%= if (opts.Environment != "development") { %>
 	"github.com/gobuffalo/envy"

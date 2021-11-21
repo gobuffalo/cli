@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	pop "github.com/gobuffalo/buffalo-pop/v2/genny/newapp"
+	pop "github.com/gobuffalo/buffalo-pop/v3/genny/newapp"
 	"github.com/gobuffalo/cli/internal/genny/assets/standard"
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
 	"github.com/gobuffalo/cli/internal/genny/ci"
@@ -335,7 +335,7 @@ func initConfig(skipConfig *bool, cfgFile *string) func() {
 		viper.SetConfigName(".buffalo") // name of config file (without extension)
 		viper.AddConfigPath("$HOME")    // adding home directory as first search path
 		viper.AutomaticEnv()            // read in environment variables that match
-		configError = viper.ReadInConfig()
+		viper.ReadInConfig()
 	}
 }
 
