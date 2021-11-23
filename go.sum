@@ -219,7 +219,6 @@ github.com/gobuffalo/plush/v4 v4.0.0/go.mod h1:ErFS3UxKqEb8fpFJT7lYErfN/Nw6vHGiD
 github.com/gobuffalo/plush/v4 v4.1.8/go.mod h1:504Kpokbl1fT93Y6BtRoVmT+H+kWoqJsAaEDEe0HeNo=
 github.com/gobuffalo/plush/v4 v4.1.9 h1:u9rQBuYCeHC0ppKxsZljk5vb1oT8PQa5EMNTAN2337s=
 github.com/gobuffalo/plush/v4 v4.1.9/go.mod h1:9OOII9uAM5pZnhWu1OkQnboXJjaWMQ7kcTl3zNcxvTM=
-github.com/gobuffalo/pop/v5 v5.3.4 h1:VWH74icA8khG8SyWDAq6Ch00jcPiC4n436JMFh0lLm0=
 github.com/gobuffalo/pop/v5 v5.3.4/go.mod h1:UiVurv2aTKC7MuR27PnMrQjAazoLr8SoC/LuTKTS/tQ=
 github.com/gobuffalo/pop/v6 v6.0.0 h1:LvHl9wrMoY0zF+SWjUJoDG1oRpYKfMxLzuBT7SCctZU=
 github.com/gobuffalo/pop/v6 v6.0.0/go.mod h1:5rd3OnViLhjteR8+0i/mT9Q4CzkTzCoR7tm/9mmAic4=
