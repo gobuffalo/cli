@@ -2,12 +2,12 @@ package plugdeps
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/gobuffalo/meta"
-	"github.com/karrick/godirwalk"
 )
 
 // ErrMissingConfig is if config/buffalo-plugins.toml file is not found. Use plugdeps#On(app) to test if plugdeps are being used
@@ -50,27 +50,26 @@ func listLocal(app meta.App) (*Plugins, error) {
 	if _, err := os.Stat(proot); err != nil {
 		return plugs, nil
 	}
-	err := godirwalk.Walk(proot, &godirwalk.Options{
-		FollowSymbolicLinks: true,
-		Callback: func(path string, info *godirwalk.Dirent) error {
-			if info.IsDir() {
-				return nil
-			}
-			base := filepath.Base(path)
-			if strings.HasPrefix(base, "buffalo-") {
-				plugs.Add(Plugin{
-					Binary: base,
-					Local:  "." + strings.TrimPrefix(path, app.Root),
-				})
-			}
-			return nil
-		},
-	})
-	if err != nil {
-		return plugs, err
-	}
 
-	return plugs, nil
+	err := fs.WalkDir(os.DirFS(proot), ".", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if d.IsDir() {
+			return nil
+		}
+
+		base := filepath.Base(path)
+		if strings.HasPrefix(base, "buffalo-") {
+			plugs.Add(Plugin{
+				Binary: base,
+				Local:  "." + strings.TrimPrefix(path, app.Root),
+			})
+		}
+		return nil
+	})
+	return plugs, err
 }
 
 // ConfigPath returns the path to the config/buffalo-plugins.toml file

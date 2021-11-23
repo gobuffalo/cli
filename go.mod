@@ -17,7 +17,6 @@ require (
 	github.com/gobuffalo/plush/v4 v4.1.9
 	github.com/gobuffalo/pop/v5 v5.3.4
 	github.com/google/go-cmp v0.5.6
-	github.com/karrick/godirwalk v1.16.1
 	github.com/markbates/grift v1.5.0
 	github.com/markbates/oncer v1.0.0
 	github.com/markbates/refresh v1.12.0
@@ -33,7 +32,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
-replace (
-	github.com/gobuffalo/buffalo-pop/v3 v3.0.0 => github.com/fasmat/buffalo-pop/v3 v3.0.0-20211121200722-a7fc8542fca5
-	github.com/gobuffalo/pop/v6 v6.0.0 => github.com/fasmat/pop/v6 v6.0.0-20211121195140-6d95c111f911
-)
+replace github.com/gobuffalo/buffalo-pop/v3 v3.0.0 => github.com/fasmat/buffalo-pop/v3 v3.0.0-20211121200722-a7fc8542fca5

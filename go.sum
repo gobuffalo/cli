@@ -134,8 +134,6 @@ github.com/envoyproxy/go-control-plane v0.9.9-0.20210512163311-63b5d3c536b0/go.m
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/fasmat/buffalo-pop/v3 v3.0.0-20211121200722-a7fc8542fca5 h1:6ZrTDWvPBNdEML3FsDH9r6Ev/re1mBnqowvA4B5XSiM=
 github.com/fasmat/buffalo-pop/v3 v3.0.0-20211121200722-a7fc8542fca5/go.mod h1:30NBCqXOwX0Ssy2X2+fWVUgCSeiw8Y0EiYoI4QtqaOg=
-github.com/fasmat/pop/v6 v6.0.0-20211121195140-6d95c111f911 h1:y7S3XYh+oOWJV5Z1WL42SDicihAf6I3w8MPa9NAHxzw=
-github.com/fasmat/pop/v6 v6.0.0-20211121195140-6d95c111f911/go.mod h1:5rd3OnViLhjteR8+0i/mT9Q4CzkTzCoR7tm/9mmAic4=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
 github.com/fatih/color v1.9.0/go.mod h1:eQcE1qtQxscV5RaZvpXrrb8Drkc3/DdQ+uUYCNjL+zU=
 github.com/fatih/color v1.13.0 h1:8LOYc1KYPPmyKMuN8QV2DNRWNbLo6LZ0iLs8+mlH53w=
@@ -223,6 +221,8 @@ github.com/gobuffalo/plush/v4 v4.1.9 h1:u9rQBuYCeHC0ppKxsZljk5vb1oT8PQa5EMNTAN23
 github.com/gobuffalo/plush/v4 v4.1.9/go.mod h1:9OOII9uAM5pZnhWu1OkQnboXJjaWMQ7kcTl3zNcxvTM=
 github.com/gobuffalo/pop/v5 v5.3.4 h1:VWH74icA8khG8SyWDAq6Ch00jcPiC4n436JMFh0lLm0=
 github.com/gobuffalo/pop/v5 v5.3.4/go.mod h1:UiVurv2aTKC7MuR27PnMrQjAazoLr8SoC/LuTKTS/tQ=
+github.com/gobuffalo/pop/v6 v6.0.0 h1:LvHl9wrMoY0zF+SWjUJoDG1oRpYKfMxLzuBT7SCctZU=
+github.com/gobuffalo/pop/v6 v6.0.0/go.mod h1:5rd3OnViLhjteR8+0i/mT9Q4CzkTzCoR7tm/9mmAic4=
 github.com/gobuffalo/tags/v3 v3.0.2/go.mod h1:ZQeN6TCTiwAFnS0dNcbDtSgZDwNKSpqajvVtt6mlYpA=
 github.com/gobuffalo/tags/v3 v3.1.0/go.mod h1:ZQeN6TCTiwAFnS0dNcbDtSgZDwNKSpqajvVtt6mlYpA=
 github.com/gobuffalo/tags/v3 v3.1.1/go.mod h1:WdZd2T0qN77hOWnjpaZXTfDtAYm0CXoJr8n7rrekPZw=
