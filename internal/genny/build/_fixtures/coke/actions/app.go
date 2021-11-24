@@ -54,7 +54,7 @@ func App() *buffalo.App {
 		app.Use(csrf.New)
 
 		// Wraps each request in a transaction.
-		//  c.Value("tx").(*pop.Connection)
+		//   c.Value("tx").(*pop.Connection)
 		// Remove to disable this.
 		app.Use(popmw.Transaction(models.DB))
 
