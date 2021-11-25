@@ -118,8 +118,8 @@ github.com/gobuffalo/attrs v1.0.1/go.mod h1:qGdnq2RukKtBl4ASJit0OFckc5XGSyTFk98S
 github.com/gobuffalo/buffalo v0.18.0/go.mod h1:fb4LkUNKu2Apo6qyuRFJoEj6iWBCDLYC+Z1FJ6AAzrs=
 github.com/gobuffalo/buffalo-pop/v3 v3.0.1 h1:05OK3D95kh65e+leKLIGJrZGKUev5WwfX4iuYw4lb2U=
 github.com/gobuffalo/buffalo-pop/v3 v3.0.1/go.mod h1:y8mNrbpSkc4uFb2+2uWJI/kmOjkuRQod+yAcTmbLEjs=
-github.com/gobuffalo/clara/v2 v2.0.4 h1:vJ+vYEGmycSu7CLYqL25dt5o6xKKphZpqcTXga7L6Mc=
-github.com/gobuffalo/clara/v2 v2.0.4/go.mod h1:tgSAxVJLk70vKjURgi+DbuVdtFlNaahcFXcwBxYRadE=
+github.com/gobuffalo/clara/v2 v2.0.5 h1:o4M7bMLN2pqxtlUOPQAIqVVa+kKEcMBK5VZBmxu+rlE=
+github.com/gobuffalo/clara/v2 v2.0.5/go.mod h1:RjaUUvAnDxowiV6pVPl67Dsp4yVKJRZVYrKpXCTghMA=
 github.com/gobuffalo/envy v1.10.1 h1:ppDLoXv2feQ5nus4IcgtyMdHQkKng2lhJCIm33cblM0=
 github.com/gobuffalo/envy v1.10.1/go.mod h1:AWx4++KnNOW3JOeEvhSaq+mvgAvnMYOY1XSIin4Mago=
 github.com/gobuffalo/events v1.4.2 h1:9X4nBKGXOU/N/3AFRO0SxYvpL88lws8M7f5FODbWCm4=
@@ -145,8 +145,6 @@ github.com/gobuffalo/logger v1.0.6 h1:nnZNpxYo0zx+Aj9RfMPBm+x9zAU2OayFh/xrAWi34H
 github.com/gobuffalo/logger v1.0.6/go.mod h1:J31TBEHR1QLV2683OXTAItYIg8pv2JMHnF/quuAbMjs=
 github.com/gobuffalo/meta v0.3.1 h1:wrg94uDwu3bM3HMdmz2wlT8A9iAJvMKbHmYs8Rxi63I=
 github.com/gobuffalo/meta v0.3.1/go.mod h1:garIq5Vcqs5dj8nv3YG8hRbqAdQhIOt0DAXmaLtO7OU=
-github.com/gobuffalo/meta/v2 v2.0.2 h1:UNpnJZ/vhk9xj8Biy9rhw+rhLhrsDV9zo34zfyOflNI=
-github.com/gobuffalo/meta/v2 v2.0.2/go.mod h1:2BLaZnoXFtIBEw28+FGpPiRZPhPr1FiD0A5ZyUzEKts=
 github.com/gobuffalo/nulls v0.4.1 h1:k7QVCJfMplv9VRQQLb4N1d8tXUdGvcdMNfp4BfMnG2M=
 github.com/gobuffalo/nulls v0.4.1/go.mod h1:pp8e1hWTRJZFpMl4fj/CVbSMlaxjeGKkFq4RuBZi3w8=
 github.com/gobuffalo/packd v1.0.1 h1:U2wXfRr4E9DH8IdsDLlRFwTZTK7hLfq9qT/QHXGVe/0=
