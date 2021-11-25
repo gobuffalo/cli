@@ -1,8 +1,7 @@
 # This is a multi-stage Dockerfile and requires >= Docker 17.05
 # https://docs.docker.com/engine/userguide/eng-image/multistage-build/
-FROM gobuffalo/buffalo:v0.17.7 as builder
+FROM gobuffalo/buffalo:v0.18.0 as builder
 
-ENV GO111MODULE on
 ENV GOPROXY http://proxy.golang.org
 
 RUN mkdir -p /src/coke

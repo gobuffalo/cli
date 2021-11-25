@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/gobuffalo/cli/internal/genny/plugins/install"
-
 	"github.com/gobuffalo/cli/internal/plugins"
 	"github.com/gobuffalo/events"
 	"github.com/gobuffalo/genny/v2"
@@ -31,5 +30,6 @@ func Listen(e events.Event) error {
 		events.EmitError(plugins.EvtSetupErr, err, payload)
 		return err
 	}
-	return events.EmitPayload(plugins.EvtSetupFinished, payload)
+	events.EmitPayload(plugins.EvtSetupFinished, payload)
+	return nil
 }

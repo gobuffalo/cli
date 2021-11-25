@@ -6,12 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"os/user"
 	"path/filepath"
 	"strings"
 
+	pop "github.com/gobuffalo/buffalo-pop/v3/genny/newapp"
 	"github.com/gobuffalo/cli/internal/genny/assets/standard"
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
 	"github.com/gobuffalo/cli/internal/genny/ci"
@@ -21,8 +23,6 @@ import (
 	"github.com/gobuffalo/cli/internal/genny/newapp/web"
 	"github.com/gobuffalo/cli/internal/genny/refresh"
 	"github.com/gobuffalo/cli/internal/genny/vcs"
-
-	pop "github.com/gobuffalo/buffalo-pop/v2/genny/newapp"
 	"github.com/gobuffalo/envy"
 	fname "github.com/gobuffalo/flect/name"
 	"github.com/gobuffalo/genny/v2"
@@ -148,9 +148,13 @@ var newCmd = &cobra.Command{
 		// Restore default values after usage (useful for testing)
 		defer func() {
 			cmd.Flags().Visit(func(f *pflag.Flag) {
-				f.Value.Set(f.DefValue)
+				if err := f.Value.Set(f.DefValue); err != nil {
+					log.Fatalf("failed to restore default value: %s", err)
+				}
 			})
-			viper.BindPFlags(cmd.Flags())
+			if err := viper.BindPFlags(cmd.Flags()); err != nil {
+				log.Fatalf("failed to bind flags: %s", err)
+			}
 		}()
 
 		nopts, err := parseNewOptions(args)
@@ -318,20 +322,20 @@ func initConfig(skipConfig *bool, cfgFile *string) func() {
 			return
 		}
 
-		var err error
-		if *cfgFile != "" { // enable ability to specify config file via flag
+		// enable ability to specify config file via flag
+		if *cfgFile != "" {
 			viper.SetConfigFile(*cfgFile)
 			// Will error only if the --config flag is used
-			if err = viper.ReadInConfig(); err != nil {
+			if err := viper.ReadInConfig(); err != nil {
 				configError = err
 			}
-		} else {
-			viper.SetConfigName(".buffalo") // name of config file (without extension)
-			viper.AddConfigPath("$HOME")    // adding home directory as first search path
-			viper.AutomaticEnv()            // read in environment variables that match
-			viper.ReadInConfig()
+			return
 		}
 
+		viper.SetConfigName(".buffalo") // name of config file (without extension)
+		viper.AddConfigPath("$HOME")    // adding home directory as first search path
+		viper.AutomaticEnv()            // read in environment variables that match
+		viper.ReadInConfig()
 	}
 }
 

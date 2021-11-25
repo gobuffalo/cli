@@ -21,7 +21,7 @@ func apkg(opts *Options) (*genny.Generator, error) {
 }
 
 func addDependencies(r *genny.Runner) error {
-	return r.Exec(exec.Command("go", "get", "-d"))
+	return r.Exec(exec.Command("go", "mod", "tidy"))
 }
 
 func copyDatabase(r *genny.Runner) error {

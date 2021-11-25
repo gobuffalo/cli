@@ -22,7 +22,7 @@ ADD . .
 RUN go install ./cmd/buffalo
 
 WORKDIR /
-RUN go install github.com/gobuffalo/buffalo-pop/v2@latest
+RUN go install github.com/gobuffalo/buffalo-pop/v3@latest
 
 RUN mkdir /src
 WORKDIR /src

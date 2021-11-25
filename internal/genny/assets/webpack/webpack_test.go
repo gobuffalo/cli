@@ -43,7 +43,7 @@ func Test_Webpack_New(t *testing.T) {
 		"assets/js/application.js",
 		"package.json",
 		"postcss.config.js",
-		"public/assets/.keep",
+		"public/assets/keep",
 		"templates/application.plush.html",
 		"webpack.config.js",
 	}
