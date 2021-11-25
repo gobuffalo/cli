@@ -15,7 +15,7 @@ import (
 	"github.com/gobuffalo/plush/v4"
 )
 
-//go:embed templates/* 
+//go:embed templates/*
 var templates embed.FS
 
 // New generator for building a Buffalo application
@@ -33,7 +33,8 @@ func New(opts *Options) (*genny.Generator, error) {
 	}
 
 	g.RunFn(func(r *genny.Runner) error {
-		return events.EmitPayload(EvtBuildStart, events.Payload{"opts": opts})
+		events.EmitPayload(EvtBuildStart, events.Payload{"opts": opts})
+		return nil
 	})
 
 	g.Transformer(genny.Dot())
@@ -105,7 +106,8 @@ func New(opts *Options) (*genny.Generator, error) {
 
 	g.Command(c)
 	g.RunFn(func(r *genny.Runner) error {
-		return events.EmitPayload(EvtBuildStop, events.Payload{"opts": opts})
+		events.EmitPayload(EvtBuildStop, events.Payload{"opts": opts})
+		return nil
 	})
 
 	g.RunFn(Cleanup(opts))

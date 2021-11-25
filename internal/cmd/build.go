@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gobuffalo/cli/internal/genny/build"
-
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/logger"
 	"github.com/gobuffalo/meta"
@@ -63,7 +62,6 @@ var xbuildCmd = &cobra.Command{
 		if buildOptions.Verbose || buildOptions.Debug {
 			lg := logger.New(logger.DebugLevel)
 			run.Logger = lg
-			// plog.Logger = lg
 			buildOptions.BuildFlags = append(buildOptions.BuildFlags, "-v")
 		}
 
@@ -85,7 +83,7 @@ var xbuildCmd = &cobra.Command{
 		// defer clean(run)
 		defer func() {
 			if err := clean(run); err != nil {
-				log.Fatal("build:clean", err)
+				log.Fatalf("build:clean %s", err)
 			}
 		}()
 		if err := run.WithNew(build.New(opts)); err != nil {

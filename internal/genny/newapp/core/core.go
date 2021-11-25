@@ -8,7 +8,7 @@ import (
 	"github.com/gobuffalo/cli/internal/genny/plugins/install"
 	"github.com/gobuffalo/cli/internal/genny/refresh"
 
-	pop "github.com/gobuffalo/buffalo-pop/v2/genny/newapp"
+	pop "github.com/gobuffalo/buffalo-pop/v3/genny/newapp"
 	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"
@@ -52,7 +52,7 @@ func New(opts *Options) (*genny.Group, error) {
 		// add the plugin
 		plugs.Add(plugdeps.Plugin{
 			Binary: "buffalo-pop",
-			GoGet:  "github.com/gobuffalo/buffalo-pop/v2@latest",
+			GoGet:  "github.com/gobuffalo/buffalo-pop/v3@latest",
 		})
 	}
 

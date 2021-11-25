@@ -16,7 +16,7 @@ jobs:
         id: go
       
       - name: Checkout Code
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
       
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2

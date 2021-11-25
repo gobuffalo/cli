@@ -20,7 +20,7 @@ func Test_New(t *testing.T) {
 	g, err := New(&Options{
 		App: meta.New("."),
 		Plugins: []plugdeps.Plugin{
-			{Binary: "buffalo-pop", GoGet: "github.com/gobuffalo/buffalo-pop/v2@latest"},
+			{Binary: "buffalo-pop", GoGet: "github.com/gobuffalo/buffalo-pop/v3@latest"},
 			{Binary: "buffalo-hello.rb", Local: "./plugins/buffalo-hello.rb"},
 		},
 	})
