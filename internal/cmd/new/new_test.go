@@ -26,7 +26,7 @@ func TestNew(t *testing.T) {
 	}{
 		{
 			name: "skip docker",
-			args: []string{"app", "--api", "--skip-docker", "-f"},
+			args: []string{"app", "--api", "--skip-docker", "-f", "--vcs", "none"},
 			check: func() error {
 				_, err := os.Stat(filepath.Join("app", "Dockerfile"))
 				if err == nil {
@@ -39,7 +39,7 @@ func TestNew(t *testing.T) {
 
 		{
 			name: "docker there",
-			args: []string{"app", "--api", "-f"},
+			args: []string{"app", "--api", "-f", "--vcs", "none"},
 			check: func() error {
 				_, err := os.Stat(filepath.Join("app", "Dockerfile"))
 				if err != nil {
