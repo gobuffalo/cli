@@ -87,7 +87,7 @@ func RunE(cmd *cobra.Command, args []string) error {
 	gg.Add(g)
 
 	g = genny.New()
-	g.Command(exec.Command("go", "mod", "tidy"))
+	g.Command(exec.Command("go", "mod", "download"))
 	gg.Add(g)
 
 	run.WithGroup(gg)
