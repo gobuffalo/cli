@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/gobuffalo/genny/v2/gentest"
@@ -19,6 +20,12 @@ func Test_New(t *testing.T) {
 
 	res := run.Results()
 	r.Len(res.Commands, 0)
+
+	for _, v := range res.Files {
+
+		fmt.Println("FILE >>>> ", v.Name())
+	}
+
 	r.Len(res.Files, 2)
 
 	f := res.Files[0]

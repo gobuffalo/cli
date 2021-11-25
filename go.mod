@@ -22,6 +22,7 @@ require (
 	github.com/markbates/refresh v1.12.0
 	github.com/markbates/safe v1.0.1
 	github.com/markbates/sigtx v1.0.0
+	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5

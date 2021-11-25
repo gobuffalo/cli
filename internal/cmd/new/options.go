@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	pop "github.com/gobuffalo/buffalo-pop/v2/genny/newapp"
+	pop "github.com/gobuffalo/buffalo-pop/v3/genny/newapp"
 	"github.com/gobuffalo/cli/internal/genny/ci"
 	"github.com/gobuffalo/cli/internal/genny/docker"
 	"github.com/gobuffalo/cli/internal/genny/newapp/core"

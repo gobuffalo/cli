@@ -16,7 +16,7 @@ import (
 	"github.com/gobuffalo/genny/v2/gogen"
 	"github.com/gobuffalo/logger"
 
-	pop "github.com/gobuffalo/buffalo-pop/v2/genny/newapp"
+	pop "github.com/gobuffalo/buffalo-pop/v3/genny/newapp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
