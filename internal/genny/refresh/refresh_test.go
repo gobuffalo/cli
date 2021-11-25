@@ -19,8 +19,7 @@ func Test_New(t *testing.T) {
 	r.NoError(err)
 
 	run := genny.DryRunner(context.Background())
-	run.With(g)
-
+	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
 	res := run.Results()

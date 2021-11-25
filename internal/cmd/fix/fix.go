@@ -16,7 +16,7 @@ var YesToAll bool
 var replace = map[string]string{
 	"github.com/gobuffalo/buffalo-plugins":         "github.com/gobuffalo/cli/internal/plugins",
 	"github.com/gobuffalo/genny":                   "github.com/gobuffalo/genny/v2",
-	"github.com/gobuffalo/pop":                     "github.com/gobuffalo/pop/v5",
+	"github.com/gobuffalo/pop":                     "github.com/gobuffalo/pop/v6",
 	"github.com/gobuffalo/pop/nulls":               "github.com/gobuffalo/nulls",
 	"github.com/gobuffalo/uuid":                    "github.com/gofrs/uuid",
 	"github.com/markbates/pop":                     "github.com/gobuffalo/pop/v5",
@@ -26,10 +26,11 @@ var replace = map[string]string{
 	"github.com/shurcooL/github_flavored_markdown": "github.com/gobuffalo/github_flavored_markdown",
 	"github.com/gobuffalo/validate":                "github.com/gobuffalo/validate/v3",
 	"github.com/gobuffalo/validate/validators":     "github.com/gobuffalo/validate/v3/validators",
-	"github.com/gobuffalo/suite":                   "github.com/gobuffalo/suite/v3",
-	"github.com/gobuffalo/buffalo-pop/":            "github.com/gobuffalo/buffalo-pop/v2",
-	"github.com/gobuffalo/buffalo-pop/pop/popmw":   "github.com/gobuffalo/buffalo-pop/v2/pop/popmw",
+	"github.com/gobuffalo/suite":                   "github.com/gobuffalo/suite/v4",
+	"github.com/gobuffalo/buffalo-pop/":            "github.com/gobuffalo/buffalo-pop/v3",
+	"github.com/gobuffalo/buffalo-pop/pop/popmw":   "github.com/gobuffalo/buffalo-pop/v3/pop/popmw",
 	"github.com/gobuffalo/plush":                   "github.com/gobuffalo/plush/v4",
+	"github.com/gobuffalo/mw-i18n":                 "github.com/gobuffalo/mw-i18n/v2",
 }
 
 var ic = ImportConverter{
@@ -57,7 +58,6 @@ var mr = MiddlewareTransformer{
 }
 
 var checks = []Check{
-	PackrClean,
 	ic.Process,
 	mr.transformPackages,
 	WebpackCheck,
@@ -78,7 +78,9 @@ func encodeApp(r *Runner) error {
 	if _, err := os.Stat(p); err == nil {
 		return nil
 	}
-	os.MkdirAll(filepath.Dir(p), 0755)
+	if err := os.MkdirAll(filepath.Dir(p), 0755); err != nil {
+		return err
+	}
 	f, err := os.Create(p)
 	if err != nil {
 		return err

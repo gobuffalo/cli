@@ -1,15 +1,18 @@
 package resource
 
 import (
+	"embed"
+	"io/fs"
 	"text/template"
 
 	"github.com/gobuffalo/flect"
 	"github.com/gobuffalo/flect/name"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/gogen"
-	"github.com/gobuffalo/packd"
-	"github.com/gobuffalo/packr/v2"
 )
+
+//go:embed templates/* templates/core/templates/folder-name/_form.plush.html.tmpl
+var templates embed.FS
 
 // New resource generator
 func New(opts *Options) (*genny.Generator, error) {
@@ -20,21 +23,27 @@ func New(opts *Options) (*genny.Generator, error) {
 	}
 
 	if !opts.SkipTemplates {
-		core := packr.New("github.com/gobuffalo/buffalo/@v0.15.4/genny/resource/templates/core", "../resource/templates/core")
+		core, err := fs.Sub(templates, "templates/core")
+		if err != nil {
+			return g, err
+		}
 
-		if err := g.Box(core); err != nil {
+		if err := g.FS(core); err != nil {
 			return g, err
 		}
 	}
 
-	var abox packd.Box
+	sub := "templates/use_model"
 	if opts.SkipModel {
-		abox = packr.New("github.com/gobuffalo/buffalo/@v0.15.4/genny/resource/templates/standard", "../resource/templates/standard")
-	} else {
-		abox = packr.New("github.com/gobuffalo/buffalo/@v0.15.4/genny/resource/templates/use_model", "../resource/templates/use_model")
+		sub = "templates/standard"
 	}
 
-	if err := g.Box(abox); err != nil {
+	aFS, err := fs.Sub(templates, sub)
+	if err != nil {
+		return g, err
+	}
+
+	if err := g.FS(aFS); err != nil {
 		return g, err
 	}
 

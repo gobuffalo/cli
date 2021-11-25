@@ -18,7 +18,7 @@ func transformMain(opts *Options) genny.RunFn {
 		}
 		opts.rollback.Store(f.Name(), f.String())
 		s := strings.Replace(f.String(), "func main()", "func originalMain()", -1)
-		f = genny.NewFile(f.Name(), strings.NewReader(s))
+		f = genny.NewFileS(f.Name(), s)
 		return r.File(f)
 	}
 }

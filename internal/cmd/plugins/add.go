@@ -2,14 +2,13 @@ package plugins
 
 import (
 	"context"
+	"errors"
 	"os"
 	"path"
 	"strings"
 
 	"github.com/gobuffalo/cli/internal/genny/add"
-
 	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
-	"github.com/gobuffalo/cli/internal/takeon/github.com/markbates/errx"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"
 	"github.com/spf13/cobra"
@@ -31,7 +30,7 @@ var addCmd = &cobra.Command{
 
 		app := meta.New(".")
 		plugs, err := plugdeps.List(app)
-		if err != nil && (errx.Unwrap(err) != plugdeps.ErrMissingConfig) {
+		if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
 			return err
 		}
 
@@ -57,7 +56,9 @@ var addCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		run.With(g)
+		if err := run.With(g); err != nil {
+			return err
+		}
 
 		return run.Run()
 	},

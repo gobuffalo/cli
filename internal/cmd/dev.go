@@ -9,10 +9,9 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
 	rg "github.com/gobuffalo/cli/internal/genny/refresh"
-
-	"github.com/fatih/color"
 	"github.com/gobuffalo/events"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"

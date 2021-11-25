@@ -1,6 +1,7 @@
 package build
 
 import (
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -10,19 +11,19 @@ import (
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/gobuffalo/meta"
-	"github.com/gobuffalo/packr/v2"
 	"github.com/stretchr/testify/require"
 )
 
 // TODO: once `buffalo new` is converted to use genny
 // create an integration test that first generates a new application
 // and then tries to build using genny/build.
-var coke = packr.New("github.com/gobuffalo/cli/internal/genny/build/build_test", "../build/_fixtures/coke")
+
+var coke = os.DirFS("./_fixtures/coke")
 
 var cokeRunner = func() *genny.Runner {
 	run := gentest.NewRunner()
-	run.Disk.AddBox(coke)
-	run.Root = coke.Path
+	run.Disk.AddFS(coke)
+	run.Root = "./_fixtures/coke"
 	return run
 }
 
@@ -48,15 +49,12 @@ func Test_New(t *testing.T) {
 	opts.App.Bin = "bin/foo"
 	r.NoError(run.WithNew(New(opts)))
 	run.Root = opts.App.Root
-
 	r.NoError(run.Run())
 
 	res := run.Results()
-
-	// we should never leave any files modified or dropped
 	r.Len(res.Files, 0)
 
-	cmds := []string{"go get -d", "go build -tags bar -o bin/foo", "go mod tidy"}
+	cmds := []string{"go mod tidy", "go build -tags bar -o bin/foo", "go mod tidy"}
 	r.Len(res.Commands, len(cmds))
 	for i, c := range res.Commands {
 		eq(r, cmds[i], c)
@@ -65,7 +63,6 @@ func Test_New(t *testing.T) {
 
 func Test_NewWithoutBuildDeps(t *testing.T) {
 	envy.Temp(func() {
-		envy.Set(envy.GO111MODULE, "off")
 		r := require.New(t)
 
 		run := cokeRunner()
@@ -84,7 +81,7 @@ func Test_NewWithoutBuildDeps(t *testing.T) {
 
 		res := run.Results()
 
-		cmds := []string{"go get -d", "go build -tags bar -o bin/foo"}
+		cmds := []string{"go mod tidy", "go build -tags bar -o bin/foo"}
 		r.Len(res.Commands, len(cmds))
 		for i, c := range res.Commands {
 			eq(r, cmds[i], c)

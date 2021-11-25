@@ -1,17 +1,27 @@
 package info
 
 import (
+	"io"
+	"io/fs"
+
 	"github.com/gobuffalo/genny/v2"
-	"github.com/gobuffalo/packd"
 )
 
-func pkgChecks(opts *Options, box packd.Finder) genny.RunFn {
+func pkgChecks(opts *Options, fsys fs.FS) genny.RunFn {
 	return func(r *genny.Runner) error {
 		for _, x := range []string{"go.mod"} {
-			f, err := box.FindString(x)
-			if err == nil {
-				opts.Out.Header("\nBuffalo: " + x)
-				opts.Out.WriteString(f)
+			f, err := fsys.Open(x)
+			if err != nil {
+				return nil
+			}
+			s, err := io.ReadAll(f)
+			if err != nil {
+				return err
+			}
+			opts.Out.Header("\nBuffalo: " + x)
+			_, err = opts.Out.Write(s)
+			if err != nil {
+				return err
 			}
 		}
 		return nil

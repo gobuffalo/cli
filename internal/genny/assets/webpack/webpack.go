@@ -1,15 +1,26 @@
 package webpack
 
 import (
+	"embed"
 	"fmt"
+	"io/fs"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/gogen"
-	"github.com/gobuffalo/packr/v2"
 )
+
+//go:embed templates/* templates/assets/css/_buffalo.scss.tmpl
+var templates embed.FS
+
+// Templates used for generating webpack
+// (exported mostly for the "fix" command)
+func Templates() (fs.FS, error) {
+	return fs.Sub(templates, "templates")
+}
 
 // BinPath is the path to the local install of webpack
 var BinPath = func() string {
@@ -19,10 +30,6 @@ var BinPath = func() string {
 	}
 	return s
 }()
-
-// Templates used for generating webpack
-// (exported mostly for the "fix" command)
-var Templates = packr.New("github.com/gobuffalo/cli/internal/genny/assets/webpack", "../webpack/templates")
 
 // New generator for creating webpack asset files
 func New(opts *Options) (*genny.Generator, error) {
@@ -45,7 +52,14 @@ func New(opts *Options) (*genny.Generator, error) {
 		return nil
 	})
 
-	g.Box(Templates)
+	temp, err := Templates()
+	if err != nil {
+		return g, err
+	}
+
+	if err := g.FS(temp); err != nil {
+		return g, err
+	}
 
 	data := map[string]interface{}{
 		"opts": opts,
@@ -53,6 +67,17 @@ func New(opts *Options) (*genny.Generator, error) {
 	t := gogen.TemplateTransformer(data, gogen.TemplateHelpers)
 	g.Transformer(t)
 	g.Transformer(genny.Dot())
+
+	// TODO: workaround for 1.16, remove when we upgrade to 1.17 and rename "dot-*" files back to "-dot-*"
+	g.Transformer(genny.NewTransformer("*", func(f genny.File) (genny.File, error) {
+		name := f.Name()
+		if strings.HasPrefix(name, "dot-") {
+			name = strings.TrimPrefix(name, "dot-")
+			name = "." + name
+		}
+		return genny.NewFile(name, f), nil
+	}))
+	g.Transformer(genny.Replace("/dot-", "/."))
 
 	g.RunFn(func(r *genny.Runner) error {
 		return installPkgs(r, opts)

@@ -35,11 +35,9 @@ func Test_New(t *testing.T) {
 
 	run := gentest.NewRunner()
 	run.WithGroup(gg)
-
 	r.NoError(run.Run())
 
 	res := run.Results()
-
 	cmds := []string{
 		"go mod init api",
 	}
@@ -65,7 +63,7 @@ func Test_New(t *testing.T) {
 
 	f, err = res.Find("actions/app.go")
 	r.NoError(err)
-	r.Contains(f.String(), `i18n "github.com/gobuffalo/mw-i18n"`)
+	r.Contains(f.String(), `i18n "github.com/gobuffalo/mw-i18n/v2"`)
 	r.Contains(f.String(), `var T *i18n.Translator`)
 	r.Contains(f.String(), `func translations() buffalo.MiddlewareFunc {`)
 
@@ -90,16 +88,17 @@ func Test_New(t *testing.T) {
 }
 
 var commonExpected = []string{
-	"main.go",
-	"actions/app.go",
 	"actions/actions_test.go",
-	"actions/render.go",
+	"actions/app.go",
 	"actions/home.go",
 	"actions/home_test.go",
+	"actions/render.go",
 	"fixtures/sample.toml",
 	"grifts/init.go",
+	"locales/embed.go",
 	".codeclimate.yml",
 	".env",
 	"inflections.json",
+	"main.go",
 	"README.md",
 }

@@ -1,10 +1,10 @@
-package models_test
+package models
 
 import (
+	"os"
 	"testing"
 
-	"github.com/gobuffalo/packr/v2"
-	"github.com/gobuffalo/suite"
+	"github.com/gobuffalo/suite/v4"
 )
 
 type ModelSuite struct {
@@ -12,7 +12,7 @@ type ModelSuite struct {
 }
 
 func Test_ModelSuite(t *testing.T) {
-	model, err := suite.NewModelWithFixtures(packr.New("../fixtures", "../fixtures"))
+	model, err := suite.NewModelWithFixtures(os.DirFS("../fixtures"))
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -3,10 +3,10 @@ package build
 import (
 	"fmt"
 	"html/template"
+	"io/fs"
 	"strings"
 
 	"github.com/gobuffalo/genny/v2"
-	"github.com/gobuffalo/packd"
 	"github.com/gobuffalo/plush/v4"
 	"github.com/markbates/safe"
 )
@@ -19,7 +19,7 @@ type TemplateValidator func(f genny.File) error
 // ValidateTemplates returns a genny.RunFn that will walk the
 // given box and run each of the files found through each of the
 // template validators
-func ValidateTemplates(walk packd.Walker, tvs []TemplateValidator) genny.RunFn {
+func ValidateTemplates(fsys fs.FS, tvs []TemplateValidator) genny.RunFn {
 	if len(tvs) == 0 {
 		return func(r *genny.Runner) error {
 			return nil
@@ -27,16 +27,20 @@ func ValidateTemplates(walk packd.Walker, tvs []TemplateValidator) genny.RunFn {
 	}
 	return func(r *genny.Runner) error {
 		var errs []string
-		err := packd.SkipWalker(walk, packd.CommonSkipPrefixes, func(path string, file packd.File) error {
-			info, err := file.FileInfo()
+		err := fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
-			if info.IsDir() {
+
+			if d.IsDir() {
 				return nil
 			}
 
-			f := genny.NewFile(path, file)
+			b, err := fsys.Open(path)
+			if err != nil {
+				return err
+			}
+			f := genny.NewFile(path, b)
 			for _, tv := range tvs {
 				err := safe.Run(func() {
 					if err := tv(f); err != nil {

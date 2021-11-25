@@ -1,14 +1,15 @@
 package core
 
 import (
+	"errors"
+
 	"github.com/gobuffalo/cli/internal/genny/ci"
 	"github.com/gobuffalo/cli/internal/genny/docker"
 	"github.com/gobuffalo/cli/internal/genny/plugins/install"
 	"github.com/gobuffalo/cli/internal/genny/refresh"
 
-	pop "github.com/gobuffalo/buffalo-pop/v2/genny/newapp"
+	pop "github.com/gobuffalo/buffalo-pop/v3/genny/newapp"
 	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
-	"github.com/gobuffalo/cli/internal/takeon/github.com/markbates/errx"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"
 )
@@ -27,7 +28,7 @@ func New(opts *Options) (*genny.Group, error) {
 	app := opts.App
 
 	plugs, err := plugdeps.List(app)
-	if err != nil && (errx.Unwrap(err) != plugdeps.ErrMissingConfig) {
+	if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
 		return nil, err
 	}
 
@@ -51,7 +52,7 @@ func New(opts *Options) (*genny.Group, error) {
 		// add the plugin
 		plugs.Add(plugdeps.Plugin{
 			Binary: "buffalo-pop",
-			GoGet:  "github.com/gobuffalo/buffalo-pop/v2@latest",
+			GoGet:  "github.com/gobuffalo/buffalo-pop/v3@latest",
 		})
 	}
 

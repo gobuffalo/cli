@@ -4,13 +4,16 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"os/user"
 	"path/filepath"
 	"strings"
 
+	pop "github.com/gobuffalo/buffalo-pop/v3/genny/newapp"
 	"github.com/gobuffalo/cli/internal/genny/assets/standard"
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
 	"github.com/gobuffalo/cli/internal/genny/ci"
@@ -20,16 +23,12 @@ import (
 	"github.com/gobuffalo/cli/internal/genny/newapp/web"
 	"github.com/gobuffalo/cli/internal/genny/refresh"
 	"github.com/gobuffalo/cli/internal/genny/vcs"
-
-	pop "github.com/gobuffalo/buffalo-pop/v2/genny/newapp"
-	"github.com/gobuffalo/cli/internal/takeon/github.com/markbates/errx"
 	"github.com/gobuffalo/envy"
 	fname "github.com/gobuffalo/flect/name"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/genny/v2/gogen"
 	"github.com/gobuffalo/logger"
 	"github.com/gobuffalo/meta"
-	"github.com/gobuffalo/packr/v2/plog"
 	"github.com/gobuffalo/plush/v4"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -149,9 +148,13 @@ var newCmd = &cobra.Command{
 		// Restore default values after usage (useful for testing)
 		defer func() {
 			cmd.Flags().Visit(func(f *pflag.Flag) {
-				f.Value.Set(f.DefValue)
+				if err := f.Value.Set(f.DefValue); err != nil {
+					log.Fatalf("failed to restore default value: %s", err)
+				}
 			})
-			viper.BindPFlags(cmd.Flags())
+			if err := viper.BindPFlags(cmd.Flags()); err != nil {
+				log.Fatalf("failed to bind flags: %s", err)
+			}
 		}()
 
 		nopts, err := parseNewOptions(args)
@@ -167,9 +170,6 @@ var newCmd = &cobra.Command{
 		run := genny.WetRunner(ctx)
 		lg := logger.New(logger.DebugLevel)
 		run.Logger = lg
-		if nopts.Verbose {
-			plog.Logger = lg
-		}
 
 		if nopts.DryRun {
 			run = genny.DryRunner(ctx)
@@ -197,7 +197,7 @@ var newCmd = &cobra.Command{
 			gg, err = web.New(wo)
 		}
 		if err != nil {
-			if errx.Unwrap(err) == core.ErrNotInGoPath {
+			if errors.Is(err, core.ErrNotInGoPath) {
 				return notInGoPath(app)
 			}
 			return err
@@ -322,20 +322,20 @@ func initConfig(skipConfig *bool, cfgFile *string) func() {
 			return
 		}
 
-		var err error
-		if *cfgFile != "" { // enable ability to specify config file via flag
+		// enable ability to specify config file via flag
+		if *cfgFile != "" {
 			viper.SetConfigFile(*cfgFile)
 			// Will error only if the --config flag is used
-			if err = viper.ReadInConfig(); err != nil {
+			if err := viper.ReadInConfig(); err != nil {
 				configError = err
 			}
-		} else {
-			viper.SetConfigName(".buffalo") // name of config file (without extension)
-			viper.AddConfigPath("$HOME")    // adding home directory as first search path
-			viper.AutomaticEnv()            // read in environment variables that match
-			viper.ReadInConfig()
+			return
 		}
 
+		viper.SetConfigName(".buffalo") // name of config file (without extension)
+		viper.AddConfigPath("$HOME")    // adding home directory as first search path
+		viper.AutomaticEnv()            // read in environment variables that match
+		viper.ReadInConfig()
 	}
 }
 

@@ -26,12 +26,10 @@ func Test_Webpack_New(t *testing.T) {
 	r.NoError(err)
 
 	run := runner()
-
-	run.With(g)
+	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
 	res := run.Results()
-
 	r.Len(res.Commands, 1)
 	c := res.Commands[0]
 	r.Equal("npm install --no-progress --save", strings.Join(c.Args, " "))
@@ -45,7 +43,7 @@ func Test_Webpack_New(t *testing.T) {
 		"assets/js/application.js",
 		"package.json",
 		"postcss.config.js",
-		"public/assets/.keep",
+		"public/assets/keep",
 		"templates/application.plush.html",
 		"webpack.config.js",
 	}
@@ -69,7 +67,7 @@ func Test_Webpack_New_WithYarn(t *testing.T) {
 	r.NoError(err)
 
 	run := runner()
-	run.With(g)
+	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
 	res := run.Results()

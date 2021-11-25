@@ -1,11 +1,11 @@
 package plugdeps
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/gobuffalo/cli/internal/takeon/github.com/markbates/errx"
 	"github.com/gobuffalo/meta"
 	"github.com/stretchr/testify/require"
 )
@@ -37,7 +37,7 @@ func Test_List_Off(t *testing.T) {
 	app := meta.App{}
 	plugs, err := List(app)
 	r.Error(err)
-	r.Equal(errx.Unwrap(err), ErrMissingConfig)
+	r.True(errors.Is(err, ErrMissingConfig))
 	r.Len(plugs.List(), 0)
 }
 
@@ -50,7 +50,8 @@ func Test_List_On(t *testing.T) {
 	r.NoError(os.MkdirAll(filepath.Dir(p), 0755))
 	f, err := os.Create(p)
 	r.NoError(err)
-	f.WriteString(eToml)
+	_, err = f.WriteString(eToml)
+	r.NoError(err)
 	r.NoError(f.Close())
 
 	plugs, err := List(app)
@@ -73,5 +74,5 @@ const eToml = `[[plugin]]
 
 [[plugin]]
   binary = "buffalo-pop"
-  go_get = "github.com/gobuffalo/buffalo-pop/v2@latest"
+  go_get = "github.com/gobuffalo/buffalo-pop/v3@latest"
 `

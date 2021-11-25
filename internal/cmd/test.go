@@ -11,9 +11,8 @@ import (
 
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/meta"
+	"github.com/gobuffalo/pop/v6"
 	"github.com/sirupsen/logrus"
-
-	"github.com/gobuffalo/pop/v5"
 	"github.com/spf13/cobra"
 )
 
@@ -38,7 +37,9 @@ var testCmd = &cobra.Command{
 			}
 
 			// drop the test db:
-			test.Dialect.DropDB()
+			if err := test.Dialect.DropDB(); err != nil {
+				return err
+			}
 
 			// create the test db:
 			err = test.Dialect.CreateDB()

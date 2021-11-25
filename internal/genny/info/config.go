@@ -1,28 +1,30 @@
 package info
 
 import (
+	"io/fs"
 	"path"
 
 	"github.com/gobuffalo/genny/v2"
-	"github.com/gobuffalo/packd"
-	"github.com/gobuffalo/packr/v2"
 )
 
-// ListWalker allows for a box that supports listing and walking
-type ListWalker interface {
-	packd.Lister
-	packd.Walkable
-}
-
-func configs(opts *Options, box ListWalker) genny.RunFn {
+func configs(opts *Options, fsys fs.FS) genny.RunFn {
 	return func(r *genny.Runner) error {
-		if len(box.List()) == 0 {
-			return nil
-		}
-		return box.Walk(func(p string, f packr.File) error {
+		return fs.WalkDir(fsys, ".", func(p string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+
+			if d.IsDir() {
+				return nil
+			}
+
+			b, err := fs.ReadFile(fsys, p)
+			if err != nil {
+				return err
+			}
 			opts.Out.Header("Buffalo: " + path.Join("config", p))
-			opts.Out.WriteString(f.String() + "\n")
-			return nil
+			_, err = opts.Out.Write(append(b, '\n'))
+			return err
 		})
 	}
 }

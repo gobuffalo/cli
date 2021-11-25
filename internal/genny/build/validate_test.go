@@ -1,21 +1,12 @@
 package build
 
 import (
+	"os"
 	"testing"
 
 	"github.com/gobuffalo/genny/v2/gentest"
-	"github.com/gobuffalo/packd"
-	"github.com/gobuffalo/packr/v2"
 	"github.com/stretchr/testify/require"
 )
-
-var goodTemplates = func() packd.Box {
-	box := packd.NewMemoryBox()
-	box.AddString("_ignored/c.html", "c")
-	box.AddString("a.html", "a")
-	box.AddString("b.md", "b")
-	return box
-}()
 
 func Test_TemplateValidator_Good(t *testing.T) {
 	r := require.New(t)
@@ -23,19 +14,17 @@ func Test_TemplateValidator_Good(t *testing.T) {
 	tvs := []TemplateValidator{PlushValidator}
 
 	run := gentest.NewRunner()
-	run.WithRun(ValidateTemplates(goodTemplates, tvs))
-
+	run.WithRun(ValidateTemplates(os.DirFS("../build/_fixtures/template_validator/good"), tvs))
 	r.NoError(run.Run())
 }
 
 func Test_TemplateValidator_Bad(t *testing.T) {
 	r := require.New(t)
 
-	box := packr.New("../build/_fixtures/template_validator/bad", "../build/_fixtures/template_validator/bad")
 	tvs := []TemplateValidator{PlushValidator}
 
 	run := gentest.NewRunner()
-	run.WithRun(ValidateTemplates(box, tvs))
+	run.WithRun(ValidateTemplates(os.DirFS("../build/_fixtures/template_validator/bad"), tvs))
 
 	err := run.Run()
 	r.Error(err)
