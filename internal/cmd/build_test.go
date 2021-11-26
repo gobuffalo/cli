@@ -45,7 +45,7 @@ func TestBuild(t *testing.T) {
 			dir := os.TempDir()
 			os.Chdir(filepath.Join(dir))
 
-			out, err := testhelpers.RunBuffaloCMD(t, v.newargs...)
+			out, err := testhelpers.RunBuffaloCMD(t, v.newargs)
 			tx.Log(out)
 			r.NoError(err)
 
