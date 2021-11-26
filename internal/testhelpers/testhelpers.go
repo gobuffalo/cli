@@ -66,7 +66,7 @@ func inCLISource() (bool, error) {
 
 // RunBuffaloCMD is useful for integration tests where CMD would want
 // to run a Buffalo command from the fully compiled binary.
-func RunBuffaloCMD(t *testing.T, args []string) (string, error) {
+func RunBuffaloCMD(t *testing.T, args ...string) (string, error) {
 	t.Helper()
 
 	output := bytes.NewBufferString("")

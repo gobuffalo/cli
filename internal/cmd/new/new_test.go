@@ -75,7 +75,7 @@ func TestNew(t *testing.T) {
 	for _, v := range tcases {
 		t.Run(v.name, func(t *testing.T) {
 			r := require.New(t)
-			out, err := testhelpers.RunBuffaloCMD(t, v.args)
+			out, err := testhelpers.RunBuffaloCMD(t, v.args...)
 			v.check(r, out, err)
 		})
 	}
