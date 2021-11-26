@@ -1,84 +1,58 @@
-//go:build integration_test
-// +build integration_test
+//go:build integration
+// +build integration
 
-package integration
+package cmd
 
-// import (
-// 	"os"
-// 	"path/filepath"
-// 	"testing"
+import (
+	"os"
+	"path/filepath"
+	"testing"
 
-// 	"github.com/stretchr/testify/require"
-// )
+	"github.com/gobuffalo/cli/internal/testhelpers"
+	"github.com/stretchr/testify/require"
+)
 
-// Test_New_Build_Nominal creates a new nominal
-// app and then builds it
-// func Test_New_Build_Nominal(t *testing.T) {
-// 	r := require.New(t)
-// 	args := []string{
-// 		"new",
-// 		"build_nominal",
-// 		"--skip-pop",
-// 		"--skip-webpack",
-// 		"--vcs=none",
-// 	}
-// 	err := call(args, func(tdir string) {
-// 		ad := filepath.Join(tdir, "build_nominal")
-// 		r.DirExists(ad)
-// 		os.Chdir(ad)
+func TestBuild(t *testing.T) {
+	r := require.New(t)
+	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 
-// 		args = []string{"build"}
-// 		err := exec(args)
-// 		r.NoError(err)
-// 	})
-// 	r.NoError(err)
+	tcases := []struct {
+		name    string
+		newargs []string
+		appname string
+	}{
+		{
+			name:    "nominal",
+			newargs: []string{"new", "nominal", "-f", "--skip-webpack", "--vcs", "none"},
+			appname: "nominal",
+		},
+		{
+			name:    "api",
+			newargs: []string{"new", "api", "-f", "--api", "--vcs", "none"},
+			appname: "api",
+		},
+		{
+			name:    "sqlite",
+			newargs: []string{"new", "sqlite", "-f", "--skip-webpack", "--db-type=sqlite3", "--vcs", "none"},
+			appname: "sqlite",
+		},
+	}
 
-// }
+	for _, v := range tcases {
+		t.Run(v.name, func(tx *testing.T) {
+			r := require.New(tx)
 
-// // Test_New_Build_Api creates a new API
-// // app and then builds it
-// func Test_New_Build_Api(t *testing.T) {
-// 	r := require.New(t)
-// 	args := []string{
-// 		"new",
-// 		"build_api",
-// 		"--skip-pop",
-// 		"--api",
-// 		"--vcs=none",
-// 	}
-// 	err := call(args, func(tdir string) {
-// 		ad := filepath.Join(tdir, "build_api")
-// 		r.DirExists(ad)
-// 		os.Chdir(ad)
+			dir := os.TempDir()
+			os.Chdir(filepath.Join(dir))
 
-// 		args = []string{"build"}
-// 		err := exec(args)
-// 		r.NoError(err)
-// 	})
-// 	r.NoError(err)
+			out, err := testhelpers.RunBuffaloCMD(t, v.newargs)
+			tx.Log(out)
+			r.NoError(err)
 
-// }
-// func Test_New_Build_Sqlite(t *testing.T) {
-// 	r := require.New(t)
-
-// 	args := []string{
-// 		"new",
-// 		"build_sqlite",
-// 		"--db-type=sqlite3",
-// 		"--skip-webpack",
-// 		"--vcs=none",
-// 	}
-
-// 	err := call(args, func(tdir string) {
-// 		ad := filepath.Join(tdir, "build_sqlite")
-// 		r.DirExists(ad)
-// 		r.FileExists(filepath.Join(ad, "database.yml"))
-// 		os.Chdir(ad)
-
-// 		args = []string{"build"}
-// 		err := exec(args)
-// 		r.NoError(err)
-// 	})
-// 	r.NoError(err)
-
-// }
+			os.Chdir(filepath.Join(dir, v.appname))
+			out, err = testhelpers.RunBuffaloCMD(t, []string{"build"})
+			tx.Log(out)
+			r.NoError(err)
+		})
+	}
+}

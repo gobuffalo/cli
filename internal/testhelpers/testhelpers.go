@@ -27,7 +27,7 @@ func EnsureBuffaloCMD(t *testing.T) error {
 		return fmt.Errorf("not in the cli source folder")
 	}
 
-	ex := exec.Command("go", "install", "github.com/gobuffalo/cli/cmd/buffalo")
+	ex := exec.Command("go", "install", "-tags", "sqlite", "github.com/gobuffalo/cli/cmd/buffalo")
 	return ex.Run()
 }
 
