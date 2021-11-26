@@ -18,7 +18,12 @@ func EnsureBuffaloCMD(t *testing.T) error {
 	t.Helper()
 
 	// Ensure we're on the
-	if !inCLISource() {
+	ok, err := inCLISource()
+	if err != nil {
+		return err
+	}
+
+	if !ok {
 		return fmt.Errorf("not in the cli source folder")
 	}
 
@@ -28,10 +33,10 @@ func EnsureBuffaloCMD(t *testing.T) error {
 
 // Ensures that the current directory is the CLI source folder by
 // checking its parent go.mod file says its github.com/gobuffalo/cli module.
-func inCLISource() bool {
+func inCLISource() (bool, error) {
 	wd, err := os.Getwd()
 	if err != nil {
-		return false
+		return false, err
 	}
 
 	mod := ""
@@ -48,14 +53,15 @@ func inCLISource() bool {
 
 		f, err := modfile.Parse("go.mod", dat, nil)
 		if err != nil {
-			panic(err)
+			return false, err
 		}
 
 		mod = f.Module.Mod.Path
 		break
 	}
 
-	return mod == "github.com/gobuffalo/cli"
+	result := mod == "github.com/gobuffalo/cli"
+	return result, nil
 }
 
 // RunBuffaloCMD is useful for integration tests where CMD would want
