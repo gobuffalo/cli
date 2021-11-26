@@ -26,6 +26,8 @@ func EnsureBuffaloCMD(t *testing.T) error {
 	return ex.Run()
 }
 
+// Ensures that the current directory is the CLI source folder by
+// checking its parent go.mod file says its github.com/gobuffalo/cli module.
 func inCLISource() bool {
 	wd, err := os.Getwd()
 	if err != nil {
