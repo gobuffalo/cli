@@ -28,5 +28,8 @@ jobs:
 
       - name: Test
         run: |
-          go mod tidy -v
           go test -tags "sqlite" -cover  ./...
+      
+      - name: Integration tests
+        run: |
+          go test -tags "sqlite,integration" -cover  ./...
