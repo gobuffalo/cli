@@ -24,38 +24,18 @@ func New(opts *Options) (*genny.Generator, error) {
 		"opts": opts,
 	}
 
-	common, err := fs.Sub(templates, "templates/common")
+	sub, err := fs.Sub(templates, "templates")
 	if err != nil {
 		return g, err
 	}
 
-	if err := g.FS(common); err != nil {
+	if err := g.FS(sub); err != nil {
 		return g, err
-	}
-
-	switch opts.Style {
-	case "multi":
-		multi, err := fs.Sub(templates, "templates/multi")
-		if err != nil {
-			return g, err
-		}
-
-		if err := g.FS(multi); err != nil {
-			return g, err
-		}
-	case "standard":
-		standard, err := fs.Sub(templates, "templates/standard")
-		if err != nil {
-			return g, err
-		}
-
-		if err := g.FS(standard); err != nil {
-			return g, err
-		}
 	}
 
 	helpers := template.FuncMap{}
 	t := gogen.TemplateTransformer(data, helpers)
+
 	g.Transformer(t)
 	g.Transformer(genny.Dot())
 
@@ -68,6 +48,7 @@ func New(opts *Options) (*genny.Generator, error) {
 		}
 		return genny.NewFile(name, f), nil
 	}))
+
 	g.Transformer(genny.Replace("/dot-", "/."))
 
 	return g, nil
