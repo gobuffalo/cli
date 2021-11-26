@@ -50,7 +50,7 @@ func TestBuild(t *testing.T) {
 			r.NoError(err)
 
 			os.Chdir(filepath.Join(dir, v.appname))
-			out, err = testhelpers.RunBuffaloCMD(t, "build")
+			out, err = testhelpers.RunBuffaloCMD(t, []string{"build"})
 			tx.Log(out)
 			r.NoError(err)
 		})
