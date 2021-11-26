@@ -37,25 +37,25 @@ func TestNew(t *testing.T) {
 		},
 		{
 			name: "skip docker",
-			args: []string{"new", "app", "--api", "--skip-docker", "-f", "--vcs", "none"},
+			args: []string{"new", "wdocker", "--api", "--skip-docker", "-f", "--vcs", "none"},
 			check: func(r *require.Assertions, out string, err error) {
 				r.NoError(err)
-				r.NoFileExists(filepath.Join("app", "Dockerfile"))
+				r.NoFileExists(filepath.Join("wdocker", "Dockerfile"))
 			},
 		},
 
 		{
 			name: "docker there",
-			args: []string{"new", "app", "--api", "-f", "--vcs", "none"},
+			args: []string{"new", "nodocker", "--api", "-f", "--vcs", "none"},
 			check: func(r *require.Assertions, out string, err error) {
 				r.NoError(err)
-				r.FileExists(filepath.Join("app", "Dockerfile"))
+				r.FileExists(filepath.Join("nodocker", "Dockerfile"))
 			},
 		},
 
 		{
 			name: "invalid db type",
-			args: []string{"new", "app", "--api", "--db-type", "a"},
+			args: []string{"new", "api", "--api", "-f", "--db-type", "a"},
 			check: func(r *require.Assertions, out string, err error) {
 				r.Error(err)
 				r.Contains(out, `unknown dialect`)
@@ -64,7 +64,7 @@ func TestNew(t *testing.T) {
 
 		{
 			name: "forbidden application name",
-			args: []string{"new", "buffalo", "--api"},
+			args: []string{"new", "buffalo", "-f", "--api"},
 			check: func(r *require.Assertions, out string, err error) {
 				r.Error(err)
 				r.Contains(out, `name buffalo is not allowed, try a different application name`)
