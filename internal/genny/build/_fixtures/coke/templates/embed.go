@@ -5,7 +5,7 @@ import (
 	"io/fs"
 )
 
-//go:embed * _flash.plush.html
+//go:embed * */*
 var files embed.FS
 
 func FS() fs.FS {
