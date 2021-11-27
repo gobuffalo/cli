@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
-
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/genny/v2"
 )
@@ -49,7 +48,6 @@ func assets(opts *Options) (*genny.Generator, error) {
 				return err
 			}
 			return nil
-
 		})
 	}
 
