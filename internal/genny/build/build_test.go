@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gobuffalo/cli/internal/genny/newapp/web"
 	"github.com/gobuffalo/cli/internal/genny/testrunner"
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/meta"
@@ -23,7 +24,7 @@ var eq = func(r *require.Assertions, s string, c *exec.Cmd) {
 func Test_New(t *testing.T) {
 	r := require.New(t)
 
-	run, err := testrunner.WebApp()
+	run, err := testrunner.WebApp(&web.Options{})
 	r.NoError(err)
 
 	opts := &Options{
@@ -55,7 +56,7 @@ func Test_NewWithoutBuildDeps(t *testing.T) {
 	envy.Temp(func() {
 		r := require.New(t)
 
-		run, err := testrunner.WebApp()
+		run, err := testrunner.WebApp(&web.Options{})
 		r.NoError(err)
 
 		opts := &Options{

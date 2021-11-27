@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gobuffalo/cli/internal/genny/newapp/web"
 	"github.com/gobuffalo/cli/internal/genny/testrunner"
 	"github.com/gobuffalo/envy"
 	"github.com/stretchr/testify/require"
@@ -24,7 +25,7 @@ func Test_assets(t *testing.T) {
 		"build": "webpack -p --progress",
 	}
 
-	run, err := testrunner.WebApp()
+	run, err := testrunner.WebApp(&web.Options{})
 	r.NoError(err)
 	r.NoError(run.WithNew(assets(opts)))
 
@@ -55,7 +56,7 @@ func Test_assets_Archived(t *testing.T) {
 	}
 	r.NoError(opts.Validate())
 
-	run, err := testrunner.WebApp()
+	run, err := testrunner.WebApp(&web.Options{})
 	r.NoError(err)
 	opts.Root = run.Root
 	r.NoError(run.WithNew(assets(opts)))

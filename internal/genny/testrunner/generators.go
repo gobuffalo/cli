@@ -7,16 +7,16 @@ import (
 	"github.com/gobuffalo/genny/v2/gentest"
 )
 
-func WebApp() (*genny.Runner, error) {
-	gg, err := web.New(&web.Options{})
+func WebApp(opts *web.Options) (*genny.Runner, error) {
+	gg, err := web.New(opts)
 	if err != nil {
 		return nil, err
 	}
 	return newApp(gg)
 }
 
-func ApiApp() (*genny.Runner, error) {
-	gg, err := api.New(&api.Options{})
+func ApiApp(opts *api.Options) (*genny.Runner, error) {
+	gg, err := api.New(opts)
 	if err != nil {
 		return nil, err
 	}

@@ -3,6 +3,7 @@ package build
 import (
 	"testing"
 
+	"github.com/gobuffalo/cli/internal/genny/newapp/web"
 	"github.com/gobuffalo/cli/internal/genny/testrunner"
 	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/stretchr/testify/require"
@@ -11,7 +12,7 @@ import (
 func Test_transformMain(t *testing.T) {
 	r := require.New(t)
 
-	ref, err := testrunner.WebApp()
+	ref, err := testrunner.WebApp(&web.Options{})
 	r.NoError(err)
 	main, err := ref.Disk.Find("main.go")
 	r.NoError(err)

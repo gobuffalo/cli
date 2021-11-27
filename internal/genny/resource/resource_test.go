@@ -10,6 +10,9 @@ import (
 	"testing"
 
 	"github.com/gobuffalo/attrs"
+	"github.com/gobuffalo/cli/internal/genny/newapp/api"
+	"github.com/gobuffalo/cli/internal/genny/newapp/core"
+	"github.com/gobuffalo/cli/internal/genny/newapp/web"
 	"github.com/gobuffalo/cli/internal/genny/testrunner"
 	"github.com/gobuffalo/flect/name"
 	"github.com/gobuffalo/meta"
@@ -37,13 +40,17 @@ func Test_New(t *testing.T) {
 
 	for _, tt := range table {
 		t.Run(tt.Name, func(st *testing.T) {
-			tt.Options.App = app
 			r := require.New(st)
+
+			opts := &web.Options{}
+			opts.Options = &core.Options{App: app}
+			run, err := testrunner.WebApp(opts)
+			r.NoError(err)
+
+			tt.Options.App = app
 			g, err := New(&tt.Options)
 			r.NoError(err)
 
-			run, err := testrunner.WebApp()
-			r.NoError(err)
 			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
@@ -84,6 +91,7 @@ func Test_New(t *testing.T) {
 					s = strings.Replace(s, "\r", "", -1)
 					return s
 				}
+
 				r.Equal(clean(string(s)), clean(f.String()))
 				return nil
 			})
@@ -107,14 +115,18 @@ func Test_New_SkipTemplates(t *testing.T) {
 
 	for _, tt := range table {
 		t.Run(tt.Name, func(st *testing.T) {
+			r := require.New(st)
+
+			opts := &web.Options{}
+			opts.Options = &core.Options{App: app}
+			run, err := testrunner.WebApp(opts)
+			r.NoError(err)
+
 			tt.Options.App = app
 			tt.Options.SkipTemplates = true
-			r := require.New(st)
 			g, err := New(&tt.Options)
 			r.NoError(err)
 
-			run, err := testrunner.WebApp()
-			r.NoError(err)
 			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
@@ -148,13 +160,17 @@ func Test_New_API(t *testing.T) {
 
 	for _, tt := range table {
 		t.Run(tt.Name, func(st *testing.T) {
-			tt.Options.App = app
 			r := require.New(st)
+
+			opts := &api.Options{}
+			opts.Options = &core.Options{App: app}
+			run, err := testrunner.ApiApp(opts)
+			r.NoError(err)
+
+			tt.Options.App = app
 			g, err := New(&tt.Options)
 			r.NoError(err)
 
-			run, err := testrunner.WebApp()
-			r.NoError(err)
 			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
@@ -169,7 +185,7 @@ func Test_New_API(t *testing.T) {
 				r.Error(err)
 			}
 
-			r.Len(res.Files, 24)
+			r.Len(res.Files, 18)
 		})
 	}
 }
@@ -177,22 +193,23 @@ func Test_New_API(t *testing.T) {
 func Test_New_UseModel(t *testing.T) {
 	r := require.New(t)
 
-	ats, err := attrs.ParseArgs("name", "desc:nulls.Text")
-	r.NoError(err)
-
 	app := meta.New(".")
 	app.PackageRoot("github.com/markbates/coke")
 
-	opts := &Options{
+	opts := &web.Options{}
+	opts.Options = &core.Options{App: app}
+	run, err := testrunner.WebApp(opts)
+	r.NoError(err)
+
+	ats, err := attrs.ParseArgs("name", "desc:nulls.Text")
+	r.NoError(err)
+
+	g, err := New(&Options{
 		App:   app,
 		Name:  "Widget",
 		Model: "User",
 		Attrs: ats,
-	}
-	g, err := New(opts)
-	r.NoError(err)
-
-	run, err := testrunner.WebApp()
+	})
 	r.NoError(err)
 	r.NoError(run.With(g))
 	r.NoError(run.Run())
@@ -222,16 +239,16 @@ func Test_New_SkipModel(t *testing.T) {
 	app := meta.New(".")
 	app.PackageRoot("github.com/markbates/coke")
 
-	opts := &Options{
+	opts := &web.Options{}
+	opts.Options = &core.Options{App: app}
+	run, err := testrunner.WebApp(opts)
+	r.NoError(err)
+
+	g, err := New(&Options{
 		App:       app,
 		Name:      "Widget",
 		SkipModel: true,
-	}
-
-	g, err := New(opts)
-	r.NoError(err)
-
-	run, err := testrunner.WebApp()
+	})
 	r.NoError(err)
 	r.NoError(run.With(g))
 	r.NoError(run.Run())
