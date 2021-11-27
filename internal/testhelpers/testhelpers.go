@@ -1,9 +1,7 @@
 package testhelpers
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -17,7 +15,6 @@ import (
 func EnsureBuffaloCMD(t *testing.T) error {
 	t.Helper()
 
-	// Ensure we're on the
 	ok, err := inCLISource()
 	if err != nil {
 		return err
@@ -31,7 +28,7 @@ func EnsureBuffaloCMD(t *testing.T) error {
 	return ex.Run()
 }
 
-// Ensures that the current directory is the CLI source folder by
+// incCLISource ensures that the current directory is the CLI source folder by
 // checking its parent go.mod file says its github.com/gobuffalo/cli module.
 func inCLISource() (bool, error) {
 	wd, err := os.Getwd()
@@ -41,7 +38,7 @@ func inCLISource() (bool, error) {
 
 	mod := ""
 	for {
-		dat, err := ioutil.ReadFile(filepath.Join(wd, "go.mod"))
+		dat, err := os.ReadFile(filepath.Join(wd, "go.mod"))
 		if err != nil {
 			wd = filepath.Dir(wd)
 			if wd == "/" {
@@ -69,13 +66,8 @@ func inCLISource() (bool, error) {
 func RunBuffaloCMD(t *testing.T, args []string) (string, error) {
 	t.Helper()
 
-	output := bytes.NewBufferString("")
-
 	ex := exec.Command("buffalo")
-	ex.Stdout = output
-	ex.Stderr = output
 	ex.Args = append(ex.Args, args...)
-	err := ex.Run()
-
-	return output.String(), err
+	output, err := ex.CombinedOutput()
+	return string(output), err
 }
