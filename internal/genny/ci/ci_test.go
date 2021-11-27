@@ -3,11 +3,10 @@ package ci
 import (
 	"testing"
 
-	"gopkg.in/yaml.v2"
-
 	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/gobuffalo/meta"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/yaml.v2"
 )
 
 func Test_New(t *testing.T) {

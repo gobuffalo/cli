@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/flect"
-
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
