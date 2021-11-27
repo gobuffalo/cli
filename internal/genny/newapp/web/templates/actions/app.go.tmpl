@@ -4,13 +4,13 @@ import (
 	"net/http"
 
 	"{{ .opts.App.PackagePkg }}/locales"
-	{{ if .opts.App.WithPop }}
+	{{ if .opts.App.WithPop -}}
 	"{{ .opts.App.ModelsPkg }}"
 	{{ end -}}
 	"{{ .opts.App.PackagePkg }}/public"
 
 	"github.com/gobuffalo/buffalo"
-	{{ if .opts.App.WithPop }}
+	{{ if .opts.App.WithPop -}}
 	"github.com/gobuffalo/buffalo-pop/v3/pop/popmw"
 	{{ end -}}
 	"github.com/gobuffalo/envy"
