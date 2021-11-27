@@ -4,18 +4,19 @@ import (
 	"testing"
 
 	"github.com/gobuffalo/cli/internal/genny/testrunner"
+	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_transformMain(t *testing.T) {
 	r := require.New(t)
 
-	run, err := testrunner.WebApp()
-	r.NoError(err)
-
 	ref, err := testrunner.WebApp()
+	r.NoError(err)
 	main, err := ref.Disk.Find("main.go")
 	r.NoError(err)
+
+	run := gentest.NewRunner()
 	run.Disk.Add(main)
 
 	opts := &Options{}

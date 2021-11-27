@@ -52,8 +52,7 @@ func Test_New(t *testing.T) {
 
 			c := res.Commands[0]
 			r.Equal("buffalo-pop pop g model widget name desc:nulls.Text", strings.Join(c.Args, " "))
-
-			r.Len(res.Files, 9)
+			r.Len(res.Files, 30)
 
 			nn := name.New(tt.Options.Name).Pluralize().String()
 			actions := []string{"_form", "index", "show", "new", "edit"}
@@ -120,16 +119,15 @@ func Test_New_SkipTemplates(t *testing.T) {
 			r.NoError(run.Run())
 
 			res := run.Results()
-
+			
 			r.Len(res.Commands, 1)
-
 			for _, s := range []string{"_form", "edit", "index", "new", "show"} {
 				p := path.Join("templates", tt.Name, s+".html")
 				_, err = res.Find(p)
 				r.Error(err)
 			}
-
-			r.Len(res.Files, 3)
+			
+			r.Len(res.Files, 24)
 		})
 	}
 }
@@ -171,7 +169,7 @@ func Test_New_API(t *testing.T) {
 				r.Error(err)
 			}
 
-			r.Len(res.Files, 3)
+			r.Len(res.Files, 24)
 		})
 	}
 }
@@ -204,8 +202,7 @@ func Test_New_UseModel(t *testing.T) {
 
 	c := res.Commands[0]
 	r.Equal("buffalo-pop pop g model user name desc:nulls.Text", strings.Join(c.Args, " "))
-
-	r.Len(res.Files, 9)
+	r.Len(res.Files, 30)
 
 	for _, s := range []string{"_form", "edit", "index", "new", "show"} {
 		p := path.Join("templates", "widgets", s+".plush.html")
@@ -241,7 +238,7 @@ func Test_New_SkipModel(t *testing.T) {
 
 	res := run.Results()
 	r.Len(res.Commands, 0)
-	r.Len(res.Files, 9)
+	r.Len(res.Files, 30)
 
 	f, err := res.Find("actions/widgets.go")
 	r.NoError(err)
