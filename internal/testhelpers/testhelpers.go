@@ -58,13 +58,10 @@ func RunBuffaloCMD(t *testing.T, args []string) (string, error) {
 	return output.String(), err
 }
 
+// testingBinaryLocation returns the location of the testing binary which is
+// set to be the user home folder on a file named `buffalointegrationtests`.
 func testingBinaryLocation() (string, error) {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(homeDir, "buffalointegrationtests"), nil
+	return filepath.Join(os.TempDir(), "buffalointegrationtests"), nil
 }
 
 // Ensures that the current directory is the CLI source folder by

@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package testhelpers_test
 
 import (
@@ -11,11 +14,9 @@ import (
 
 func TestEnsureBuffaloCMD(t *testing.T) {
 	r := require.New(t)
+	path := filepath.Join(os.TempDir(), "buffalointegrationtests")
 
+	r.NoError(os.Remove(path))
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
-
-	homeDir, err := os.UserHomeDir()
-	r.NoError(err)
-
-	r.FileExists(filepath.Join(homeDir, "buffalointegrationtests"))
+	r.FileExists(path)
 }
