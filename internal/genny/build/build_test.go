@@ -1,31 +1,16 @@
 package build
 
 import (
-	"os"
 	"os/exec"
 	"runtime"
 	"strings"
 	"testing"
 
+	"github.com/gobuffalo/cli/internal/genny/testrunner"
 	"github.com/gobuffalo/envy"
-	"github.com/gobuffalo/genny/v2"
-	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/gobuffalo/meta"
 	"github.com/stretchr/testify/require"
 )
-
-// TODO: once `buffalo new` is converted to use genny
-// create an integration test that first generates a new application
-// and then tries to build using genny/build.
-
-var coke = os.DirFS("./_fixtures/coke")
-
-var cokeRunner = func() *genny.Runner {
-	run := gentest.NewRunner()
-	run.Disk.AddFS(coke)
-	run.Root = "./_fixtures/coke"
-	return run
-}
 
 var eq = func(r *require.Assertions, s string, c *exec.Cmd) {
 	if runtime.GOOS == "windows" {
@@ -38,7 +23,8 @@ var eq = func(r *require.Assertions, s string, c *exec.Cmd) {
 func Test_New(t *testing.T) {
 	r := require.New(t)
 
-	run := cokeRunner()
+	run, err := testrunner.WebApp()
+	r.NoError(err)
 
 	opts := &Options{
 		WithAssets:    true,
@@ -54,7 +40,11 @@ func Test_New(t *testing.T) {
 	res := run.Results()
 	r.Len(res.Files, 0)
 
-	cmds := []string{"go mod tidy", "go build -tags bar -o bin/foo", "go mod tidy"}
+	cmds := []string{
+		"go mod tidy",
+		"go build -tags bar -o bin/foo",
+		"go mod tidy",
+	}
 	r.Len(res.Commands, len(cmds))
 	for i, c := range res.Commands {
 		eq(r, cmds[i], c)
@@ -65,7 +55,8 @@ func Test_NewWithoutBuildDeps(t *testing.T) {
 	envy.Temp(func() {
 		r := require.New(t)
 
-		run := cokeRunner()
+		run, err := testrunner.WebApp()
+		r.NoError(err)
 
 		opts := &Options{
 			WithAssets:    false,

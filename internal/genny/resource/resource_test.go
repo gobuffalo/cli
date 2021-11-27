@@ -10,9 +10,8 @@ import (
 	"testing"
 
 	"github.com/gobuffalo/attrs"
+	"github.com/gobuffalo/cli/internal/genny/testrunner"
 	"github.com/gobuffalo/flect/name"
-	"github.com/gobuffalo/genny/v2"
-	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/gobuffalo/meta"
 	"github.com/stretchr/testify/require"
 )
@@ -20,29 +19,6 @@ import (
 type pass struct {
 	Name    string
 	Options Options
-}
-
-func runner(r *require.Assertions) *genny.Runner {
-	run := gentest.NewRunner()
-	fsys := os.DirFS("./_fixtures/coke")
-	err := fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() {
-			return nil
-		}
-
-		f, err := fsys.Open(path)
-		if err != nil {
-			return err
-		}
-		path = strings.TrimSuffix(path, ".tmpl")
-		run.Disk.Add(genny.NewFile(path, f))
-		return nil
-	})
-	r.NoError(err)
-	return run
 }
 
 func Test_New(t *testing.T) {
@@ -66,7 +42,8 @@ func Test_New(t *testing.T) {
 			g, err := New(&tt.Options)
 			r.NoError(err)
 
-			run := runner(r)
+			run, err := testrunner.WebApp()
+			r.NoError(err)
 			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
@@ -137,7 +114,8 @@ func Test_New_SkipTemplates(t *testing.T) {
 			g, err := New(&tt.Options)
 			r.NoError(err)
 
-			run := runner(r)
+			run, err := testrunner.WebApp()
+			r.NoError(err)
 			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
@@ -177,7 +155,8 @@ func Test_New_API(t *testing.T) {
 			g, err := New(&tt.Options)
 			r.NoError(err)
 
-			run := runner(r)
+			run, err := testrunner.WebApp()
+			r.NoError(err)
 			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
@@ -215,7 +194,8 @@ func Test_New_UseModel(t *testing.T) {
 	g, err := New(opts)
 	r.NoError(err)
 
-	run := runner(r)
+	run, err := testrunner.WebApp()
+	r.NoError(err)
 	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
@@ -254,7 +234,8 @@ func Test_New_SkipModel(t *testing.T) {
 	g, err := New(opts)
 	r.NoError(err)
 
-	run := runner(r)
+	run, err := testrunner.WebApp()
+	r.NoError(err)
 	r.NoError(run.With(g))
 	r.NoError(run.Run())
 

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gobuffalo/cli/internal/genny/testrunner"
 	"github.com/gobuffalo/envy"
 	"github.com/stretchr/testify/require"
 )
@@ -23,7 +24,8 @@ func Test_assets(t *testing.T) {
 		"build": "webpack -p --progress",
 	}
 
-	run := cokeRunner()
+	run, err := testrunner.WebApp()
+	r.NoError(err)
 	r.NoError(run.WithNew(assets(opts)))
 
 	r.NoError(envy.MustSet("NODE_ENV", ""))
@@ -53,7 +55,8 @@ func Test_assets_Archived(t *testing.T) {
 	}
 	r.NoError(opts.Validate())
 
-	run := cokeRunner()
+	run, err := testrunner.WebApp()
+	r.NoError(err)
 	opts.Root = run.Root
 	r.NoError(run.WithNew(assets(opts)))
 	r.NoError(run.Run())
