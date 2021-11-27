@@ -27,7 +27,14 @@ func EnsureBuffaloCMD(t *testing.T) error {
 		return fmt.Errorf("not in the cli source folder")
 	}
 
-	ex := exec.Command("go", "install", "-tags", "sqlite", "github.com/gobuffalo/cli/cmd/buffalo")
+	binary, err := testingBinaryLocation()
+	if err != nil {
+		return err
+	}
+
+	ex := exec.Command("go", "build", "-tags", "sqlite", "-o", binary, "github.com/gobuffalo/cli/cmd/buffalo")
+	ex.Stdout = os.Stdout
+	ex.Stderr = os.Stderr
 	return ex.Run()
 }
 
@@ -69,13 +76,26 @@ func inCLISource() (bool, error) {
 func RunBuffaloCMD(t *testing.T, args []string) (string, error) {
 	t.Helper()
 
-	output := bytes.NewBufferString("")
+	binary, err := testingBinaryLocation()
+	if err != nil {
+		return "", err
+	}
 
-	ex := exec.Command("buffalo")
+	output := bytes.NewBufferString("")
+	ex := exec.Command(binary)
 	ex.Stdout = output
 	ex.Stderr = output
 	ex.Args = append(ex.Args, args...)
-	err := ex.Run()
+	err = ex.Run()
 
 	return output.String(), err
+}
+
+func testingBinaryLocation() (string, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(homeDir, "buffalointegrationtests"), nil
 }

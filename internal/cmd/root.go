@@ -36,41 +36,66 @@ var (
 	popInstallInstructions string
 )
 
-// rootCmd is the hook for all of the other commands in the buffalo binary.
-var rootCmd = &cobra.Command{
-	SilenceErrors: true,
-	Use:           "buffalo",
-	Short:         "Build Buffalo applications with ease",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		if err := plugins.Load(); err != nil {
-			return err
-		}
-
-		isFreeCommand := false
-		for _, freeCmd := range anywhereCommands {
-			if freeCmd != cmd.Name() {
-				continue
-			}
-
-			isFreeCommand = true
-			break
-		}
-
-		if isFreeCommand {
-			return nil
-		}
-
-		if !insideBuffaloProject() {
-			return fmt.Errorf("you need to be inside your buffalo project path to run this command")
-		}
-
-		return nil
-	},
-}
-
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	rootCmd := cmd()
+	err := rootCmd.Execute()
+	if err == nil {
+		return
+	}
+
+	if strings.Contains(err.Error(), dbNotFound) || strings.Contains(err.Error(), popNotFound) {
+		logrus.Errorf(popInstallInstructions)
+		os.Exit(-1)
+	}
+	logrus.Errorf("Error: %s", err)
+	if strings.Contains(err.Error(), dbNotFound) || strings.Contains(err.Error(), popNotFound) {
+		fmt.Println(popInstallInstructions)
+		os.Exit(-1)
+	}
+	os.Exit(-1)
+}
+
+// preRunCheck confirms that the command being called can be
+// invoked within the current folder. Some commands like generators
+// require to be called from the root of the project.
+func preRunCheck(cmd *cobra.Command, args []string) error {
+	if err := plugins.Load(); err != nil {
+		return err
+	}
+
+	isAnywhereCommand := false
+	for _, freeCmd := range anywhereCommands {
+		if freeCmd != cmd.Name() {
+			continue
+		}
+
+		isAnywhereCommand = true
+		break
+	}
+
+	if isAnywhereCommand {
+		return nil
+	}
+
+	// check if command is being run from inside a buffalo project
+	_, err := os.Stat(".buffalo.dev.yml")
+	if err != nil {
+		return fmt.Errorf("you need to be inside your buffalo project path to run this command")
+	}
+
+	return nil
+}
+
+func cmd() *cobra.Command {
+	rootCmd := &cobra.Command{
+		SilenceErrors:     true,
+		Use:               "buffalo",
+		Short:             "Build Buffalo applications with ease",
+		PersistentPreRunE: preRunCheck,
+	}
+
 	newCmd := new.Cmd()
 	setupCmd := setup.Cmd()
 	generateCmd := generate.Cmd()
@@ -109,27 +134,6 @@ func Execute() {
 	rootCmd.AddCommand(routesCmd)
 
 	decorate("root", rootCmd)
-	err := rootCmd.Execute()
-	if err == nil {
-		return
-	}
 
-	if strings.Contains(err.Error(), dbNotFound) || strings.Contains(err.Error(), popNotFound) {
-		logrus.Errorf(popInstallInstructions)
-		os.Exit(-1)
-	}
-	logrus.Errorf("Error: %s", err)
-	if strings.Contains(err.Error(), dbNotFound) || strings.Contains(err.Error(), popNotFound) {
-		fmt.Println(popInstallInstructions)
-		os.Exit(-1)
-	}
-	os.Exit(-1)
-}
-
-func insideBuffaloProject() bool {
-	if _, err := os.Stat(".buffalo.dev.yml"); err != nil {
-		return false
-	}
-
-	return true
+	return rootCmd
 }
