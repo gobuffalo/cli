@@ -4,11 +4,15 @@ import (
 	"net/http"
 
 	"{{ .opts.App.PackagePkg }}/locales"
-	{{ if .opts.App.WithPop }}"{{ .opts.App.ModelsPkg }}"{{ end -}}
+	{{ if .opts.App.WithPop -}}
+	"{{ .opts.App.ModelsPkg }}"
+	{{ end -}}
 	"{{ .opts.App.PackagePkg }}/public"
 
 	"github.com/gobuffalo/buffalo"
-	{{ if .opts.App.WithPop }}"github.com/gobuffalo/buffalo-pop/v3/pop/popmw"{{ end -}}
+	{{ if .opts.App.WithPop -}}
+	"github.com/gobuffalo/buffalo-pop/v3/pop/popmw"
+	{{ end -}}
 	"github.com/gobuffalo/envy"
 	csrf "github.com/gobuffalo/mw-csrf"
 	forcessl "github.com/gobuffalo/mw-forcessl"
