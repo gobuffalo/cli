@@ -119,14 +119,14 @@ func Test_New_SkipTemplates(t *testing.T) {
 			r.NoError(run.Run())
 
 			res := run.Results()
-			
+
 			r.Len(res.Commands, 1)
 			for _, s := range []string{"_form", "edit", "index", "new", "show"} {
 				p := path.Join("templates", tt.Name, s+".html")
 				_, err = res.Find(p)
 				r.Error(err)
 			}
-			
+
 			r.Len(res.Files, 24)
 		})
 	}
