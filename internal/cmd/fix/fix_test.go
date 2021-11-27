@@ -70,4 +70,6 @@ func TestFix(t *testing.T) {
 			r.NoError(err)
 		})
 	}
+
+	// TODO: is a successful build after fix enough for the test or should we check that the now fixed application actually matches a newly generated one?
 }
