@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"golang.org/x/mod/modfile"
@@ -63,7 +64,12 @@ func RunBuffaloCMD(t *testing.T, args []string) (string, error) {
 func testingBinaryLocation(t *testing.T) string {
 	t.Helper()
 
-	return filepath.Join(os.TempDir(), "buffalointegrationtests")
+	binary := "buffalointegrationtests"
+	if runtime.GOOS == "windows" {
+		binary += ".exe"
+	}
+
+	return filepath.Join(os.TempDir(), binary)
 }
 
 // Ensures that the current directory is the CLI source folder by

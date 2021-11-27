@@ -6,6 +6,7 @@ package testhelpers_test
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/gobuffalo/cli/internal/testhelpers"
@@ -15,10 +16,13 @@ import (
 func TestEnsureBuffaloCMD(t *testing.T) {
 	r := require.New(t)
 
-	path := filepath.Join(os.TempDir(), "buffalointegrationtests")
-	os.Remove(path)
+	binary := "buffalointegrationtests"
+	if runtime.GOOS == "windows" {
+		binary += ".exe"
+	}
 
-	t.Log("Original >>", path)
+	path := filepath.Join(os.TempDir(), binary)
+	os.Remove(path)
 
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 	r.FileExists(path)
