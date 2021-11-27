@@ -11,6 +11,15 @@ import (
 	"golang.org/x/mod/modfile"
 )
 
+// InstallBuffaloCMD installs a specific version of buffalo, it should be run before
+// calling RunBuffaloCMD to ensure this is the version of buffalo that is being tested.
+func InstallBuffaloCMD(t *testing.T, version string) error {
+	t.Helper()
+
+	ex := exec.Command("go", "install", "-tags", "sqlite", fmt.Sprintf("github.com/gobuffalo/cli/cmd/buffalo@%s", version))
+	return ex.Run()
+}
+
 // EnsureBuffaloCMD installs current version of buffalo, it should be run before
 // calling RunBuffaloCMD to ensure this is the version of buffalo that is being tested.
 func EnsureBuffaloCMD(t *testing.T) error {
