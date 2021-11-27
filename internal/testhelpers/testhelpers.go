@@ -27,12 +27,17 @@ func EnsureBuffaloCMD(t *testing.T) error {
 		return fmt.Errorf("not in the cli source folder")
 	}
 
-	binary, err := testingBinaryLocation()
-	if err != nil {
-		return err
-	}
+	ex := exec.Command("go")
+	ex.Args = append(
+		ex.Args,
+		"build",
+		"-tags",
+		"sqlite",
+		"-o",
+		testingBinaryLocation(t),
+		"github.com/gobuffalo/cli/cmd/buffalo",
+	)
 
-	ex := exec.Command("go", "build", "-tags", "sqlite", "-o", binary, "github.com/gobuffalo/cli/cmd/buffalo")
 	ex.Stdout = os.Stdout
 	ex.Stderr = os.Stderr
 	return ex.Run()
@@ -43,25 +48,22 @@ func EnsureBuffaloCMD(t *testing.T) error {
 func RunBuffaloCMD(t *testing.T, args []string) (string, error) {
 	t.Helper()
 
-	binary, err := testingBinaryLocation()
-	if err != nil {
-		return "", err
-	}
-
 	output := bytes.NewBufferString("")
-	ex := exec.Command(binary)
+	ex := exec.Command(testingBinaryLocation(t))
 	ex.Stdout = output
 	ex.Stderr = output
 	ex.Args = append(ex.Args, args...)
-	err = ex.Run()
+	err := ex.Run()
 
 	return output.String(), err
 }
 
 // testingBinaryLocation returns the location of the testing binary which is
 // set to be the user home folder on a file named `buffalointegrationtests`.
-func testingBinaryLocation() (string, error) {
-	return filepath.Join(os.TempDir(), "buffalointegrationtests"), nil
+func testingBinaryLocation(t *testing.T) string {
+	t.Helper()
+
+	return filepath.Join(os.TempDir(), "buffalointegrationtests")
 }
 
 // Ensures that the current directory is the CLI source folder by

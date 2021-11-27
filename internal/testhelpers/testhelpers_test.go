@@ -14,9 +14,12 @@ import (
 
 func TestEnsureBuffaloCMD(t *testing.T) {
 	r := require.New(t)
-	path := filepath.Join(os.TempDir(), "buffalointegrationtests")
 
-	r.NoError(os.Remove(path))
+	path := filepath.Join(os.TempDir(), "buffalointegrationtests")
+	os.Remove(path)
+
+	t.Log("Original >>", path)
+
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 	r.FileExists(path)
 }
