@@ -38,6 +38,35 @@ func EnsureBuffaloCMD(t *testing.T) error {
 	return ex.Run()
 }
 
+// RunBuffaloCMD is useful for integration tests where CMD would want
+// to run a Buffalo command from the fully compiled binary.
+func RunBuffaloCMD(t *testing.T, args []string) (string, error) {
+	t.Helper()
+
+	binary, err := testingBinaryLocation()
+	if err != nil {
+		return "", err
+	}
+
+	output := bytes.NewBufferString("")
+	ex := exec.Command(binary)
+	ex.Stdout = output
+	ex.Stderr = output
+	ex.Args = append(ex.Args, args...)
+	err = ex.Run()
+
+	return output.String(), err
+}
+
+func testingBinaryLocation() (string, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(homeDir, "buffalointegrationtests"), nil
+}
+
 // Ensures that the current directory is the CLI source folder by
 // checking its parent go.mod file says its github.com/gobuffalo/cli module.
 func inCLISource() (bool, error) {
@@ -69,33 +98,4 @@ func inCLISource() (bool, error) {
 
 	result := mod == "github.com/gobuffalo/cli"
 	return result, nil
-}
-
-// RunBuffaloCMD is useful for integration tests where CMD would want
-// to run a Buffalo command from the fully compiled binary.
-func RunBuffaloCMD(t *testing.T, args []string) (string, error) {
-	t.Helper()
-
-	binary, err := testingBinaryLocation()
-	if err != nil {
-		return "", err
-	}
-
-	output := bytes.NewBufferString("")
-	ex := exec.Command(binary)
-	ex.Stdout = output
-	ex.Stderr = output
-	ex.Args = append(ex.Args, args...)
-	err = ex.Run()
-
-	return output.String(), err
-}
-
-func testingBinaryLocation() (string, error) {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(homeDir, "buffalointegrationtests"), nil
 }

@@ -105,7 +105,7 @@ func RunE(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	run.Logger.Infof("Congratulations! Your application, %s, has been successfully built!", app.Name)
+	run.Logger.Infof("Congratulations! Your application, %s, has been successfully generated!", app.Name)
 	run.Logger.Infof("You can find your new application at: %v", app.Root)
 	run.Logger.Info("Please read the README.md file in your new application for next steps on running your application.")
 
