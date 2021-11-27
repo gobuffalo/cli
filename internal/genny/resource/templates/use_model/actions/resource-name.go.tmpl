@@ -131,7 +131,7 @@ func (v {{.opts.Name.Resource}}Resource) Create(c buffalo.Context) error {
 			// correct the input.
 			c.Set("{{.opts.Model.VarCaseSingle}}", {{.opts.Model.VarCaseSingle}})
 
-			return c.Render(http.StatusUnprocessableEntity, r.HTML("/{{.opts.Name.File.Pluralize}}/new.plush.html"))
+			return c.Render(http.StatusUnprocessableEntity, r.HTML("{{.opts.Name.File.Pluralize}}/new.plush.html"))
 		}).Wants("json", func(c buffalo.Context) error {
 			return c.Render(http.StatusUnprocessableEntity, r.JSON(verrs))
 		}).Wants("xml", func(c buffalo.Context) error {
