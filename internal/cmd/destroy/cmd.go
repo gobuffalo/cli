@@ -12,11 +12,11 @@ var cmd = &cobra.Command{
 }
 
 func Cmd() *cobra.Command {
-	cmd.AddCommand(ResourceCmd)
-	cmd.AddCommand(ActionCmd)
-	cmd.AddCommand(MailerCmd)
+	cmd.AddCommand(resourceCmd)
+	cmd.AddCommand(actionCmd)
+	cmd.AddCommand(mailerCmd)
 
-	cmd.PersistentFlags().BoolVarP(&YesToAll, "yes", "y", false, "confirms all beforehand")
+	cmd.PersistentFlags().BoolVarP(&yesToAll, "yes", "y", false, "confirms all beforehand")
 
 	return cmd
 }

@@ -1,4 +1,4 @@
-package cmd
+package task
 
 import (
 	grifts "github.com/markbates/grift/cmd"
@@ -6,7 +6,7 @@ import (
 )
 
 // task command is a forward to grift tasks
-var taskCommand = &cobra.Command{
+var cmd = &cobra.Command{
 	Use:                "task",
 	Aliases:            []string{"t", "tasks"},
 	Short:              "Run grift tasks",
@@ -16,7 +16,6 @@ var taskCommand = &cobra.Command{
 	},
 }
 
-func init() {
-	decorate("task", taskCommand)
-	RootCmd.AddCommand(taskCommand)
+func Cmd() *cobra.Command {
+	return cmd
 }

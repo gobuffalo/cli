@@ -14,11 +14,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// YesToAll means not to ask when destroying but simply confirm all beforehand.
-var YesToAll = false
+// yesToAll means not to ask when destroying but simply confirm all beforehand.
+var yesToAll = false
 
-// ResourceCmd destroys a passed resource
-var ResourceCmd = &cobra.Command{
+// resourceCmd destroys a passed resource
+var resourceCmd = &cobra.Command{
 	Use: "resource [name]",
 	// Example: "resource cars",
 	Aliases: []string{"r"},
@@ -53,7 +53,7 @@ func confirm(msg string) bool {
 }
 
 func removeTemplates(fileName string) {
-	if YesToAll || confirm("Want to remove templates? (y/N)") {
+	if yesToAll || confirm("Want to remove templates? (y/N)") {
 		templatesFolder := filepath.Join("templates", fileName)
 		logrus.Infof("- Deleted %v folder", templatesFolder)
 		os.RemoveAll(templatesFolder)
@@ -61,7 +61,7 @@ func removeTemplates(fileName string) {
 }
 
 func removeActions(fileName string) error {
-	if YesToAll || confirm("Want to remove actions? (y/N)") {
+	if yesToAll || confirm("Want to remove actions? (y/N)") {
 		logrus.Infof("- Deleted %v", fmt.Sprintf("actions/%v.go", fileName))
 		os.Remove(filepath.Join("actions", fmt.Sprintf("%v.go", fileName)))
 
@@ -90,13 +90,13 @@ func removeActions(fileName string) error {
 }
 
 func removeLocales(fileName string) {
-	if YesToAll || confirm("Want to remove locales? (y/N)") {
+	if yesToAll || confirm("Want to remove locales? (y/N)") {
 		removeMatch("locales", fmt.Sprintf("%v.*.yaml", fileName))
 	}
 }
 
 func removeModel(name string) {
-	if YesToAll || confirm("Want to remove model? (y/N)") {
+	if yesToAll || confirm("Want to remove model? (y/N)") {
 		modelFileName := flect.Singularize(flect.Underscore(name))
 
 		os.Remove(filepath.Join("models", fmt.Sprintf("%v.go", modelFileName)))
@@ -108,7 +108,7 @@ func removeModel(name string) {
 }
 
 func removeMigrations(fileName string) {
-	if YesToAll || confirm("Want to remove migrations? (y/N)") {
+	if yesToAll || confirm("Want to remove migrations? (y/N)") {
 		removeMatch("migrations", fmt.Sprintf("*_create_%v.up.*", fileName))
 		removeMatch("migrations", fmt.Sprintf("*_create_%v.down.*", fileName))
 	}

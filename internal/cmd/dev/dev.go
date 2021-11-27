@@ -1,4 +1,4 @@
-package cmd
+package dev
 
 import (
 	"context"
@@ -7,12 +7,10 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strings"
 
 	"github.com/fatih/color"
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
 	rg "github.com/gobuffalo/cli/internal/genny/refresh"
-	"github.com/gobuffalo/events"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"
 	"github.com/markbates/refresh/refresh"
@@ -21,21 +19,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func init() {
-	events.NamedListen("buffalo:dev", func(e events.Event) {
-		if strings.HasPrefix(e.Kind, "refresh:") {
-			e.Kind = strings.Replace(e.Kind, "refresh:", "buffalo:dev:", 1)
-			events.Emit(e)
-		}
-	})
-}
-
-var devOptions = struct {
-	Debug bool
-}{}
-
 // devCmd represents the dev command
-var devCmd = &cobra.Command{
+var cmd = &cobra.Command{
 	Use:   "dev",
 	Short: "Run the Buffalo app in 'development' mode",
 	Long: `Run the Buffalo app in 'development' mode.
@@ -132,7 +117,7 @@ func startDevServer(ctx context.Context, args []string) error {
 	if err := c.Load(cfgFile); err != nil {
 		return err
 	}
-	c.Debug = devOptions.Debug
+	c.Debug = debug
 
 	bt := app.BuildTags("development")
 	if len(bt) > 0 {
@@ -141,10 +126,4 @@ func startDevServer(ctx context.Context, args []string) error {
 	r := refresh.NewWithContext(c, ctx)
 	r.CommandFlags = args
 	return r.Start()
-}
-
-func init() {
-	devCmd.Flags().BoolVarP(&devOptions.Debug, "debug", "d", false, "use delve to debug the app")
-	decorate("dev", devCmd)
-	RootCmd.AddCommand(devCmd)
 }
