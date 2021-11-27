@@ -1,4 +1,4 @@
-package cmd
+package info
 
 import (
 	"context"
@@ -12,16 +12,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var infoOptions = struct {
-	Clara *rx.Options
-	Info  *info.Options
-}{
-	Clara: &rx.Options{},
-	Info:  &info.Options{},
-}
+var (
+	app         = meta.New(".")
+	infoOptions = struct {
+		Clara *rx.Options
+		Info  *info.Options
+	}{
+		Clara: &rx.Options{
+			App: app,
+		},
+		Info: &info.Options{
+			App: app,
+		},
+	}
+)
 
-// infoCmd represents the info command
-var infoCmd = &cobra.Command{
+// cmd represents the info command
+var cmd = &cobra.Command{
 	Use:   "info",
 	Short: "Print diagnostic information (useful for debugging)",
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -51,13 +58,4 @@ var infoCmd = &cobra.Command{
 
 		return run.Run()
 	},
-}
-
-func init() {
-	app := meta.New(".")
-	infoOptions.Clara.App = app
-	infoOptions.Info.App = app
-
-	decorate("info", RootCmd)
-	RootCmd.AddCommand(infoCmd)
 }

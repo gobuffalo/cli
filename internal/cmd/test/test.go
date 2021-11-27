@@ -1,4 +1,4 @@
-package cmd
+package test
 
 import (
 	"bytes"
@@ -16,14 +16,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var forceMigrations = false
-
-func init() {
-	decorate("test", testCmd)
-	RootCmd.AddCommand(testCmd)
-}
-
-var testCmd = &cobra.Command{
+var cmd = &cobra.Command{
 	Use:                "test",
 	Short:              "Run the tests for the Buffalo app. Use --force-migrations to skip schema load.",
 	DisableFlagParsing: true,
@@ -48,7 +41,7 @@ var testCmd = &cobra.Command{
 			}
 
 			// Read and remove --force-migrations flag from args:
-			forceMigrations = strings.Contains(strings.Join(args, ""), "--force-migrations")
+			var forceMigrations = strings.Contains(strings.Join(args, ""), "--force-migrations")
 			args = cutArg("--force-migrations", args)
 			if forceMigrations {
 				fm, err := pop.NewFileMigrator("./migrations", test)

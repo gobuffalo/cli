@@ -2,10 +2,8 @@ package new
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/gobuffalo/cli/internal/genny/assets/standard"
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
@@ -16,13 +14,12 @@ import (
 	"github.com/gobuffalo/genny/v2/gogen"
 	"github.com/gobuffalo/logger"
 
-	pop "github.com/gobuffalo/buffalo-pop/v3/genny/newapp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
-var Cmd = &cobra.Command{
+var cmd = &cobra.Command{
 	Use:   "new [name]",
 	Short: "Creates a new Buffalo application",
 	RunE:  RunE,
@@ -113,28 +110,4 @@ func RunE(cmd *cobra.Command, args []string) error {
 	run.Logger.Info("Please read the README.md file in your new application for next steps on running your application.")
 
 	return nil
-}
-
-func init() {
-	Cmd.Flags().Bool("api", false, "skip all front-end code and configure for an API server")
-	Cmd.Flags().BoolP("force", "f", false, "delete and remake if the app already exists")
-	Cmd.Flags().BoolP("dry-run", "d", false, "dry run")
-	Cmd.Flags().BoolP("verbose", "v", false, "verbosely print out the go get commands")
-
-	Cmd.Flags().Bool("skip-pop", false, "skips adding pop/soda to your app")
-	Cmd.Flags().Bool("skip-webpack", false, "skips adding Webpack to your app")
-	Cmd.Flags().Bool("skip-yarn", false, "use npm instead of yarn for frontend dependencies management")
-	Cmd.Flags().Bool("skip-docker", false, "skips generating the Dockerfile")
-
-	Cmd.Flags().String("db-type", "postgres", fmt.Sprintf("specify the type of database you want to use [%s]", strings.Join(pop.AvailableDialects, ", ")))
-	Cmd.Flags().String("ci-provider", "none", "specify the type of ci file you would like buffalo to generate [none, travis, gitlab-ci, circleci]")
-	Cmd.Flags().String("vcs", "git", "specify the Version control system you would like to use [none, git, bzr]")
-	Cmd.Flags().String("module", "", "specify the root module (package) name. [defaults to 'automatic']")
-
-	viper.BindPFlags(Cmd.Flags())
-
-	cfgFile := Cmd.PersistentFlags().String("config", "", "config file (default is $HOME/.buffalo.yaml)")
-	skipConfig := Cmd.Flags().Bool("skip-config", false, "skips using the config file")
-
-	cobra.OnInitialize(initConfig(skipConfig, cfgFile))
 }

@@ -14,9 +14,6 @@ var taskCommand = &cobra.Command{
 	RunE: func(c *cobra.Command, args []string) error {
 		return grifts.Run("buffalo task", args)
 	},
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		return nil
-	},
 }
 
 func init() {

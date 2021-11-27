@@ -1,7 +1,7 @@
 //go:build integration
 // +build integration
 
-package cmd
+package build_test
 
 import (
 	"os"
