@@ -5,7 +5,6 @@ import (
 	"go/parser"
 	"go/printer"
 	"go/token"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -65,7 +64,7 @@ func (mw MiddlewareTransformer) processFile(p string, fi os.FileInfo, err error)
 }
 
 func (mw MiddlewareTransformer) addMissingRootMiddlewareImports(fset *token.FileSet, f *ast.File, p string) error {
-	read, err := ioutil.ReadFile(p)
+	read, err := os.ReadFile(p)
 	if err != nil {
 		return err
 	}
@@ -85,11 +84,11 @@ func (mw MiddlewareTransformer) addMissingRootMiddlewareImports(fset *token.File
 		astutil.AddNamedImport(fset, f, "contenttype", "github.com/gobuffalo/mw-contenttype")
 	}
 
-	return ioutil.WriteFile(p, []byte(content), 0)
+	return os.WriteFile(p, []byte(content), 0)
 }
 
 func (mw MiddlewareTransformer) rewriteMiddlewareUses(p string) error {
-	read, err := ioutil.ReadFile(p)
+	read, err := os.ReadFile(p)
 	if err != nil {
 		return err
 	}
@@ -101,8 +100,7 @@ func (mw MiddlewareTransformer) rewriteMiddlewareUses(p string) error {
 	newContents = strings.Replace(newContents, "middleware.PopTransaction", "popmw.Transaction", -1)
 	newContents = strings.Replace(newContents, "ssl.ForceSSL", "forcessl.Middleware", -1)
 
-	err = ioutil.WriteFile(p, []byte(newContents), 0)
-	return err
+	return os.WriteFile(p, []byte(newContents), 0)
 }
 
 func writeTempResult(name string, fset *token.FileSet, f *ast.File) (string, error) {
