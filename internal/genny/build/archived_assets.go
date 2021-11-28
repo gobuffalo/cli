@@ -3,6 +3,7 @@ package build
 import (
 	"archive/zip"
 	"bytes"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -10,12 +11,23 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/genny/v2"
+	"golang.org/x/mod/modfile"
 )
 
 func archivedAssets(opts *Options) (*genny.Generator, error) {
 	g := genny.New()
 
 	if err := opts.Validate(); err != nil {
+		return g, err
+	}
+
+	mod, err := os.ReadFile(filepath.Join(opts.App.Root, "go.mod"))
+	if err != nil {
+		return g, err
+	}
+
+	mf, err := modfile.Parse("go.mod", mod, nil)
+	if err != nil {
 		return g, err
 	}
 
@@ -80,9 +92,12 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 		if err != nil {
 			return err
 		}
+
 		opts.rollback.Store(f.Name(), f.String())
 		body := strings.Replace(f.String(), `app.ServeFiles("/assets"`, `// app.ServeFiles("/assets"`, 1)
 		body = strings.Replace(body, `app.ServeFiles("/"`, `// app.ServeFiles("/"`, 1)
+		body = strings.Replace(body, fmt.Sprintf(`"%v/public"`, mf.Module.Mod), `// "noassets/public"`, 1)
+		body = strings.Replace(body, `"net/http"`, `// "net/http"`, 1)
 		return r.File(genny.NewFileS(f.Name(), body))
 	})
 
