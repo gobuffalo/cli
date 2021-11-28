@@ -14,9 +14,11 @@ func plugs() plugins.List {
 		var err error
 		_plugs, err = plugins.Available()
 		if err == nil {
-			_plugs = plugins.List{}
-			logrus.Errorf("error loading plugins %s", err)
+			return
 		}
+
+		_plugs = plugins.List{}
+		logrus.Errorf("error loading plugins %s", err)
 	})
 	return _plugs
 }
