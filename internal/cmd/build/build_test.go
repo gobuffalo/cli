@@ -41,18 +41,44 @@ func TestBuild(t *testing.T) {
 	for _, v := range tcases {
 		t.Run(v.name, func(tx *testing.T) {
 			r := require.New(tx)
+			wd, err := os.Getwd()
+			r.NoError(err)
+			defer os.Chdir(wd)
 
 			dir := os.TempDir()
 			os.Chdir(filepath.Join(dir))
 
-			out, err := testhelpers.RunBuffaloCMD(t, v.newargs)
+			out, err := testhelpers.RunBuffaloCMD(tx, v.newargs)
 			tx.Log(out)
 			r.NoError(err)
 
 			os.Chdir(filepath.Join(dir, v.appname))
-			out, err = testhelpers.RunBuffaloCMD(t, []string{"build"})
+			out, err = testhelpers.RunBuffaloCMD(tx, []string{"build"})
 			tx.Log(out)
 			r.NoError(err)
 		})
 	}
+}
+
+func TestBuildNoAssets(t *testing.T) {
+	r := require.New(t)
+	r.NoError(testhelpers.EnsureBuffaloCMD(t))
+
+	wd, err := os.Getwd()
+	r.NoError(err)
+	defer os.Chdir(wd)
+
+	dir := os.TempDir()
+	os.Chdir(dir)
+
+	out, err := testhelpers.RunBuffaloCMD(t, []string{"new", "noassets", "-f", "--skip-webpack", "--vcs", "none"})
+	t.Log(out)
+	r.NoError(err)
+
+	os.Chdir(filepath.Join(dir, "noassets"))
+	out, err = testhelpers.RunBuffaloCMD(t, []string{"build", "--extract-assets"})
+	t.Log(out)
+	r.NoError(err)
+
+	r.FileExists(filepath.Join(dir, "noassets", "assets.zip"))
 }
