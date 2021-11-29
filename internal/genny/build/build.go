@@ -49,7 +49,10 @@ func New(opts *Options) (*genny.Generator, error) {
 	g.Transformer(genny.Replace("/dot-", "/."))
 
 	// validate templates
-	g.RunFn(ValidateTemplates(os.DirFS(opts.App.Root+"/templates"), opts.TemplateValidators))
+	templatesPath := opts.App.Root + "/templates"
+	if _, err := os.Stat(templatesPath); err == nil {
+		g.RunFn(ValidateTemplates(os.DirFS(templatesPath), opts.TemplateValidators))
+	}
 
 	// rename main() to originalMain()
 	g.RunFn(transformMain(opts))
