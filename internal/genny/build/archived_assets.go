@@ -96,7 +96,7 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 		opts.rollback.Store(f.Name(), f.String())
 		body := strings.Replace(f.String(), `app.ServeFiles("/assets"`, `// app.ServeFiles("/assets"`, 1)
 		body = strings.Replace(body, `app.ServeFiles("/"`, `// app.ServeFiles("/"`, 1)
-		body = strings.Replace(body, fmt.Sprintf(`"%v/public"`, mf.Module.Mod), `// "noassets/public"`, 1)
+		body = strings.Replace(body, fmt.Sprintf(`"%v/public"`, mf.Module.Mod), fmt.Sprintf(`// "%v/public"`, mf.Module.Mod), 1)
 		body = strings.Replace(body, `"net/http"`, `// "net/http"`, 1)
 
 		return r.File(genny.NewFileS(f.Name(), body))
