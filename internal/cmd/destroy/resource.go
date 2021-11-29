@@ -3,13 +3,11 @@ package destroy
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/gobuffalo/flect"
-
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -68,7 +66,7 @@ func removeActions(fileName string) error {
 		logrus.Infof("- Deleted %v", fmt.Sprintf("actions/%v_test.go", fileName))
 		os.Remove(filepath.Join("actions", fmt.Sprintf("%v_test.go", fileName)))
 
-		content, err := ioutil.ReadFile(filepath.Join("actions", "app.go"))
+		content, err := os.ReadFile(filepath.Join("actions", "app.go"))
 		if err != nil {
 			logrus.Warn("error reading app.go content")
 			return err
@@ -77,7 +75,7 @@ func removeActions(fileName string) error {
 		resourceExpression := fmt.Sprintf("app.Resource(\"/%v\", %vResource{})", fileName, flect.Pascalize(fileName))
 		newContents := strings.Replace(string(content), resourceExpression, "", -1)
 
-		err = ioutil.WriteFile(filepath.Join("actions", "app.go"), []byte(newContents), 0)
+		err = os.WriteFile(filepath.Join("actions", "app.go"), []byte(newContents), 0)
 		if err != nil {
 			logrus.Error("error writing new app.go content")
 			return err
@@ -115,7 +113,7 @@ func removeMigrations(fileName string) {
 }
 
 func removeMatch(folder, pattern string) {
-	files, err := ioutil.ReadDir(folder)
+	files, err := os.ReadDir(folder)
 	if err == nil {
 		for _, f := range files {
 			matches, _ := filepath.Match(pattern, f.Name())

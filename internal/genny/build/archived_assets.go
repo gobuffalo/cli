@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -39,17 +38,22 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 		archive := zip.NewWriter(bb)
 		defer archive.Close()
 
-		fsys := os.DirFS(source)
-		err := fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
+		for _, f := range r.Disk.Files() {
+			rel, err := filepath.Rel(source, f.Name())
 			if err != nil {
 				return err
 			}
 
-			if d.IsDir() {
-				return nil
+			if strings.HasPrefix(rel, "..") {
+				continue
 			}
 
-			info, err := d.Info()
+			file, ok := f.(fs.File)
+			if !ok {
+				return fmt.Errorf("cannot process file %s", f.Name())
+			}
+
+			info, err := file.Stat()
 			if err != nil {
 				return err
 			}
@@ -58,7 +62,7 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 			if err != nil {
 				return err
 			}
-			header.Name = path
+			header.Name = rel
 			header.Method = zip.Deflate
 
 			writer, err := archive.CreateHeader(header)
@@ -66,16 +70,10 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 				return err
 			}
 
-			file, err := fsys.Open(path)
+			_, err = io.Copy(writer, file)
 			if err != nil {
 				return err
 			}
-
-			_, err = io.Copy(writer, file)
-			return err
-		})
-		if err != nil {
-			return err
 		}
 		// We need to close the archive before passing the buffer to genny, otherwise the zip
 		// will be corrupted.

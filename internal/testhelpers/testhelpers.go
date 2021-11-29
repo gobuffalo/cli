@@ -2,7 +2,6 @@ package testhelpers
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -17,7 +16,6 @@ import (
 func EnsureBuffaloCMD(t *testing.T) error {
 	t.Helper()
 
-	// Ensure we're on the
 	ok, err := inCLISource()
 	if err != nil {
 		return err
@@ -43,6 +41,7 @@ func EnsureBuffaloCMD(t *testing.T) error {
 	return ex.Run()
 }
 
+<<<<<<< HEAD
 // RunBuffaloCMD is useful for integration tests where CMD would want
 // to run a Buffalo command from the fully compiled binary.
 func RunBuffaloCMD(t *testing.T, args []string) (string, error) {
@@ -69,6 +68,9 @@ func testingBinaryLocation(t *testing.T) string {
 }
 
 // Ensures that the current directory is the CLI source folder by
+=======
+// inCLISource ensures that the current directory is the CLI source folder by
+>>>>>>> 9a97761b7b717e5bb9eaf44282115eb02b0c9fe6
 // checking its parent go.mod file says its github.com/gobuffalo/cli module.
 func inCLISource() (bool, error) {
 	wd, err := os.Getwd()
@@ -78,7 +80,7 @@ func inCLISource() (bool, error) {
 
 	mod := ""
 	for {
-		dat, err := ioutil.ReadFile(filepath.Join(wd, "go.mod"))
+		dat, err := os.ReadFile(filepath.Join(wd, "go.mod"))
 		if err != nil {
 			wd = filepath.Dir(wd)
 			if wd == "/" {
@@ -100,3 +102,17 @@ func inCLISource() (bool, error) {
 	result := mod == "github.com/gobuffalo/cli"
 	return result, nil
 }
+<<<<<<< HEAD
+=======
+
+// RunBuffaloCMD is useful for integration tests where CMD would want
+// to run a Buffalo command from the fully compiled binary.
+func RunBuffaloCMD(t *testing.T, args []string) (string, error) {
+	t.Helper()
+
+	ex := exec.Command("buffalo")
+	ex.Args = append(ex.Args, args...)
+	output, err := ex.CombinedOutput()
+	return string(output), err
+}
+>>>>>>> 9a97761b7b717e5bb9eaf44282115eb02b0c9fe6

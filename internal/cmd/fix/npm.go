@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -21,7 +20,7 @@ func AddPackageJSONScripts(r *Runner) error {
 	}
 	fmt.Println("~~~ Patching package.json to add dev and build scripts ~~~")
 
-	b, err := ioutil.ReadFile("package.json")
+	b, err := os.ReadFile("package.json")
 	if err != nil {
 		return err
 	}
@@ -62,7 +61,7 @@ func AddPackageJSONScripts(r *Runner) error {
 			return fmt.Errorf("could not rewrite package.json: %w", err)
 		}
 
-		if err := ioutil.WriteFile("package.json", b, 0644); err != nil {
+		if err := os.WriteFile("package.json", b, 0644); err != nil {
 			return fmt.Errorf("could not rewrite package.json: %w", err)
 		}
 	} else {
@@ -103,7 +102,7 @@ func PackageJSONCheck(r *Runner) error {
 		return err
 	}
 
-	b, err := ioutil.ReadFile("package.json")
+	b, err := os.ReadFile("package.json")
 	if err != nil {
 		return err
 	}

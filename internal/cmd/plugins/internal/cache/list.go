@@ -3,7 +3,7 @@ package cache
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/gobuffalo/cli/internal/plugins"
 	"github.com/spf13/cobra"
@@ -14,7 +14,7 @@ var ListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "displays the contents of the plugin cache",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		b, err := ioutil.ReadFile(plugins.CachePath)
+		b, err := os.ReadFile(plugins.CachePath)
 		if err != nil {
 			return err
 		}

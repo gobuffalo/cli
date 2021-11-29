@@ -39,6 +39,14 @@ func TestBuild(t *testing.T) {
 		},
 	}
 
+	dir, err := os.MkdirTemp("", "buffalo-build-test-*")
+	r.NoError(err)
+	t.Cleanup(func() {
+		if err := os.RemoveAll(dir); err != nil {
+			t.Logf("failed to delete temporary directory: %s", dir)
+		}
+	})
+
 	for _, v := range tcases {
 		t.Run(v.name, func(tx *testing.T) {
 			r := require.New(tx)
@@ -46,8 +54,7 @@ func TestBuild(t *testing.T) {
 			r.NoError(err)
 			defer os.Chdir(wd)
 
-			dir := os.TempDir()
-			os.Chdir(filepath.Join(dir))
+			r.NoError(os.Chdir(dir))
 
 			out, err := testhelpers.RunBuffaloCMD(tx, v.newargs)
 			tx.Log(out)

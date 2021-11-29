@@ -1,19 +1,18 @@
 package actions
 
 import (
-  "net/http"
+    "net/http"
 
-  "github.com/gobuffalo/buffalo"
+    "github.com/gobuffalo/buffalo"
 )
 
 type {{.opts.Name.Resource}}Resource struct{
-  buffalo.Resource
+    buffalo.Resource
 }
 
 {{ range $a := .actions }}
 // {{$a.Pascalize}} default implementation.
 func (v {{$.opts.Name.Resource}}Resource) {{$a.Pascalize}}(c buffalo.Context) error {
-  return c.Render(http.StatusOK, r.String("{{$.opts.Model.Proper}}#{{$a.Pascalize}}"))
+    return c.Render(http.StatusOK, r.String("{{$.opts.Model.Proper}}#{{$a.Pascalize}}"))
 }
-
-{{end}}
+{{ end }}

@@ -3,7 +3,8 @@ package build
 import (
 	"testing"
 
-	"github.com/gobuffalo/genny/v2"
+	"github.com/gobuffalo/cli/internal/genny/newapp/web"
+	"github.com/gobuffalo/cli/internal/genny/testrunner"
 	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/stretchr/testify/require"
 )
@@ -11,11 +12,13 @@ import (
 func Test_transformMain(t *testing.T) {
 	r := require.New(t)
 
-	run := gentest.NewRunner()
-	b, err := coke.Open("main.go")
+	ref, err := testrunner.WebApp(&web.Options{})
+	r.NoError(err)
+	main, err := ref.Disk.Find("main.go")
 	r.NoError(err)
 
-	run.Disk.Add(genny.NewFile("main.go", b))
+	run := gentest.NewRunner()
+	run.Disk.Add(main)
 
 	opts := &Options{}
 	run.WithRun(transformMain(opts))
