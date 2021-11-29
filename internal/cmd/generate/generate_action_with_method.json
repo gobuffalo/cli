@@ -1,4 +1,5 @@
-[{
+[
+  {
     "path": "actions/users.go",
     "contains": [
       "func UsersCreate(c buffalo.Context) error {"
@@ -14,6 +15,8 @@
   },
   {
     "path": "actions/app.go",
-    "contains": ["app.POST(\"/users/update\", UsersUpdate)"]
+    "contains": [
+      "app.POST(\"/users/update\", UsersUpdate)"
+    ]
   }
 ]

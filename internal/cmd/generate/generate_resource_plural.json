@@ -1,4 +1,5 @@
-[{
+[
+  {
     "path": "actions/cars.go",
     "contains": [
       "func (v CarsResource) List(c buffalo.Context) error {",

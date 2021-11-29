@@ -1,4 +1,5 @@
-[{
+[
+  {
     "path": "mailers/ouch.go",
     "absent": true
   },
@@ -10,5 +11,4 @@
     "path": "templates/mail/ouch.plush.html",
     "absent": true
   }
-
 ]
