@@ -3,7 +3,6 @@ package fix
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -11,7 +10,7 @@ import (
 // DeprecrationsCheck will either log, or fix, deprecated items in the application
 func DeprecrationsCheck(r *Runner) error {
 	fmt.Println("~~~ Checking for deprecations ~~~")
-	b, err := ioutil.ReadFile("main.go")
+	b, err := os.ReadFile("main.go")
 	if err != nil {
 		return err
 	}
@@ -28,7 +27,7 @@ func DeprecrationsCheck(r *Runner) error {
 			return nil
 		}
 
-		b, err := ioutil.ReadFile(path)
+		b, err := os.ReadFile(path)
 		if err != nil {
 			return err
 		}
@@ -51,6 +50,6 @@ func DeprecrationsCheck(r *Runner) error {
 		if bytes.Contains(b, []byte("T.LanguageFinder=")) || bytes.Contains(b, []byte("T.LanguageFinder ")) {
 			r.Warnings = append(r.Warnings, fmt.Sprintf("i18n.Translator#LanguageFinder has been deprecated in v0.11.1, and has been removed in v0.12.0. Use i18n.Translator#LanguageExtractors instead. [%s]", path))
 		}
-		return ioutil.WriteFile(path, b, 0664)
+		return os.WriteFile(path, b, 0664)
 	})
 }

@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/gobuffalo/clara/v2/genny/rx"
-
 	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/gobuffalo/meta"
 	"github.com/stretchr/testify/require"

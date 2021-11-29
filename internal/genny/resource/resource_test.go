@@ -10,9 +10,11 @@ import (
 	"testing"
 
 	"github.com/gobuffalo/attrs"
+	"github.com/gobuffalo/cli/internal/genny/newapp/api"
+	"github.com/gobuffalo/cli/internal/genny/newapp/core"
+	"github.com/gobuffalo/cli/internal/genny/newapp/web"
+	"github.com/gobuffalo/cli/internal/genny/testrunner"
 	"github.com/gobuffalo/flect/name"
-	"github.com/gobuffalo/genny/v2"
-	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/gobuffalo/meta"
 	"github.com/stretchr/testify/require"
 )
@@ -20,29 +22,6 @@ import (
 type pass struct {
 	Name    string
 	Options Options
-}
-
-func runner(r *require.Assertions) *genny.Runner {
-	run := gentest.NewRunner()
-	fsys := os.DirFS("./_fixtures/coke")
-	err := fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() {
-			return nil
-		}
-
-		f, err := fsys.Open(path)
-		if err != nil {
-			return err
-		}
-		path = strings.TrimSuffix(path, ".tmpl")
-		run.Disk.Add(genny.NewFile(path, f))
-		return nil
-	})
-	r.NoError(err)
-	return run
 }
 
 func Test_New(t *testing.T) {
@@ -61,12 +40,17 @@ func Test_New(t *testing.T) {
 
 	for _, tt := range table {
 		t.Run(tt.Name, func(st *testing.T) {
-			tt.Options.App = app
 			r := require.New(st)
+
+			opts := &web.Options{}
+			opts.Options = &core.Options{App: app}
+			run, err := testrunner.WebApp(opts)
+			r.NoError(err)
+
+			tt.Options.App = app
 			g, err := New(&tt.Options)
 			r.NoError(err)
 
-			run := runner(r)
 			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
@@ -75,8 +59,7 @@ func Test_New(t *testing.T) {
 
 			c := res.Commands[0]
 			r.Equal("buffalo-pop pop g model widget name desc:nulls.Text", strings.Join(c.Args, " "))
-
-			r.Len(res.Files, 9)
+			r.Len(res.Files, 30)
 
 			nn := name.New(tt.Options.Name).Pluralize().String()
 			actions := []string{"_form", "index", "show", "new", "edit"}
@@ -108,6 +91,7 @@ func Test_New(t *testing.T) {
 					s = strings.Replace(s, "\r", "", -1)
 					return s
 				}
+
 				r.Equal(clean(string(s)), clean(f.String()))
 				return nil
 			})
@@ -131,27 +115,31 @@ func Test_New_SkipTemplates(t *testing.T) {
 
 	for _, tt := range table {
 		t.Run(tt.Name, func(st *testing.T) {
+			r := require.New(st)
+
+			opts := &web.Options{}
+			opts.Options = &core.Options{App: app}
+			run, err := testrunner.WebApp(opts)
+			r.NoError(err)
+
 			tt.Options.App = app
 			tt.Options.SkipTemplates = true
-			r := require.New(st)
 			g, err := New(&tt.Options)
 			r.NoError(err)
 
-			run := runner(r)
 			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
 			res := run.Results()
 
 			r.Len(res.Commands, 1)
-
 			for _, s := range []string{"_form", "edit", "index", "new", "show"} {
 				p := path.Join("templates", tt.Name, s+".html")
 				_, err = res.Find(p)
 				r.Error(err)
 			}
 
-			r.Len(res.Files, 3)
+			r.Len(res.Files, 24)
 		})
 	}
 }
@@ -172,12 +160,17 @@ func Test_New_API(t *testing.T) {
 
 	for _, tt := range table {
 		t.Run(tt.Name, func(st *testing.T) {
-			tt.Options.App = app
 			r := require.New(st)
+
+			opts := &api.Options{}
+			opts.Options = &core.Options{App: app}
+			run, err := testrunner.ApiApp(opts)
+			r.NoError(err)
+
+			tt.Options.App = app
 			g, err := New(&tt.Options)
 			r.NoError(err)
 
-			run := runner(r)
 			r.NoError(run.With(g))
 			r.NoError(run.Run())
 
@@ -192,7 +185,7 @@ func Test_New_API(t *testing.T) {
 				r.Error(err)
 			}
 
-			r.Len(res.Files, 3)
+			r.Len(res.Files, 18)
 		})
 	}
 }
@@ -200,22 +193,24 @@ func Test_New_API(t *testing.T) {
 func Test_New_UseModel(t *testing.T) {
 	r := require.New(t)
 
-	ats, err := attrs.ParseArgs("name", "desc:nulls.Text")
-	r.NoError(err)
-
 	app := meta.New(".")
 	app.PackageRoot("github.com/markbates/coke")
 
-	opts := &Options{
+	opts := &web.Options{}
+	opts.Options = &core.Options{App: app}
+	run, err := testrunner.WebApp(opts)
+	r.NoError(err)
+
+	ats, err := attrs.ParseArgs("name", "desc:nulls.Text")
+	r.NoError(err)
+
+	g, err := New(&Options{
 		App:   app,
 		Name:  "Widget",
 		Model: "User",
 		Attrs: ats,
-	}
-	g, err := New(opts)
+	})
 	r.NoError(err)
-
-	run := runner(r)
 	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
@@ -224,8 +219,7 @@ func Test_New_UseModel(t *testing.T) {
 
 	c := res.Commands[0]
 	r.Equal("buffalo-pop pop g model user name desc:nulls.Text", strings.Join(c.Args, " "))
-
-	r.Len(res.Files, 9)
+	r.Len(res.Files, 30)
 
 	for _, s := range []string{"_form", "edit", "index", "new", "show"} {
 		p := path.Join("templates", "widgets", s+".plush.html")
@@ -245,22 +239,23 @@ func Test_New_SkipModel(t *testing.T) {
 	app := meta.New(".")
 	app.PackageRoot("github.com/markbates/coke")
 
-	opts := &Options{
+	opts := &web.Options{}
+	opts.Options = &core.Options{App: app}
+	run, err := testrunner.WebApp(opts)
+	r.NoError(err)
+
+	g, err := New(&Options{
 		App:       app,
 		Name:      "Widget",
 		SkipModel: true,
-	}
-
-	g, err := New(opts)
+	})
 	r.NoError(err)
-
-	run := runner(r)
 	r.NoError(run.With(g))
 	r.NoError(run.Run())
 
 	res := run.Results()
 	r.Len(res.Commands, 0)
-	r.Len(res.Files, 9)
+	r.Len(res.Files, 30)
 
 	f, err := res.Find("actions/widgets.go")
 	r.NoError(err)

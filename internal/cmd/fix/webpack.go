@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"os"
 
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
@@ -41,7 +40,7 @@ func WebpackCheck(r *Runner) error {
 		return err
 	}
 
-	b, err := ioutil.ReadFile("webpack.config.js")
+	b, err := os.ReadFile("webpack.config.js")
 	if err != nil {
 		return err
 	}

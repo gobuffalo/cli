@@ -1,4 +1,3 @@
-//go:build integration
 // +build integration
 
 package new
@@ -16,10 +15,15 @@ func TestNew(t *testing.T) {
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 
-	dir := os.TempDir()
+	dir, err := os.MkdirTemp("", "buffalo-new-test-*")
+	r.NoError(err)
+	t.Cleanup(func() {
+		if err := os.RemoveAll(dir); err != nil {
+			t.Logf("failed to delete temporary directory: %s", dir)
+		}
+	})
 
 	r.NoError(os.Chdir(dir))
-	r.NoError(os.RemoveAll(filepath.Join(dir, "app")))
 
 	tcases := []struct {
 		name  string
@@ -32,24 +36,23 @@ func TestNew(t *testing.T) {
 			check: func(r *require.Assertions, out string, err error) {
 				r.Error(err)
 				r.Contains(out, "you must enter a name for your new application")
-				r.NoFileExists(filepath.Join("app"))
 			},
 		},
 		{
 			name: "skip docker",
-			args: []string{"new", "wdocker", "--api", "--skip-docker", "-f", "--vcs", "none"},
+			args: []string{"new", "nodocker", "--api", "--skip-docker", "-f", "--vcs", "none"},
 			check: func(r *require.Assertions, out string, err error) {
 				r.NoError(err)
-				r.NoFileExists(filepath.Join("wdocker", "Dockerfile"))
+				r.NoFileExists(filepath.Join("nodocker", "Dockerfile"))
 			},
 		},
 
 		{
 			name: "docker there",
-			args: []string{"new", "nodocker", "--api", "-f", "--vcs", "none"},
+			args: []string{"new", "wdocker", "--api", "-f", "--vcs", "none"},
 			check: func(r *require.Assertions, out string, err error) {
 				r.NoError(err)
-				r.FileExists(filepath.Join("nodocker", "Dockerfile"))
+				r.FileExists(filepath.Join("wdocker", "Dockerfile"))
 			},
 		},
 
@@ -79,5 +82,4 @@ func TestNew(t *testing.T) {
 			v.check(r, out, err)
 		})
 	}
-
 }

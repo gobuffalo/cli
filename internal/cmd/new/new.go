@@ -61,11 +61,12 @@ func RunE(cmd *cobra.Command, args []string) error {
 	}
 
 	var gg *genny.Group
-
 	if app.AsAPI {
-		gg, err = api.New(&api.Options{
+		if gg, err = api.New(&api.Options{
 			Options: opts,
-		})
+		}); err != nil {
+			return err
+		}
 	} else {
 		wo := &web.Options{
 			Options: opts,
@@ -75,18 +76,13 @@ func RunE(cmd *cobra.Command, args []string) error {
 		} else {
 			wo.Standard = &standard.Options{}
 		}
-		gg, err = web.New(wo)
-	}
-
-	if err != nil {
-		return err
+		if gg, err = web.New(wo); err != nil {
+			return err
+		}
 	}
 
 	g := genny.New()
 	g.Command(exec.Command("go", "mod", "tidy"))
-	gg.Add(g)
-
-	g = genny.New()
 	g.Command(exec.Command("go", "mod", "download"))
 	gg.Add(g)
 

@@ -1,10 +1,10 @@
 package build
 
 import (
-	"os"
 	"testing"
 
 	"github.com/gobuffalo/genny/v2/gentest"
+	"github.com/psanford/memfs"
 	"github.com/stretchr/testify/require"
 )
 
@@ -13,8 +13,14 @@ func Test_TemplateValidator_Good(t *testing.T) {
 
 	tvs := []TemplateValidator{PlushValidator}
 
+	goodFS := memfs.New()
+	r.NoError(goodFS.MkdirAll("_ignored", 0755))
+	r.NoError(goodFS.WriteFile("_ignored/c.html", []byte("c"), 0644))
+	r.NoError(goodFS.WriteFile("a.html", []byte("a"), 0644))
+	r.NoError(goodFS.WriteFile("b.html", []byte("b"), 0644))
+
 	run := gentest.NewRunner()
-	run.WithRun(ValidateTemplates(os.DirFS("../build/_fixtures/template_validator/good"), tvs))
+	run.WithRun(ValidateTemplates(goodFS, tvs))
 	r.NoError(run.Run())
 }
 
@@ -23,8 +29,12 @@ func Test_TemplateValidator_Bad(t *testing.T) {
 
 	tvs := []TemplateValidator{PlushValidator}
 
+	badFS := memfs.New()
+	r.NoError(badFS.WriteFile("a.html", []byte("A Hello <%= broken!>%>>"), 0644))
+	r.NoError(badFS.WriteFile("b.md", []byte("B Hello <%= broken!>%>>"), 0644))
+
 	run := gentest.NewRunner()
-	run.WithRun(ValidateTemplates(os.DirFS("../build/_fixtures/template_validator/bad"), tvs))
+	run.WithRun(ValidateTemplates(badFS, tvs))
 
 	err := run.Run()
 	r.Error(err)

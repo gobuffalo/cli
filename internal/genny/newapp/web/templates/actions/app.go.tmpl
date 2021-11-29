@@ -57,12 +57,12 @@ func App() *buffalo.App {
 		// Remove to disable this.
 		app.Use(csrf.New)
 
-		{{ if .opts.App.WithPop }}
+		{{ if .opts.App.WithPop -}}
 		// Wraps each request in a transaction.
 		//   c.Value("tx").(*pop.Connection)
 		// Remove to disable this.
 		app.Use(popmw.Transaction(models.DB))
-		{{ end }}
+		{{ end -}}
 
 		// Setup and use translations:
 		app.Use(translations())
