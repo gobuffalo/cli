@@ -80,5 +80,15 @@ func TestBuildNoAssets(t *testing.T) {
 	t.Log(out)
 	r.NoError(err)
 
-	r.FileExists(filepath.Join("bin", "assets.zip"))
+	if runtime.GOOS == "windows" {
+		err := os.Walk(filepath.Join(dir, "noassets", "bin"), func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			t.Logf("FOUND: %s", path)
+		})
+	}
+
+	// r.FileExists(filepath.Join("bin", "assets.zip"))
 }
