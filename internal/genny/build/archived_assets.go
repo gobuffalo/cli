@@ -93,10 +93,15 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 			return err
 		}
 
+		// public folder import is based on the module name
+		// we will need to comment this when extracting assets
+		// as it will not be used.
+		pim := fmt.Sprintf(`"%v/public"`, mf.Module.Mod)
+
 		opts.rollback.Store(f.Name(), f.String())
 		body := strings.Replace(f.String(), `app.ServeFiles("/assets"`, `// app.ServeFiles("/assets"`, 1)
 		body = strings.Replace(body, `app.ServeFiles("/"`, `// app.ServeFiles("/"`, 1)
-		body = strings.Replace(body, fmt.Sprintf(`"%v/public"`, mf.Module.Mod), fmt.Sprintf(`// "%v/public"`, mf.Module.Mod), 1)
+		body = strings.Replace(body, pim, "//"+pim, 1)
 		body = strings.Replace(body, `"net/http"`, `// "net/http"`, 1)
 
 		return r.File(genny.NewFileS(f.Name(), body))
