@@ -67,6 +67,7 @@ func Test_assets_Archived(t *testing.T) {
 		WithAssets:    true,
 		ExtractAssets: true,
 	}
+
 	opts.App = app
 	r.NoError(opts.Validate())
 	r.NoError(run.WithNew(assets(opts)))

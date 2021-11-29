@@ -87,6 +87,10 @@ func TestBuildNoAssets(t *testing.T) {
 	t.Log(out)
 	r.NoError(err)
 
+	t.Cleanup(func() {
+		os.RemoveAll(filepath.Join(dir, "noassets"))
+	})
+
 	os.Chdir(filepath.Join(dir, "noassets"))
 	out, err = testhelpers.RunBuffaloCMD(t, []string{"build", "--extract-assets"})
 	t.Log(out)

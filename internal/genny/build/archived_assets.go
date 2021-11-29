@@ -6,28 +6,17 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/gobuffalo/genny/v2"
-	"golang.org/x/mod/modfile"
+	"github.com/gobuffalo/genny/v2/gogen/goimports"
 )
 
 func archivedAssets(opts *Options) (*genny.Generator, error) {
 	g := genny.New()
 
 	if err := opts.Validate(); err != nil {
-		return g, err
-	}
-
-	mod, err := os.ReadFile(filepath.Join(opts.App.Root, "go.mod"))
-	if err != nil {
-		return g, err
-	}
-
-	mf, err := modfile.Parse("go.mod", mod, nil)
-	if err != nil {
 		return g, err
 	}
 
@@ -42,7 +31,7 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 		for _, f := range r.Disk.Files() {
 			rel, err := filepath.Rel(source, f.Name())
 			if err != nil {
-				return err
+				continue
 			}
 
 			if strings.HasPrefix(rel, "..") {
@@ -92,18 +81,25 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 			return err
 		}
 
-		// public folder import is based on the module name
-		// we will need to comment this when extracting assets
-		// as it will not be used.
-		pim := fmt.Sprintf(`"%v/public"`, mf.Module.Mod)
-
 		opts.rollback.Store(f.Name(), f.String())
 		body := strings.Replace(f.String(), `app.ServeFiles("/assets"`, `// app.ServeFiles("/assets"`, 1)
 		body = strings.Replace(body, `app.ServeFiles("/"`, `// app.ServeFiles("/"`, 1)
-		body = strings.Replace(body, pim, "//"+pim, 1)
-		body = strings.Replace(body, `"net/http"`, `// "net/http"`, 1)
+		f = genny.NewFileS(f.Name(), body)
 
-		return r.File(genny.NewFileS(f.Name(), body))
+		// run goimports after to ensure we remove unneeded imports
+		// from actions/app.go
+		content := bytes.NewBufferString("")
+		gi := goimports.NewFromFiles(goimports.File{
+			Name: f.Name(),
+			In:   f,
+			Out:  content,
+		})
+
+		if err := gi.Run(); err != nil {
+			return err
+		}
+
+		return r.File(genny.NewFile(f.Name(), content))
 	})
 
 	return g, nil
