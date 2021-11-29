@@ -9,6 +9,7 @@ import (
 // and returns to the original working directory afterwards.
 func RunWithinTempFolder(t *testing.T, fn func(t *testing.T)) {
 	t.Helper()
+
 	original, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)

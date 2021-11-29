@@ -1,4 +1,3 @@
-//go:build integration
 // +build integration
 
 package new
@@ -17,7 +16,7 @@ func TestNew(t *testing.T) {
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 
-	tcases := []struct {
+	tt := []struct {
 		name  string
 		args  []string
 		check func(*require.Assertions, string, error)
@@ -67,12 +66,12 @@ func TestNew(t *testing.T) {
 		},
 	}
 
-	for _, v := range tcases {
-		t.Run(v.name, func(tt *testing.T) {
-			testhelpers.RunWithinTempFolder(tt, func(ttt *testing.T) {
-				r := require.New(ttt)
-				out, err := testhelpers.RunBuffaloCMD(ttt, v.args)
-				v.check(r, out, err)
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
+				r := require.New(t)
+				out, err := testhelpers.RunBuffaloCMD(t, tc.args)
+				tc.check(r, out, err)
 			})
 		})
 	}
