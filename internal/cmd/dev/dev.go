@@ -19,53 +19,45 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// devCmd represents the dev command
-var cmd = &cobra.Command{
-	Use:   "dev",
-	Short: "Run the Buffalo app in 'development' mode",
-	Long: `Run the Buffalo app in 'development' mode.
-This includes rebuilding the application when files change.
-This behavior can be changed in .buffalo.dev.yml file.`,
-	RunE: func(c *cobra.Command, args []string) error {
-		if runtime.GOOS == "windows" {
-			color.NoColor = true
-		}
-		defer func() {
-			msg := "There was a problem starting the dev server, Please review the troubleshooting docs: %s\n"
-			cause := "Unknown"
-			if r := recover(); r != nil {
-				if err, ok := r.(error); ok {
-					cause = err.Error()
-				}
+func runE(c *cobra.Command, args []string) error {
+	if runtime.GOOS == "windows" {
+		color.NoColor = true
+	}
+	defer func() {
+		msg := "There was a problem starting the dev server, Please review the troubleshooting docs: %s\n"
+		cause := "Unknown"
+		if r := recover(); r != nil {
+			if err, ok := r.(error); ok {
+				cause = err.Error()
 			}
-			logrus.Errorf(msg, cause)
-		}()
-		os.Setenv("GO_ENV", "development")
-
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-
-		wg, ctx := errgroup.WithContext(ctx)
-
-		wg.Go(func() error {
-			return startDevServer(ctx, args)
-		})
-
-		wg.Go(func() error {
-			app := meta.New(".")
-			if !app.WithNodeJs {
-				// No need to run dev script
-				return nil
-			}
-			return runDevScript(ctx, app)
-		})
-
-		err := wg.Wait()
-		if err != context.Canceled {
-			return err
 		}
-		return nil
-	},
+		logrus.Errorf(msg, cause)
+	}()
+	os.Setenv("GO_ENV", "development")
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	wg, ctx := errgroup.WithContext(ctx)
+
+	wg.Go(func() error {
+		return startDevServer(ctx, args)
+	})
+
+	wg.Go(func() error {
+		app := meta.New(".")
+		if !app.WithNodeJs {
+			// No need to run dev script
+			return nil
+		}
+		return runDevScript(ctx, app)
+	})
+
+	err := wg.Wait()
+	if err != context.Canceled {
+		return err
+	}
+	return nil
 }
 
 func runDevScript(ctx context.Context, app meta.App) error {

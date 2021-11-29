@@ -33,64 +33,59 @@ var buildOptions = struct {
 	},
 }
 
-var xbuildCmd = &cobra.Command{
-	Use:     "build",
-	Aliases: []string{"b", "bill", "install"},
-	Short:   "Build the application binary, including bundling of webpack assets",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		ctx, cancel := sigtx.WithCancel(context.Background(), os.Interrupt)
-		defer cancel()
+func runE(cmd *cobra.Command, args []string) error {
+	ctx, cancel := sigtx.WithCancel(context.Background(), os.Interrupt)
+	defer cancel()
 
-		pwd, err := os.Getwd()
-		if err != nil {
-			return err
+	pwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	buildOptions.App = meta.New(pwd)
+	if len(buildOptions.bin) > 0 {
+		buildOptions.App.Bin = buildOptions.bin
+	}
+
+	buildOptions.Options.WithAssets = !buildOptions.SkipAssets
+	buildOptions.Options.WithBuildDeps = !buildOptions.SkipBuildDeps
+
+	run := genny.WetRunner(ctx)
+	if buildOptions.DryRun {
+		run = genny.DryRunner(ctx)
+	}
+
+	if buildOptions.Verbose || buildOptions.Debug {
+		lg := logger.New(logger.DebugLevel)
+		run.Logger = lg
+		buildOptions.BuildFlags = append(buildOptions.BuildFlags, "-v")
+	}
+
+	opts := buildOptions.Options
+	opts.BuildVersion = buildVersion(opts.BuildTime.Format(time.RFC3339))
+
+	if buildOptions.Tags != "" {
+		opts.Tags = append(opts.Tags, buildOptions.Tags)
+	}
+
+	if !buildOptions.SkipTemplateValidation {
+		opts.TemplateValidators = append(opts.TemplateValidators, build.PlushValidator, build.GoTemplateValidator)
+	}
+
+	if cmd.CalledAs() == "install" {
+		opts.GoCommand = "install"
+	}
+	clean := build.Cleanup(opts)
+	// defer clean(run)
+	defer func() {
+		if err := clean(run); err != nil {
+			log.Fatalf("build:clean %s", err)
 		}
-
-		buildOptions.App = meta.New(pwd)
-		if len(buildOptions.bin) > 0 {
-			buildOptions.App.Bin = buildOptions.bin
-		}
-
-		buildOptions.Options.WithAssets = !buildOptions.SkipAssets
-		buildOptions.Options.WithBuildDeps = !buildOptions.SkipBuildDeps
-
-		run := genny.WetRunner(ctx)
-		if buildOptions.DryRun {
-			run = genny.DryRunner(ctx)
-		}
-
-		if buildOptions.Verbose || buildOptions.Debug {
-			lg := logger.New(logger.DebugLevel)
-			run.Logger = lg
-			buildOptions.BuildFlags = append(buildOptions.BuildFlags, "-v")
-		}
-
-		opts := buildOptions.Options
-		opts.BuildVersion = buildVersion(opts.BuildTime.Format(time.RFC3339))
-
-		if buildOptions.Tags != "" {
-			opts.Tags = append(opts.Tags, buildOptions.Tags)
-		}
-
-		if !buildOptions.SkipTemplateValidation {
-			opts.TemplateValidators = append(opts.TemplateValidators, build.PlushValidator, build.GoTemplateValidator)
-		}
-
-		if cmd.CalledAs() == "install" {
-			opts.GoCommand = "install"
-		}
-		clean := build.Cleanup(opts)
-		// defer clean(run)
-		defer func() {
-			if err := clean(run); err != nil {
-				log.Fatalf("build:clean %s", err)
-			}
-		}()
-		if err := run.WithNew(build.New(opts)); err != nil {
-			return err
-		}
-		return run.Run()
-	},
+	}()
+	if err := run.WithNew(build.New(opts)); err != nil {
+		return err
+	}
+	return run.Run()
 }
 
 func buildVersion(version string) string {

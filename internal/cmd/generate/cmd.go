@@ -4,13 +4,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cmd = &cobra.Command{
-	Use:     "generate",
-	Short:   "Generate application components",
-	Aliases: []string{"g"},
-}
-
 func Cmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "generate",
+		Short:   "Generate application components",
+		Aliases: []string{"g"},
+	}
+
 	cmd.AddCommand(ResourceCmd)
 	cmd.AddCommand(ActionCmd)
 	cmd.AddCommand(TaskCmd)

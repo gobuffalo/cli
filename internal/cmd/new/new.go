@@ -19,12 +19,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cmd = &cobra.Command{
-	Use:   "new [name]",
-	Short: "Creates a new Buffalo application",
-	RunE:  RunE,
-}
-
 func RunE(cmd *cobra.Command, args []string) error {
 	// Restore default values after usage (useful for testing)
 	defer func() {

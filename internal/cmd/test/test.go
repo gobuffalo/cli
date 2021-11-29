@@ -16,56 +16,51 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cmd = &cobra.Command{
-	Use:                "test",
-	Short:              "Run the tests for the Buffalo app. Use --force-migrations to skip schema load.",
-	DisableFlagParsing: true,
-	RunE: func(c *cobra.Command, args []string) error {
-		os.Setenv("GO_ENV", "test")
-		if _, err := os.Stat("database.yml"); err == nil {
-			// there's a database
-			test, err := pop.Connect("test")
+func runE(c *cobra.Command, args []string) error {
+	os.Setenv("GO_ENV", "test")
+	if _, err := os.Stat("database.yml"); err == nil {
+		// there's a database
+		test, err := pop.Connect("test")
+		if err != nil {
+			return err
+		}
+
+		// drop the test db:
+		if err := test.Dialect.DropDB(); err != nil {
+			return err
+		}
+
+		// create the test db:
+		err = test.Dialect.CreateDB()
+		if err != nil {
+			return err
+		}
+
+		// Read and remove --force-migrations flag from args:
+		var forceMigrations = strings.Contains(strings.Join(args, ""), "--force-migrations")
+		args = cutArg("--force-migrations", args)
+		if forceMigrations {
+			fm, err := pop.NewFileMigrator("./migrations", test)
+
 			if err != nil {
 				return err
 			}
 
-			// drop the test db:
-			if err := test.Dialect.DropDB(); err != nil {
+			if err := fm.Up(); err != nil {
 				return err
 			}
 
-			// create the test db:
-			err = test.Dialect.CreateDB()
+			return testRunner(args)
+		}
+
+		if schema := findSchema(); schema != nil {
+			err = test.Dialect.LoadSchema(schema)
 			if err != nil {
 				return err
-			}
-
-			// Read and remove --force-migrations flag from args:
-			var forceMigrations = strings.Contains(strings.Join(args, ""), "--force-migrations")
-			args = cutArg("--force-migrations", args)
-			if forceMigrations {
-				fm, err := pop.NewFileMigrator("./migrations", test)
-
-				if err != nil {
-					return err
-				}
-
-				if err := fm.Up(); err != nil {
-					return err
-				}
-
-				return testRunner(args)
-			}
-
-			if schema := findSchema(); schema != nil {
-				err = test.Dialect.LoadSchema(schema)
-				if err != nil {
-					return err
-				}
 			}
 		}
-		return testRunner(args)
-	},
+	}
+	return testRunner(args)
 }
 
 func findSchema() io.Reader {

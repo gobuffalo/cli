@@ -1,7 +1,6 @@
 package testhelpers
 
 import (
-	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -49,14 +48,11 @@ func EnsureBuffaloCMD(t *testing.T) error {
 func RunBuffaloCMD(t *testing.T, args []string) (string, error) {
 	t.Helper()
 
-	output := bytes.NewBufferString("")
 	ex := exec.Command(testingBinaryLocation(t))
-	ex.Stdout = output
-	ex.Stderr = output
 	ex.Args = append(ex.Args, args...)
-	err := ex.Run()
+	output, err := ex.CombinedOutput()
 
-	return output.String(), err
+	return string(output), err
 }
 
 // testingBinaryLocation returns the location of the testing binary which is

@@ -41,28 +41,23 @@ var (
 	}
 )
 
-var cmd = &cobra.Command{
-	Use:   "setup",
-	Short: "Setup a newly created, or recently checked out application.",
-	Long:  setupLongDescription,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		app := meta.New(".")
-		payload := events.Payload{
-			"app": app,
-		}
-		events.EmitPayload(EvtSetupStarted, payload)
+func runE(cmd *cobra.Command, args []string) error {
+	app := meta.New(".")
+	payload := events.Payload{
+		"app": app,
+	}
+	events.EmitPayload(EvtSetupStarted, payload)
 
-		for _, check := range checks {
-			err := check(app)
-			if err != nil {
-				events.EmitError(EvtSetupErr, err, payload)
-				return err
-			}
+	for _, check := range checks {
+		err := check(app)
+		if err != nil {
+			events.EmitError(EvtSetupErr, err, payload)
+			return err
 		}
+	}
 
-		events.EmitPayload(EvtSetupFinished, payload)
-		return nil
-	},
+	events.EmitPayload(EvtSetupFinished, payload)
+	return nil
 }
 
 func run(cmd *exec.Cmd) error {

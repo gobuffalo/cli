@@ -5,14 +5,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cmd = &cobra.Command{
-	Use:   "routes",
-	Short: "Print all defined routes",
-	RunE: func(c *cobra.Command, args []string) error {
-		return grifts.Run("buffalo task", []string{"routes"})
-	},
-}
-
 func Cmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "routes",
+		Short: "Print all defined routes",
+		RunE: func(c *cobra.Command, args []string) error {
+			return grifts.Run("buffalo task", []string{"routes"})
+		},
+	}
+
 	return cmd
 }

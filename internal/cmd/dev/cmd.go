@@ -7,9 +7,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	debug bool
-)
+// debug flag to enable delve debugging
+var debug bool = false
 
 func Cmd() *cobra.Command {
 	// Listen to events for event rewrite
@@ -19,6 +18,16 @@ func Cmd() *cobra.Command {
 			events.Emit(e)
 		}
 	})
+
+	// devCmd represents the dev command
+	cmd := &cobra.Command{
+		Use:   "dev",
+		Short: "Run the Buffalo app in 'development' mode",
+		Long: `Run the Buffalo app in 'development' mode.
+This includes rebuilding the application when files change.
+This behavior can be changed in .buffalo.dev.yml file.`,
+		RunE: runE,
+	}
 
 	cmd.Flags().BoolVarP(&debug, "debug", "d", false, "use delve to debug the app")
 

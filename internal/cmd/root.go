@@ -65,18 +65,10 @@ func preRunCheck(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	isAnywhereCommand := false
 	for _, freeCmd := range anywhereCommands {
 		if freeCmd != cmd.Name() {
-			continue
+			return nil
 		}
-
-		isAnywhereCommand = true
-		break
-	}
-
-	if isAnywhereCommand {
-		return nil
 	}
 
 	// check if command is being run from inside a buffalo project

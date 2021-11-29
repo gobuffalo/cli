@@ -10,6 +10,11 @@ import (
 )
 
 func Cmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "new [name]",
+		Short: "Creates a new Buffalo application",
+		RunE:  RunE,
+	}
 
 	cmd.Flags().Bool("api", false, "skip all front-end code and configure for an API server")
 	cmd.Flags().BoolP("force", "f", false, "delete and remake if the app already exists")
