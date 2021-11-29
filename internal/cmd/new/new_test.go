@@ -1,8 +1,10 @@
+//go:build integration
 // +build integration
 
 package new
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -14,16 +16,6 @@ import (
 func TestNew(t *testing.T) {
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
-
-	dir, err := os.MkdirTemp("", "buffalo-new-test-*")
-	r.NoError(err)
-	t.Cleanup(func() {
-		if err := os.RemoveAll(dir); err != nil {
-			t.Logf("failed to delete temporary directory: %s", dir)
-		}
-	})
-
-	r.NoError(os.Chdir(dir))
 
 	tcases := []struct {
 		name  string
@@ -76,10 +68,145 @@ func TestNew(t *testing.T) {
 	}
 
 	for _, v := range tcases {
-		t.Run(v.name, func(t *testing.T) {
-			r := require.New(t)
-			out, err := testhelpers.RunBuffaloCMD(t, v.args)
-			v.check(r, out, err)
+		t.Run(v.name, func(tt *testing.T) {
+			testhelpers.RunWithinTempFolder(tt, func(ttt *testing.T) {
+				r := require.New(ttt)
+				out, err := testhelpers.RunBuffaloCMD(ttt, v.args)
+				v.check(r, out, err)
+			})
 		})
 	}
+}
+
+func TestNewAppAPIContent(t *testing.T) {
+	r := require.New(t)
+	r.NoError(testhelpers.EnsureBuffaloCMD(t))
+
+	checks := []struct {
+		path  string
+		check func(*require.Assertions, string, bool)
+	}{
+		{
+			path: filepath.Join("apicontent", "actions", "app.go"),
+			check: func(r *require.Assertions, content string, exists bool) {
+				r.True(exists)
+				r.Contains(string(content), "app.Use(contenttype.Set(\"application/json\"))")
+			},
+		},
+
+		{
+			path: filepath.Join("apicontent", "actions", "home.go"),
+			check: func(r *require.Assertions, content string, exists bool) {
+				r.True(exists)
+
+				r.Contains(string(content), "r.JSON")
+				r.NotContains(string(content), "r.HTML")
+			},
+		},
+
+		{
+			path: filepath.Join("apicontent", "actions", "render.go"),
+			check: func(r *require.Assertions, content string, exists bool) {
+				r.True(exists)
+
+				r.Contains(string(content), "DefaultContentType: \"application/json\",")
+				r.NotContains(string(content), "HTMLLayout")
+				r.NotContains(string(content), "TemplatesBox")
+				r.NotContains(string(content), "Helpers")
+			},
+		},
+
+		{
+			path: filepath.Join("apicontent", "templates"),
+			check: func(r *require.Assertions, content string, exists bool) {
+				r.False(exists)
+			},
+		},
+
+		{
+			path: filepath.Join("apicontent", "assets"),
+			check: func(r *require.Assertions, content string, exists bool) {
+				r.False(exists)
+			},
+		},
+
+		{
+			path: filepath.Join("apicontent", "public"),
+			check: func(r *require.Assertions, content string, exists bool) {
+				r.False(exists)
+			},
+		},
+	}
+
+	testhelpers.RunWithinTempFolder(t, func(ttt *testing.T) {
+		r := require.New(ttt)
+		_, err := testhelpers.RunBuffaloCMD(ttt, []string{"new", "apicontent", "--api", "-f", "--vcs", "none"})
+		r.NoError(err)
+
+		for _, v := range checks {
+			ttt.Run(v.path, func(tt *testing.T) {
+				r := require.New(tt)
+				exists := true
+
+				b, err := os.ReadFile(v.path)
+				if err != nil && errors.Is(err, os.ErrNotExist) {
+					exists = false
+				}
+
+				v.check(r, string(b), exists)
+			})
+		}
+	})
+
+}
+
+func TestNewAppTravis(t *testing.T) {
+	r := require.New(t)
+	r.NoError(testhelpers.EnsureBuffaloCMD(t))
+
+	checks := []struct {
+		path  string
+		check func(*require.Assertions, string, bool)
+	}{
+		{
+			path: filepath.Join("apitravis", ".travis.yml"),
+			check: func(r *require.Assertions, content string, exists bool) {
+				r.True(exists)
+				r.Contains(string(content), "language: go")
+				r.Contains(string(content), "1.11.x")
+				r.Contains(string(content), "go_import_path:")
+			},
+		},
+
+		{
+			path: filepath.Join("apitravis", "database.yml"),
+			check: func(r *require.Assertions, content string, exists bool) {
+				r.True(exists)
+				r.Contains(string(content), "dialect: \"sqlite3\"")
+				r.Contains(string(content), "development:")
+				r.Contains(string(content), "production:")
+				r.Contains(string(content), "test:")
+			},
+		},
+	}
+
+	testhelpers.RunWithinTempFolder(t, func(ttt *testing.T) {
+		out, err := testhelpers.RunBuffaloCMD(t, []string{"new", "apitravis", "--api", "-f", "--vcs", "none", "--ci-provider", "travis", "--db-type", "sqlite3"})
+		t.Log(out)
+		r.NoError(err)
+
+		r := require.New(ttt)
+		for _, v := range checks {
+			ttt.Run(v.path, func(tt *testing.T) {
+				b, err := os.ReadFile(v.path)
+
+				exists := true
+				if err != nil && errors.Is(err, os.ErrNotExist) {
+					exists = false
+				}
+
+				v.check(r, string(b), exists)
+			})
+		}
+	})
 }

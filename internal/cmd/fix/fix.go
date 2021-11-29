@@ -10,9 +10,6 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-// YesToAll will be used by the command to skip the questions
-var YesToAll bool
-
 var replace = map[string]string{
 	"github.com/gobuffalo/buffalo-plugins":         "github.com/gobuffalo/cli/internal/plugins",
 	"github.com/gobuffalo/genny":                   "github.com/gobuffalo/genny/v2",
@@ -92,7 +89,7 @@ func encodeApp(r *Runner) error {
 }
 
 func ask(q string) bool {
-	if YesToAll {
+	if yesToAll {
 		return true
 	}
 

@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/genny/v2"
+	"github.com/gobuffalo/genny/v2/gogen/goimports"
 )
 
 func archivedAssets(opts *Options) (*genny.Generator, error) {
@@ -30,7 +31,7 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 		for _, f := range r.Disk.Files() {
 			rel, err := filepath.Rel(source, f.Name())
 			if err != nil {
-				return err
+				continue
 			}
 
 			if strings.HasPrefix(rel, "..") {
@@ -79,10 +80,26 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 		if err != nil {
 			return err
 		}
+
 		opts.rollback.Store(f.Name(), f.String())
 		body := strings.Replace(f.String(), `app.ServeFiles("/assets"`, `// app.ServeFiles("/assets"`, 1)
 		body = strings.Replace(body, `app.ServeFiles("/"`, `// app.ServeFiles("/"`, 1)
-		return r.File(genny.NewFileS(f.Name(), body))
+		f = genny.NewFileS(f.Name(), body)
+
+		// run goimports after to ensure we remove unneeded imports
+		// from actions/app.go
+		content := bytes.NewBufferString("")
+		gi := goimports.NewFromFiles(goimports.File{
+			Name: f.Name(),
+			In:   f,
+			Out:  content,
+		})
+
+		if err := gi.Run(); err != nil {
+			return err
+		}
+
+		return r.File(genny.NewFile(f.Name(), content))
 	})
 
 	return g, nil

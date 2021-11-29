@@ -10,8 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// MailerCmd destroys a passed mailer
-var MailerCmd = &cobra.Command{
+// mailerCmd destroys a passed mailer
+var mailerCmd = &cobra.Command{
 	Use: "mailer [name]",
 	// Example: "mailer cars",
 	Aliases: []string{"l"},
@@ -30,7 +30,7 @@ var MailerCmd = &cobra.Command{
 }
 
 func removeMailer(name string) {
-	if YesToAll || confirm("Want to remove mailer? (y/N)") {
+	if yesToAll || confirm("Want to remove mailer? (y/N)") {
 		mailerFileName := flect.Singularize(flect.Underscore(name))
 
 		files := []string{

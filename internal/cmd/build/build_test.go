@@ -1,0 +1,84 @@
+//go:build integration
+// +build integration
+
+package build_test
+
+import (
+	"os"
+	"path/filepath"
+	"runtime"
+	"testing"
+
+	"github.com/gobuffalo/cli/internal/testhelpers"
+	"github.com/stretchr/testify/require"
+)
+
+func TestBuild(t *testing.T) {
+	r := require.New(t)
+	r.NoError(testhelpers.EnsureBuffaloCMD(t))
+
+	tcases := []struct {
+		name    string
+		newargs []string
+		appname string
+	}{
+		{
+			name:    "nominal",
+			newargs: []string{"new", "nominal", "-f", "--skip-webpack", "--vcs", "none"},
+			appname: "nominal",
+		},
+		{
+			name:    "api",
+			newargs: []string{"new", "api", "-f", "--api", "--vcs", "none"},
+			appname: "api",
+		},
+		{
+			name:    "sqlite",
+			newargs: []string{"new", "sqlite", "-f", "--skip-webpack", "--db-type=sqlite3", "--vcs", "none"},
+			appname: "sqlite",
+		},
+	}
+
+	for _, v := range tcases {
+		t.Run(v.name, func(tx *testing.T) {
+			testhelpers.RunWithinTempFolder(tx, func(tt *testing.T) {
+				r := require.New(tt)
+				out, err := testhelpers.RunBuffaloCMD(tt, v.newargs)
+				tt.Log(out)
+				r.NoError(err)
+
+				os.Chdir(v.appname)
+
+				out, err = testhelpers.RunBuffaloCMD(tt, []string{"build"})
+				tt.Log(out)
+				r.NoError(err)
+			})
+		})
+	}
+}
+
+func TestBuildNoAssets(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Skipping this test on windows temporarily")
+	}
+
+	r := require.New(t)
+	r.NoError(testhelpers.EnsureBuffaloCMD(t))
+
+	testhelpers.RunWithinTempFolder(t, func(tt *testing.T) {
+		out, err := testhelpers.RunBuffaloCMD(tt, []string{"new", "noassets", "-f", "--skip-webpack", "--vcs", "none"})
+		tt.Log(out)
+		r.NoError(err)
+
+		tt.Cleanup(func() {
+			os.RemoveAll("noassets")
+		})
+
+		os.Chdir("noassets")
+		out, err = testhelpers.RunBuffaloCMD(tt, []string{"build", "--extract-assets"})
+		tt.Log(out)
+		r.NoError(err)
+
+		r.FileExists(filepath.Join("bin", "assets.zip"))
+	})
+}
