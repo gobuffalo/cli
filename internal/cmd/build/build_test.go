@@ -4,8 +4,10 @@
 package build_test
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/gobuffalo/cli/internal/testhelpers"
@@ -81,13 +83,14 @@ func TestBuildNoAssets(t *testing.T) {
 	r.NoError(err)
 
 	if runtime.GOOS == "windows" {
-		err := os.Walk(filepath.Join(dir, "noassets", "bin"), func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
+		fmt.Println(out)
 
+		err := filepath.Walk(filepath.Join(dir, "noassets", "bin"), func(path string, info os.FileInfo, err error) error {
 			t.Logf("FOUND: %s", path)
+			return err
 		})
+
+		fmt.Println(err)
 	}
 
 	// r.FileExists(filepath.Join("bin", "assets.zip"))
