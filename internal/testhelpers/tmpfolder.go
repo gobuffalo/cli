@@ -5,14 +5,23 @@ import (
 	"testing"
 )
 
+// RunWithinTempFolder runs the given function on a temporary folder
+// and returns to the original working directory afterwards.
 func RunWithinTempFolder(t *testing.T, fn func(t *testing.T)) {
 	t.Helper()
-	wd, err := os.Getwd()
+	original, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	dir, err := os.MkdirTemp("", "buffalo-new-test-*")
+	t.Cleanup(func() {
+		err := os.Chdir(original)
+		if err != nil {
+			t.Logf("error moving back to the original folder: %s", err)
+		}
+	})
+
+	dir, err := os.MkdirTemp("", "buffalo-integration-test-*")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -29,12 +38,4 @@ func RunWithinTempFolder(t *testing.T, fn func(t *testing.T)) {
 	}
 
 	fn(t)
-
-	t.Cleanup(func() {
-		err := os.Chdir(wd)
-		if err != nil {
-			t.Logf("error moving back to the original folder: %s", err)
-		}
-	})
-
 }
