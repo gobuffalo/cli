@@ -39,31 +39,20 @@ func TestBuild(t *testing.T) {
 		},
 	}
 
-	dir, err := os.MkdirTemp("", "buffalo-build-test-*")
-	r.NoError(err)
-	t.Cleanup(func() {
-		if err := os.RemoveAll(dir); err != nil {
-			t.Logf("failed to delete temporary directory: %s", dir)
-		}
-	})
-
 	for _, v := range tcases {
 		t.Run(v.name, func(tx *testing.T) {
-			r := require.New(tx)
-			wd, err := os.Getwd()
-			r.NoError(err)
-			defer os.Chdir(wd)
+			testhelpers.RunWithinTempFolder(tx, func(tt *testing.T) {
+				r := require.New(tt)
+				out, err := testhelpers.RunBuffaloCMD(tt, v.newargs)
+				tt.Log(out)
+				r.NoError(err)
 
-			r.NoError(os.Chdir(dir))
+				os.Chdir(v.appname)
 
-			out, err := testhelpers.RunBuffaloCMD(tx, v.newargs)
-			tx.Log(out)
-			r.NoError(err)
-
-			os.Chdir(filepath.Join(dir, v.appname))
-			out, err = testhelpers.RunBuffaloCMD(tx, []string{"build"})
-			tx.Log(out)
-			r.NoError(err)
+				out, err = testhelpers.RunBuffaloCMD(tt, []string{"build"})
+				tt.Log(out)
+				r.NoError(err)
+			})
 		})
 	}
 }
@@ -76,25 +65,20 @@ func TestBuildNoAssets(t *testing.T) {
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 
-	wd, err := os.Getwd()
-	r.NoError(err)
-	defer os.Chdir(wd)
+	testhelpers.RunWithinTempFolder(t, func(tt *testing.T) {
+		out, err := testhelpers.RunBuffaloCMD(tt, []string{"new", "noassets", "-f", "--skip-webpack", "--vcs", "none"})
+		tt.Log(out)
+		r.NoError(err)
 
-	dir := os.TempDir()
-	os.Chdir(dir)
+		tt.Cleanup(func() {
+			os.RemoveAll("noassets")
+		})
 
-	out, err := testhelpers.RunBuffaloCMD(t, []string{"new", "noassets", "-f", "--skip-webpack", "--vcs", "none"})
-	t.Log(out)
-	r.NoError(err)
+		os.Chdir("noassets")
+		out, err = testhelpers.RunBuffaloCMD(tt, []string{"build", "--extract-assets"})
+		tt.Log(out)
+		r.NoError(err)
 
-	t.Cleanup(func() {
-		os.RemoveAll(filepath.Join(dir, "noassets"))
+		r.FileExists(filepath.Join("bin", "assets.zip"))
 	})
-
-	os.Chdir(filepath.Join(dir, "noassets"))
-	out, err = testhelpers.RunBuffaloCMD(t, []string{"build", "--extract-assets"})
-	t.Log(out)
-	r.NoError(err)
-
-	r.FileExists(filepath.Join("bin", "assets.zip"))
 }

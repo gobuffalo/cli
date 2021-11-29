@@ -17,16 +17,6 @@ func TestNew(t *testing.T) {
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 
-	dir, err := os.MkdirTemp("", "buffalo-new-test-*")
-	r.NoError(err)
-	t.Cleanup(func() {
-		if err := os.RemoveAll(dir); err != nil {
-			t.Logf("failed to delete temporary directory: %s", dir)
-		}
-	})
-
-	r.NoError(os.Chdir(dir))
-
 	tcases := []struct {
 		name  string
 		args  []string
@@ -78,36 +68,19 @@ func TestNew(t *testing.T) {
 	}
 
 	for _, v := range tcases {
-		t.Run(v.name, func(t *testing.T) {
-			wd, err := os.Getwd()
-			r.NoError(err)
-			defer os.Chdir(wd)
-
-			dir := os.TempDir()
-			r.NoError(os.Chdir(dir))
-
-			r := require.New(t)
-			out, err := testhelpers.RunBuffaloCMD(t, v.args)
-			v.check(r, out, err)
+		t.Run(v.name, func(tt *testing.T) {
+			testhelpers.RunWithinTempFolder(tt, func(ttt *testing.T) {
+				r := require.New(ttt)
+				out, err := testhelpers.RunBuffaloCMD(ttt, v.args)
+				v.check(r, out, err)
+			})
 		})
 	}
 }
 
 func TestNewAppAPIContent(t *testing.T) {
 	r := require.New(t)
-
-	wd, err := os.Getwd()
-	r.NoError(err)
-	defer os.Chdir(wd)
-
-	t.Log(wd)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
-
-	dir := t.TempDir()
-	r.NoError(os.Chdir(dir))
-
-	_, err = testhelpers.RunBuffaloCMD(t, []string{"new", "apicontent", "--api", "-f", "--vcs", "none"})
-	r.NoError(err)
 
 	checks := []struct {
 		path  string
@@ -165,38 +138,31 @@ func TestNewAppAPIContent(t *testing.T) {
 		},
 	}
 
-	for _, v := range checks {
-		t.Run(v.path, func(t *testing.T) {
-			r := require.New(t)
-			exists := true
+	testhelpers.RunWithinTempFolder(t, func(ttt *testing.T) {
+		r := require.New(ttt)
+		_, err := testhelpers.RunBuffaloCMD(ttt, []string{"new", "apicontent", "--api", "-f", "--vcs", "none"})
+		r.NoError(err)
 
-			b, err := os.ReadFile(v.path)
-			if err != nil && errors.Is(err, os.ErrNotExist) {
-				exists = false
-			}
+		for _, v := range checks {
+			ttt.Run(v.path, func(tt *testing.T) {
+				r := require.New(tt)
+				exists := true
 
-			v.check(r, string(b), exists)
-		})
-	}
+				b, err := os.ReadFile(v.path)
+				if err != nil && errors.Is(err, os.ErrNotExist) {
+					exists = false
+				}
+
+				v.check(r, string(b), exists)
+			})
+		}
+	})
 
 }
 
 func TestNewAppTravis(t *testing.T) {
 	r := require.New(t)
-
-	wd, err := os.Getwd()
-	r.NoError(err)
-	defer os.Chdir(wd)
-
-	t.Log(wd)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
-
-	dir := t.TempDir()
-	r.NoError(os.Chdir(dir))
-
-	out, err := testhelpers.RunBuffaloCMD(t, []string{"new", "apitravis", "--api", "-f", "--vcs", "none", "--ci-provider", "travis", "--db-type", "sqlite3"})
-	t.Log(out)
-	r.NoError(err)
 
 	checks := []struct {
 		path  string
@@ -224,17 +190,23 @@ func TestNewAppTravis(t *testing.T) {
 		},
 	}
 
-	for _, v := range checks {
-		t.Run(v.path, func(t *testing.T) {
-			r := require.New(t)
-			exists := true
+	testhelpers.RunWithinTempFolder(t, func(ttt *testing.T) {
+		out, err := testhelpers.RunBuffaloCMD(t, []string{"new", "apitravis", "--api", "-f", "--vcs", "none", "--ci-provider", "travis", "--db-type", "sqlite3"})
+		t.Log(out)
+		r.NoError(err)
 
-			b, err := os.ReadFile(v.path)
-			if err != nil && errors.Is(err, os.ErrNotExist) {
-				exists = false
-			}
+		r := require.New(ttt)
+		for _, v := range checks {
+			ttt.Run(v.path, func(tt *testing.T) {
+				b, err := os.ReadFile(v.path)
 
-			v.check(r, string(b), exists)
-		})
-	}
+				exists := true
+				if err != nil && errors.Is(err, os.ErrNotExist) {
+					exists = false
+				}
+
+				v.check(r, string(b), exists)
+			})
+		}
+	})
 }
