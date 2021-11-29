@@ -4,7 +4,6 @@
 package build_test
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -63,6 +62,10 @@ func TestBuild(t *testing.T) {
 }
 
 func TestBuildNoAssets(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Skipping this test on windows temporarily")
+	}
+
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 
@@ -82,16 +85,5 @@ func TestBuildNoAssets(t *testing.T) {
 	t.Log(out)
 	r.NoError(err)
 
-	if runtime.GOOS == "windows" {
-		fmt.Println(out)
-
-		err := filepath.Walk(filepath.Join(dir, "noassets", "bin"), func(path string, info os.FileInfo, err error) error {
-			t.Logf("FOUND: %s", path)
-			return err
-		})
-
-		fmt.Println(err)
-	}
-
-	// r.FileExists(filepath.Join("bin", "assets.zip"))
+	r.FileExists(filepath.Join("bin", "assets.zip"))
 }
