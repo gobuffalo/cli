@@ -18,24 +18,28 @@ func TestBuild(t *testing.T) {
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 
 	tcases := []struct {
-		name    string
-		newargs []string
-		appname string
+		name         string
+		newargs      []string
+		resourceargs []string
+		appname      string
 	}{
 		{
-			name:    "nominal",
-			newargs: []string{"new", "nominal", "-f", "--skip-webpack", "--vcs", "none"},
-			appname: "nominal",
+			name:         "nominal",
+			newargs:      []string{"new", "nominal", "-f", "--skip-webpack", "--vcs", "none"},
+			resourceargs: []string{"g", "resource", "phone", "model"},
+			appname:      "nominal",
 		},
 		{
-			name:    "api",
-			newargs: []string{"new", "api", "-f", "--api", "--vcs", "none"},
-			appname: "api",
+			name:         "api",
+			newargs:      []string{"new", "api", "-f", "--api", "--vcs", "none"},
+			resourceargs: []string{"g", "resource", "phone", "model"},
+			appname:      "api",
 		},
 		{
-			name:    "sqlite",
-			newargs: []string{"new", "sqlite", "-f", "--skip-webpack", "--db-type=sqlite3", "--vcs", "none"},
-			appname: "sqlite",
+			name:         "sqlite",
+			newargs:      []string{"new", "sqlite", "-f", "--skip-webpack", "--db-type=sqlite3", "--vcs", "none"},
+			resourceargs: []string{"g", "resource", "phone", "model"},
+			appname:      "sqlite",
 		},
 	}
 
@@ -48,6 +52,10 @@ func TestBuild(t *testing.T) {
 				r.NoError(err)
 
 				os.Chdir(v.appname)
+
+				out, err = testhelpers.RunBuffaloCMD(t, v.resourceargs)
+				tx.Log(out)
+				r.NoError(err)
 
 				out, err = testhelpers.RunBuffaloCMD(tt, []string{"build"})
 				tt.Log(out)
@@ -75,6 +83,11 @@ func TestBuildNoAssets(t *testing.T) {
 		})
 
 		os.Chdir("noassets")
+
+		out, err = testhelpers.RunBuffaloCMD(t, []string{"g", "resource", "phone", "model"})
+		tt.Log(out)
+		r.NoError(err)
+
 		out, err = testhelpers.RunBuffaloCMD(tt, []string{"build", "--extract-assets"})
 		tt.Log(out)
 		r.NoError(err)
