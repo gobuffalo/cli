@@ -41,6 +41,12 @@ func TestBuild(t *testing.T) {
 			resourceargs: []string{"g", "resource", "phone", "model"},
 			appname:      "sqlite",
 		},
+		{
+			name:         "skipop",
+			newargs:      []string{"new", "skipop", "-f", "--skip-pop", "--vcs", "none"},
+			resourceargs: []string{"g", "action", "phone", "new"},
+			appname:      "skipop",
+		},
 	}
 
 	for _, v := range tcases {
@@ -53,6 +59,10 @@ func TestBuild(t *testing.T) {
 
 				os.Chdir(v.appname)
 
+				// NOTE: I think adding this to here is totally fine since
+				// this is "integration" test. However, the original reason
+				// I added it now is to prevent build failure when there is
+				// no subdir under templates directory (go:embed * */*)
 				out, err = testhelpers.RunBuffaloCMD(t, v.resourceargs)
 				tx.Log(out)
 				r.NoError(err)
