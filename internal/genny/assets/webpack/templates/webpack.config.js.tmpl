@@ -3,7 +3,6 @@ const Glob = require("glob");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
-const CleanObsoleteChunks = require("webpack-clean-obsolete-chunks");
 const TerserPlugin = require("terser-webpack-plugin");
 const LiveReloadPlugin = require("webpack-livereload-plugin");
 
@@ -42,10 +41,20 @@ const configurator = {
         jQuery: "jquery"
       }),
       new MiniCssExtractPlugin({filename: "[name].[contenthash].css"}),
-      new CopyWebpackPlugin({patterns:[{from: "./assets",to: ""}]}, {copyUnmodified: true,ignore: ["css/**", "js/**", "src/**"]}),
+      new CopyWebpackPlugin({
+        patterns: [{
+          from: "./assets",
+          globOptions: {
+            ignore: [
+              "**/css/**", 
+              "**/js/**", 
+              "**/src/**",
+            ]
+          }
+        }],
+      }),
       new Webpack.LoaderOptionsPlugin({minimize: true,debug: false}),
-      new WebpackManifestPlugin({fileName: "manifest.json",publicPath: ""}),
-      new CleanObsoleteChunks()
+      new WebpackManifestPlugin({fileName: "manifest.json",publicPath: ""})
     ];
 
     return plugins
@@ -81,7 +90,11 @@ const configurator = {
     var config = {
       mode: env,
       entry: configurator.entries(),
-      output: {filename: "[name].[hash].js", path: `${__dirname}/public/assets`},
+      output: {
+        filename: "[name].[contenthash].js", 
+        path: `${__dirname}/public/assets`,
+        clean: true,
+      },
       plugins: configurator.plugins(),
       module: configurator.moduleOptions(),
       resolve: {
