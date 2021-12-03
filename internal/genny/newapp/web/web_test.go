@@ -87,7 +87,7 @@ var commonExpected = []string{
 	"templates/_flash.plush.html",
 	"templates/application.plush.html",
 	"templates/embed.go",
-	"templates/index.plush.html",
+	"templates/home/index.plush.html",
 	".codeclimate.yml",
 	".env",
 	"inflections.json",
