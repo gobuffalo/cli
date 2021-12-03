@@ -3,13 +3,14 @@ package build
 import (
 	"archive/zip"
 	"bytes"
+	"fmt"
 	"io"
 	"io/fs"
-	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/gobuffalo/genny/v2"
+	"github.com/gobuffalo/genny/v2/gogen/goimports"
 )
 
 func archivedAssets(opts *Options) (*genny.Generator, error) {
@@ -27,17 +28,22 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 		archive := zip.NewWriter(bb)
 		defer archive.Close()
 
-		fsys := os.DirFS(source)
-		err := fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
+		for _, f := range r.Disk.Files() {
+			rel, err := filepath.Rel(source, f.Name())
 			if err != nil {
-				return err
+				continue
 			}
 
-			if d.IsDir() {
-				return nil
+			if strings.HasPrefix(rel, "..") {
+				continue
 			}
 
-			info, err := d.Info()
+			file, ok := f.(fs.File)
+			if !ok {
+				return fmt.Errorf("cannot process file %s", f.Name())
+			}
+
+			info, err := file.Stat()
 			if err != nil {
 				return err
 			}
@@ -46,7 +52,7 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 			if err != nil {
 				return err
 			}
-			header.Name = path
+			header.Name = rel
 			header.Method = zip.Deflate
 
 			writer, err := archive.CreateHeader(header)
@@ -54,16 +60,10 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 				return err
 			}
 
-			file, err := fsys.Open(path)
+			_, err = io.Copy(writer, file)
 			if err != nil {
 				return err
 			}
-
-			_, err = io.Copy(writer, file)
-			return err
-		})
-		if err != nil {
-			return err
 		}
 		// We need to close the archive before passing the buffer to genny, otherwise the zip
 		// will be corrupted.
@@ -80,10 +80,26 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 		if err != nil {
 			return err
 		}
+
 		opts.rollback.Store(f.Name(), f.String())
 		body := strings.Replace(f.String(), `app.ServeFiles("/assets"`, `// app.ServeFiles("/assets"`, 1)
 		body = strings.Replace(body, `app.ServeFiles("/"`, `// app.ServeFiles("/"`, 1)
-		return r.File(genny.NewFileS(f.Name(), body))
+		f = genny.NewFileS(f.Name(), body)
+
+		// run goimports after to ensure we remove unneeded imports
+		// from actions/app.go
+		content := bytes.NewBufferString("")
+		gi := goimports.NewFromFiles(goimports.File{
+			Name: f.Name(),
+			In:   f,
+			Out:  content,
+		})
+
+		if err := gi.Run(); err != nil {
+			return err
+		}
+
+		return r.File(genny.NewFile(f.Name(), content))
 	})
 
 	return g, nil

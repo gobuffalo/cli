@@ -1,12 +1,12 @@
 package actions
 
 import (
-	{{ if .opts.App.WithPop }}
+	{{ if .opts.App.WithPop -}}
 	"{{ .opts.App.ModelsPkg }}"
 	{{ end -}}
 
 	"github.com/gobuffalo/buffalo"
-	{{ if .opts.App.WithPop }}
+	{{ if .opts.App.WithPop -}}
 	"github.com/gobuffalo/buffalo-pop/v3/pop/popmw"
 	{{ end -}}
 	"github.com/gobuffalo/envy"
@@ -58,12 +58,12 @@ func App() *buffalo.App {
 		// Set the request content type to JSON
 		app.Use(contenttype.Set("application/json"))
 
-		{{ if .opts.App.WithPop }}
+		{{ if .opts.App.WithPop -}}
 		// Wraps each request in a transaction.
 		//   c.Value("tx").(*pop.Connection)
 		// Remove to disable this.
 		app.Use(popmw.Transaction(models.DB))
-		{{ end }}
+		{{ end -}}
 
 		app.GET("/", HomeHandler)
 	}

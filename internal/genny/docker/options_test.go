@@ -9,14 +9,7 @@ import (
 func Test_Options_Validate(t *testing.T) {
 	r := require.New(t)
 
-	opts := &Options{
-		Style: "foo",
-	}
+	opts := &Options{}
 	err := opts.Validate()
-	r.Error(err)
-
-	opts.Style = "multi"
-	err = opts.Validate()
 	r.NoError(err)
-
 }

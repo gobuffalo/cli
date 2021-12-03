@@ -1,0 +1,12 @@
+Setup runs through checklist to make sure dependencies are setup correctly.
+
+Asset Pipeline (if used):
+* Runs "npm install" or "yarn install" to install asset dependencies.
+
+Database (if used):
+* Runs "buffalo db create -a" to create databases.
+* Runs "buffalo db migrate" to run database migrations.
+* Runs "buffalo task db:seed" to seed the database (if the task exists).
+
+Tests:
+* Runs "buffalo test" to confirm the application's tests are running properly.

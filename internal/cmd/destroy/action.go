@@ -7,8 +7,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//ActionCmd destroys passed action file
-var ActionCmd = &cobra.Command{
+//actionCmd destroys passed action file
+var actionCmd = &cobra.Command{
 	Use: "action [name]",
 	// Example: "resource cars",
 	Aliases: []string{"a"},

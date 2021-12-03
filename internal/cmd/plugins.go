@@ -1,16 +1,11 @@
 package cmd
 
 import (
-	pluginscmd "github.com/gobuffalo/cli/internal/cmd/plugins"
 	"github.com/gobuffalo/cli/internal/plugins"
 	"github.com/markbates/oncer"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
-
-func init() {
-	RootCmd.AddCommand(pluginscmd.PluginsCmd)
-}
 
 var _plugs plugins.List
 
@@ -18,10 +13,12 @@ func plugs() plugins.List {
 	oncer.Do("buffalo/cmd/plugins", func() {
 		var err error
 		_plugs, err = plugins.Available()
-		if err != nil {
-			_plugs = plugins.List{}
-			logrus.Errorf("error loading plugins %s", err)
+		if err == nil {
+			return
 		}
+
+		_plugs = plugins.List{}
+		logrus.Errorf("error loading plugins %s", err)
 	})
 	return _plugs
 }

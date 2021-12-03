@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/gobuffalo/cli/internal/genny/newapp/core"
-
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/gobuffalo/meta"
