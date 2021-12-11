@@ -12,7 +12,7 @@ import (
 	"golang.org/x/tools/go/ast/astutil"
 )
 
-//MiddlewareTransformer moves from our old middleware package to new one
+// MiddlewareTransformer moves from our old middleware package to new one
 type MiddlewareTransformer struct {
 	PackagesReplacement map[string]string
 	Aliases             map[string]string
@@ -37,7 +37,7 @@ func (mw MiddlewareTransformer) processFile(p string, fi os.FileInfo, err error)
 			return err
 		}
 
-		//Replacing mw packages
+		// Replacing mw packages
 		for old, new := range mw.PackagesReplacement {
 			deleted := astutil.DeleteImport(fset, f, old)
 			if deleted {
@@ -131,7 +131,7 @@ func buildASTFor(p string) (*token.FileSet, *ast.File, error) {
 	return fset, f, err
 }
 
-//onlyRelevantFiles processes only .go files excluding folders like node_modules and vendor.
+// onlyRelevantFiles processes only .go files excluding folders like node_modules and vendor.
 func onlyRelevantFiles(p string, fi os.FileInfo, err error, fn func(p string) error) error {
 	if err != nil {
 		return err

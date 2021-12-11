@@ -157,7 +157,6 @@ func TestNewAppAPIContent(t *testing.T) {
 			})
 		}
 	})
-
 }
 
 func TestNewAppTravis(t *testing.T) {

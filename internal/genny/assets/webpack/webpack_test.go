@@ -55,7 +55,6 @@ func Test_Webpack_New(t *testing.T) {
 	f, err := res.Find("package.json")
 	r.NoError(err)
 	r.Contains(f.String(), `"bootstrap": "^5.`)
-
 }
 
 func Test_Webpack_New_WithYarn(t *testing.T) {

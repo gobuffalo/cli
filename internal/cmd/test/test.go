@@ -37,11 +37,10 @@ func runE(c *cobra.Command, args []string) error {
 		}
 
 		// Read and remove --force-migrations flag from args:
-		var forceMigrations = strings.Contains(strings.Join(args, ""), "--force-migrations")
+		forceMigrations := strings.Contains(strings.Join(args, ""), "--force-migrations")
 		args = cutArg("--force-migrations", args)
 		if forceMigrations {
 			fm, err := pop.NewFileMigrator("./migrations", test)
-
 			if err != nil {
 				return err
 			}

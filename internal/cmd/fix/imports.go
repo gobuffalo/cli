@@ -25,7 +25,6 @@ func (c ImportConverter) Process(r *Runner) error {
 	fmt.Println("~~~ Rewriting Imports ~~~")
 
 	return filepath.Walk(".", c.processFile)
-
 }
 
 func (c ImportConverter) processFile(p string, info os.FileInfo, err error) error {
@@ -37,7 +36,6 @@ func (c ImportConverter) processFile(p string, info os.FileInfo, err error) erro
 }
 
 func (c ImportConverter) rewriteFile(name string) error {
-
 	// create an empty fileset.
 	fset := token.NewFileSet()
 

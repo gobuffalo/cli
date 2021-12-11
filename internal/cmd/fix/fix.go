@@ -75,7 +75,7 @@ func encodeApp(r *Runner) error {
 	if _, err := os.Stat(p); err == nil {
 		return nil
 	}
-	if err := os.MkdirAll(filepath.Dir(p), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
 		return err
 	}
 	f, err := os.Create(p)

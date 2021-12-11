@@ -50,6 +50,6 @@ func DeprecrationsCheck(r *Runner) error {
 		if bytes.Contains(b, []byte("T.LanguageFinder=")) || bytes.Contains(b, []byte("T.LanguageFinder ")) {
 			r.Warnings = append(r.Warnings, fmt.Sprintf("i18n.Translator#LanguageFinder has been deprecated in v0.11.1, and has been removed in v0.12.0. Use i18n.Translator#LanguageExtractors instead. [%s]", path))
 		}
-		return os.WriteFile(path, b, 0664)
+		return os.WriteFile(path, b, 0o664)
 	})
 }

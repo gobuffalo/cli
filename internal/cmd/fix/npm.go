@@ -61,7 +61,7 @@ func AddPackageJSONScripts(r *Runner) error {
 			return fmt.Errorf("could not rewrite package.json: %w", err)
 		}
 
-		if err := os.WriteFile("package.json", b, 0644); err != nil {
+		if err := os.WriteFile("package.json", b, 0o644); err != nil {
 			return fmt.Errorf("could not rewrite package.json: %w", err)
 		}
 	} else {

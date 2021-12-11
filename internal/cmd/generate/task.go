@@ -17,7 +17,7 @@ var taskOptions = struct {
 	Options: &grift.Options{},
 }
 
-//TaskCmd is the command called with the generate grift cli.
+// TaskCmd is the command called with the generate grift cli.
 var TaskCmd = &cobra.Command{
 	Use:     "task [name]",
 	Aliases: []string{"t", "grift"},

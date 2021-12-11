@@ -230,7 +230,6 @@ func Test_New_UseModel(t *testing.T) {
 	f, err := res.Find("actions/widgets.go")
 	r.NoError(err)
 	r.Contains(f.String(), "users := &models.Users{}")
-
 }
 
 func Test_New_SkipModel(t *testing.T) {

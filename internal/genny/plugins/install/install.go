@@ -83,6 +83,6 @@ func pRun(proot string, p plugdeps.Plugin) genny.RunFn {
 			return err
 		}
 
-		return os.Chmod(pbp, 0555)
+		return os.Chmod(pbp, 0o555)
 	}
 }
