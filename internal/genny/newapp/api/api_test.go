@@ -20,8 +20,7 @@ func Test_New(t *testing.T) {
 	r := require.New(t)
 
 	app := meta.Named("api", ".")
-	(&app).PackageRoot("api")
-	app.WithModules = false
+	app.PackageRoot("api")
 	app.AsAPI = true
 	app.AsWeb = false
 
