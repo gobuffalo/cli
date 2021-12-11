@@ -115,9 +115,9 @@ github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LB
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/gobuffalo/attrs v1.0.1 h1:Z84c0uuGKg58mhcLQODAqE/Sbxg8GgwjvV9nekZPs5c=
 github.com/gobuffalo/attrs v1.0.1/go.mod h1:qGdnq2RukKtBl4ASJit0OFckc5XGSyTFk98SvRpMFrQ=
-github.com/gobuffalo/buffalo v0.18.0/go.mod h1:fb4LkUNKu2Apo6qyuRFJoEj6iWBCDLYC+Z1FJ6AAzrs=
-github.com/gobuffalo/buffalo-pop/v3 v3.0.1 h1:05OK3D95kh65e+leKLIGJrZGKUev5WwfX4iuYw4lb2U=
-github.com/gobuffalo/buffalo-pop/v3 v3.0.1/go.mod h1:y8mNrbpSkc4uFb2+2uWJI/kmOjkuRQod+yAcTmbLEjs=
+github.com/gobuffalo/buffalo v0.18.1/go.mod h1:fb4LkUNKu2Apo6qyuRFJoEj6iWBCDLYC+Z1FJ6AAzrs=
+github.com/gobuffalo/buffalo-pop/v3 v3.0.2 h1:3B9Na2PGWff9MgP6cXVWODkJKZNe+WdXTnmenGEJyrI=
+github.com/gobuffalo/buffalo-pop/v3 v3.0.2/go.mod h1:41ELDuiSPHvb23KAbLOZGw0EBsKH1SvsMk3G8MTeqJE=
 github.com/gobuffalo/clara/v2 v2.0.5 h1:o4M7bMLN2pqxtlUOPQAIqVVa+kKEcMBK5VZBmxu+rlE=
 github.com/gobuffalo/clara/v2 v2.0.5/go.mod h1:RjaUUvAnDxowiV6pVPl67Dsp4yVKJRZVYrKpXCTghMA=
 github.com/gobuffalo/envy v1.10.1 h1:ppDLoXv2feQ5nus4IcgtyMdHQkKng2lhJCIm33cblM0=
@@ -165,8 +165,9 @@ github.com/gobuffalo/validate/v3 v3.3.1/go.mod h1:Ehu8ieNJQuUM4peDDr/0VapzdGA7Rg
 github.com/godbus/dbus/v5 v5.0.4/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=
 github.com/gofrs/uuid v3.2.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
 github.com/gofrs/uuid v4.0.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
-github.com/gofrs/uuid v4.1.0+incompatible h1:sIa2eCvUTwgjbqXrPLfNwUf9S3i3mpH1O1atV+iL/Wk=
 github.com/gofrs/uuid v4.1.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
+github.com/gofrs/uuid v4.2.0+incompatible h1:yyYWMnhkhrKwwr8gAOcOCYxOOscHgDS9yZgBrnJfGa0=
+github.com/gofrs/uuid v4.2.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
 github.com/gogo/protobuf v1.3.2/go.mod h1:P1XiOD3dCwIKUDQYPy72D8LYyHL2YPYrpS2s69NZV8Q=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
 github.com/golang/groupcache v0.0.0-20190702054246-869f871628b6/go.mod h1:cIg4eruTrX1D+g88fzRXU5OdNfaM+9IcxsU14FzY7Hc=
