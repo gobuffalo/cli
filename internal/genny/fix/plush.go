@@ -8,15 +8,15 @@ import (
 	"strings"
 )
 
-// Plush will update foo.html templates to foo.plush.html templates
-func Plush(r *Runner) error {
-	templatesDir := filepath.Join(r.App.Root, "templates")
+// UpdatePlushTemplates will update foo.html templates to foo.plush.html templates
+func UpdatePlushTemplates(opts *Options) ([]string, error) {
+	templatesDir := filepath.Join(opts.App.Root, "templates")
 	if _, err := os.Stat(templatesDir); os.IsNotExist(err) {
 		// Skip if the templates dir doesn't exist (e.g. API apps)
-		return nil
+		return nil, nil
 	}
 	fmt.Println("~~~ Adding .plush extension to .html/.js/.md files ~~~")
-	return filepath.Walk(templatesDir, func(p string, info os.FileInfo, err error) error {
+	err := filepath.Walk(templatesDir, func(p string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -59,4 +59,5 @@ func Plush(r *Runner) error {
 
 		return err
 	})
+	return nil, err
 }

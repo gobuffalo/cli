@@ -15,61 +15,51 @@ import (
 	"github.com/gobuffalo/meta"
 )
 
-// Plugins fixes the plugin configuration of the project by
-// manipulating the plugins .toml file.
-type Plugins struct{}
-
-// CleanCache cleans the plugins cache folder by removing it
-func (pf Plugins) CleanCache(r *Runner) error {
+// CleanPluginCache cleans the plugins cache folder by removing it
+func CleanPluginCache(opts *Options) ([]string, error) {
 	fmt.Println("~~~ Cleaning plugins cache ~~~")
 	os.RemoveAll(plugins.CachePath)
-	return nil
+	return nil, nil
 }
 
-// Reinstall installs latest versions of the plugins
-func (pf Plugins) Reinstall(r *Runner) error {
-	plugs, err := plugdeps.List(r.App)
+// ReinstallPlugins installs latest versions of the plugins
+func ReinstallPlugins(opts *Options) ([]string, error) {
+	plugs, err := plugdeps.List(opts.App)
 	if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
-		return err
+		return nil, err
 	}
 
-	// TODO: generalize with meta/v2
-	if r.App.WithPop {
-		plugs.Add(plugdeps.NewPlugin(current_pop))
-	}
 	run := genny.WetRunner(context.Background())
 	gg, err := install.New(&install.Options{
-		App:     r.App,
+		App:     opts.App,
 		Plugins: plugs.List(),
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	run.WithGroup(gg)
 
 	fmt.Println("~~~ Reinstalling plugins ~~~")
-	return run.Run()
+	return nil, run.Run()
 }
 
-// RemoveOld removes old and deprecated plugins
-func (pf Plugins) RemoveOld(r *Runner) error {
+// RemoveOldPlugins removes old and deprecated plugins
+func RemoveOldPlugins(opts *Options) ([]string, error) {
 	fmt.Println("~~~ Removing old plugins ~~~")
 
 	run := genny.WetRunner(context.Background())
 	app := meta.New(".")
 	plugs, err := plugdeps.List(app)
 	if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
-		return err
+		return nil, err
 	}
 
 	plugs.Remove(plugdeps.Plugin{
 		Binary: "buffalo-pop",
 	})
 
-	fmt.Println("~~~ Removing previous version of buffalo-pop plugin ~~~")
-
+	fmt.Println("~~~ Removing github.com/gobuffalo/buffalo-pop plugin ~~~")
 	run.WithRun(cmdPlugins.NewEncodePluginsRunner(app, plugs))
-
-	return run.Run()
+	return nil, run.Run()
 }

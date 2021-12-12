@@ -13,7 +13,7 @@ func TestVersion(t *testing.T) {
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 
-	tcases := []struct {
+	tt := []struct {
 		name    string
 		args    []string
 		content string
@@ -22,13 +22,13 @@ func TestVersion(t *testing.T) {
 		{name: "JSON", args: []string{"version", "--json"}, content: "\"version\":"},
 	}
 
-	for _, tcase := range tcases {
-		t.Run(tcase.name, func(tx *testing.T) {
-			rx := require.New(tx)
-			out, err := testhelpers.RunBuffaloCMD(t, tcase.args)
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			rx := require.New(t)
+			out, err := testhelpers.RunBuffaloCMD(t, tc.args)
 
 			rx.NoError(err)
-			rx.Contains(out, tcase.content)
+			rx.Contains(out, tc.content)
 		})
 	}
 }

@@ -13,54 +13,54 @@ import (
 // webpack.config.js against the applications webpack.config.js. If they are
 // different you have the option to overwrite the existing webpack.config.js
 // file with the new one.
-func WebpackCheck(r *Runner) error {
+func WebpackCheck(opts *Options) ([]string, error) {
 	fmt.Println("~~~ Checking webpack.config.js ~~~")
 
-	if !r.App.WithWebpack {
-		return nil
+	if !opts.App.WithWebpack {
+		return nil, nil
 	}
 
 	templates, err := webpack.Templates()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	tmpl, err := template.New("webpack.config.js.tmpl").ParseFS(templates, "webpack.config.js.tmpl")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	bb := &bytes.Buffer{}
-	err = tmpl.Execute(bb, map[string]interface{}{
+	err = tmpl.ExecuteTemplate(bb, "webpack.config.js.tmpl", map[string]interface{}{
 		"opts": &webpack.Options{
-			App: r.App,
+			App: opts.App,
 		},
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	b, err := os.ReadFile("webpack.config.js")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if string(b) == bb.String() {
-		return nil
+		return nil, nil
 	}
 
-	if !ask("Your webpack.config.js file is different from the latest Buffalo template.\nWould you like to replace yours with the latest template?") {
+	if !opts.YesToAll && !ask("Your webpack.config.js file is different from the latest Buffalo template.\nWould you like to replace yours with the latest template?") {
 		fmt.Println("\tSkipping webpack.config.js")
-		return nil
+		return nil, nil
 	}
 
 	wf, err := os.Create("webpack.config.js")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	_, err = wf.Write(bb.Bytes())
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return wf.Close()
+	return nil, wf.Close()
 }

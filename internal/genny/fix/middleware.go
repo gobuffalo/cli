@@ -18,8 +18,9 @@ type MiddlewareTransformer struct {
 	Aliases             map[string]string
 }
 
-func (mw MiddlewareTransformer) transformPackages(r *Runner) error {
-	return filepath.Walk(".", mw.processFile)
+func (mw MiddlewareTransformer) transformPackages(opts *Options) ([]string, error) {
+	err := filepath.Walk(".", mw.processFile)
+	return nil, err
 }
 
 func (mw MiddlewareTransformer) processFile(p string, fi os.FileInfo, err error) error {

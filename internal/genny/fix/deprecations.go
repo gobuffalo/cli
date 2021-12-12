@@ -8,17 +8,18 @@ import (
 )
 
 // DeprecrationsCheck will either log, or fix, deprecated items in the application
-func DeprecrationsCheck(r *Runner) error {
+func DeprecrationsCheck(opts *Options) ([]string, error) {
 	fmt.Println("~~~ Checking for deprecations ~~~")
 	b, err := os.ReadFile("main.go")
 	if err != nil {
-		return err
+		return nil, err
 	}
+	warnings := make([]string, 0)
 	if bytes.Contains(b, []byte("app.Start")) {
-		r.Warnings = append(r.Warnings, "app.Start has been removed in v0.11.0. Use app.Serve Instead. [main.go]")
+		warnings = append(warnings, "app.Start has been removed in v0.11.0. Use app.Serve Instead. [main.go]")
 	}
 
-	return filepath.Walk(filepath.Join(r.App.Root, "actions"), func(path string, info os.FileInfo, _ error) error {
+	err = filepath.Walk(filepath.Join(opts.App.Root, "actions"), func(path string, info os.FileInfo, _ error) error {
 		if info.IsDir() {
 			return nil
 		}
@@ -32,13 +33,13 @@ func DeprecrationsCheck(r *Runner) error {
 			return err
 		}
 		if bytes.Contains(b, []byte("Websocket()")) {
-			r.Warnings = append(r.Warnings, fmt.Sprintf("buffalo.Context#Websocket has been deprecated in v0.11.0, and removed in v0.12.0. Use github.com/gorilla/websocket directly. [%s]", path))
+			warnings = append(warnings, fmt.Sprintf("buffalo.Context#Websocket has been deprecated in v0.11.0, and removed in v0.12.0. Use github.com/gorilla/websocket directly. [%s]", path))
 		}
 		if bytes.Contains(b, []byte("meta.Name")) {
-			r.Warnings = append(r.Warnings, fmt.Sprintf("meta.Name has been deprecated in v0.11.0, and removed in v0.12.0. Use github.com/markbates/inflect.Name directly. [%s]", path))
+			warnings = append(warnings, fmt.Sprintf("meta.Name has been deprecated in v0.11.0, and removed in v0.12.0. Use github.com/markbates/inflect.Name directly. [%s]", path))
 		}
 		if bytes.Contains(b, []byte("generators.Find(")) {
-			r.Warnings = append(r.Warnings, fmt.Sprintf("generators.Find(string) has been deprecated in v0.11.0, and removed in v0.12.0. Use generators.FindByBox() instead. [%s]", path))
+			warnings = append(warnings, fmt.Sprintf("generators.Find(string) has been deprecated in v0.11.0, and removed in v0.12.0. Use generators.FindByBox() instead. [%s]", path))
 		}
 		// i18n middleware changes in v0.11.1
 		if bytes.Contains(b, []byte("T.CookieName")) {
@@ -48,8 +49,9 @@ func DeprecrationsCheck(r *Runner) error {
 			b = bytes.Replace(b, []byte("T.SessionName"), []byte("T.LanguageExtractorOptions[\"SessionName\"]"), -1)
 		}
 		if bytes.Contains(b, []byte("T.LanguageFinder=")) || bytes.Contains(b, []byte("T.LanguageFinder ")) {
-			r.Warnings = append(r.Warnings, fmt.Sprintf("i18n.Translator#LanguageFinder has been deprecated in v0.11.1, and has been removed in v0.12.0. Use i18n.Translator#LanguageExtractors instead. [%s]", path))
+			warnings = append(warnings, fmt.Sprintf("i18n.Translator#LanguageFinder has been deprecated in v0.11.1, and has been removed in v0.12.0. Use i18n.Translator#LanguageExtractors instead. [%s]", path))
 		}
 		return os.WriteFile(path, b, 0o664)
 	})
+	return warnings, err
 }

@@ -16,7 +16,7 @@ func TestBuild(t *testing.T) {
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 
-	tcases := []struct {
+	tt := []struct {
 		name         string
 		newargs      []string
 		resourceargs []string
@@ -48,26 +48,26 @@ func TestBuild(t *testing.T) {
 		},
 	}
 
-	for _, v := range tcases {
-		t.Run(v.name, func(tx *testing.T) {
-			testhelpers.RunWithinTempFolder(tx, func(tt *testing.T) {
-				r := require.New(tt)
-				out, err := testhelpers.RunBuffaloCMD(tt, v.newargs)
-				tt.Log(out)
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
+				r := require.New(t)
+				out, err := testhelpers.RunBuffaloCMD(t, tc.newargs)
+				t.Log(out)
 				r.NoError(err)
 
-				os.Chdir(v.appname)
+				r.NoError(os.Chdir(tc.appname))
 
 				// NOTE: I think adding this to here is totally fine since
 				// this is "integration" test. However, the original reason
 				// I added it now is to prevent build failure when there is
 				// no subdir under templates directory (go:embed * */*)
-				out, err = testhelpers.RunBuffaloCMD(t, v.resourceargs)
-				tx.Log(out)
+				out, err = testhelpers.RunBuffaloCMD(t, tc.resourceargs)
+				t.Log(out)
 				r.NoError(err)
 
-				out, err = testhelpers.RunBuffaloCMD(tt, []string{"build"})
-				tt.Log(out)
+				out, err = testhelpers.RunBuffaloCMD(t, []string{"build"})
+				t.Log(out)
 				r.NoError(err)
 			})
 		})
@@ -81,24 +81,23 @@ func TestBuildNoAssets(t *testing.T) {
 
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
-
-	testhelpers.RunWithinTempFolder(t, func(tt *testing.T) {
-		out, err := testhelpers.RunBuffaloCMD(tt, []string{"new", "noassets", "-f", "--skip-webpack", "--vcs", "none"})
-		tt.Log(out)
+	testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
+		out, err := testhelpers.RunBuffaloCMD(t, []string{"new", "noassets", "-f", "--skip-webpack", "--vcs", "none"})
+		t.Log(out)
 		r.NoError(err)
 
-		tt.Cleanup(func() {
+		t.Cleanup(func() {
 			os.RemoveAll("noassets")
 		})
 
-		os.Chdir("noassets")
+		r.NoError(os.Chdir("noassets"))
 
 		out, err = testhelpers.RunBuffaloCMD(t, []string{"g", "resource", "phone", "model"})
-		tt.Log(out)
+		t.Log(out)
 		r.NoError(err)
 
-		out, err = testhelpers.RunBuffaloCMD(tt, []string{"build", "--extract-assets"})
-		tt.Log(out)
+		out, err = testhelpers.RunBuffaloCMD(t, []string{"build", "--extract-assets"})
+		t.Log(out)
 		r.NoError(err)
 
 		r.FileExists(filepath.Join("bin", "assets.zip"))

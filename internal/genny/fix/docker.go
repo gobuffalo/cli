@@ -11,15 +11,14 @@ import (
 	"github.com/gobuffalo/genny/v2"
 )
 
-func fixDocker(r *Runner) error {
-	app := r.App
-	if !app.WithDocker {
-		return nil
+func fixDocker(opts *Options) ([]string, error) {
+	if !opts.App.WithDocker {
+		return nil, nil
 	}
 	fmt.Println("~~~ Upgrading Dockerfile ~~~")
 	run := genny.WetRunner(context.Background())
 	run.WithRun(func(r *genny.Runner) error {
-		dk, err := r.FindFile(filepath.Join(app.Root, "Dockerfile"))
+		dk, err := r.FindFile(filepath.Join(opts.App.Root, "Dockerfile"))
 		if err != nil {
 			return err
 		}
@@ -34,5 +33,5 @@ func fixDocker(r *Runner) error {
 		}
 		return r.File(genny.NewFileS(dk.Name(), strings.Join(lines, "\n")))
 	})
-	return run.Run()
+	return nil, run.Run()
 }

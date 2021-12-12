@@ -21,10 +21,11 @@ type ImportConverter struct {
 // Process will walk all the .go files in an application, excluding ./vendor.
 // It will then attempt to convert any old import paths to any new import paths
 // used by this version Buffalo.
-func (c ImportConverter) Process(r *Runner) error {
+func (c ImportConverter) Process(opts *Options) ([]string, error) {
 	fmt.Println("~~~ Rewriting Imports ~~~")
 
-	return filepath.Walk(".", c.processFile)
+	err := filepath.Walk(".", c.processFile)
+	return nil, err
 }
 
 func (c ImportConverter) processFile(p string, info os.FileInfo, err error) error {

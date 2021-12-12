@@ -1,7 +1,10 @@
-package fix
+package fix_test
 
 import (
+	"fmt"
+	"go/build"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 
@@ -11,65 +14,60 @@ import (
 
 func TestFix(t *testing.T) {
 	r := require.New(t)
-	pwd, err := os.Getwd()
-	r.NoError(err)
-	r.NoError(testhelpers.InstallBuffaloCMD(t, "v0.17.5"))
+	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 
-	dir, err := os.MkdirTemp("", "buffalo-fix-test-*")
-	r.NoError(err)
 	t.Cleanup(func() {
-		if err := os.RemoveAll(dir); err != nil {
-			t.Logf("failed to delete temporary directory: %s", dir)
+		buffaloBin := filepath.Join(build.Default.GOPATH, "bin", "buffalo")
+		if err := os.Remove(buffaloBin); err != nil {
+			t.Logf("failed to delete buffalo binary: %s", buffaloBin)
 		}
 	})
 
+	versions := []string{
+		"v0.18.0",
+		"v0.17.7",
+		"v0.16.26",
+	}
+
 	tt := []struct {
-		name    string
 		newargs []string
 		appname string
 	}{
 		{
-			name:    "api",
 			newargs: []string{"new", "api", "-f", "--api", "--vcs", "none"},
 			appname: "api",
 		},
 		{
-			name:    "web",
-			newargs: []string{"new", "web", "-f", "--skip-webpack", "--vcs", "none"},
+			newargs: []string{"new", "web", "-f", "--vcs", "none"},
 			appname: "web",
 		},
 	}
 
-	for _, tc := range tt {
-		t.Run(tc.name, func(tx *testing.T) {
-			r := require.New(tx)
+	for _, version := range versions {
+		r.NoError(testhelpers.InstallOldBuffaloCMD(t, version))
 
-			r.NoError(os.Chdir(dir))
+		for _, tc := range tt {
+			testname := fmt.Sprintf("%s - %s", tc.appname, version)
 
-			out, err := testhelpers.RunBuffaloCMD(t, tc.newargs)
-			tx.Log(out)
-			r.NoError(err)
-		})
+			t.Run(testname, func(t *testing.T) {
+				testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
+					r := require.New(t)
+
+					out, err := exec.Command("buffalo", tc.newargs...).CombinedOutput()
+					t.Log(string(out))
+					r.NoError(err)
+
+					r.NoError(os.Chdir(tc.appname))
+
+					output, err := testhelpers.RunBuffaloCMD(t, []string{"fix", "-y"})
+					t.Log(output)
+					r.NoError(err)
+
+					output, err = testhelpers.RunBuffaloCMD(t, []string{"build"})
+					t.Log(output)
+					r.NoError(err)
+				})
+			})
+		}
 	}
-
-	r.NoError(os.Chdir(pwd))
-	r.NoError(testhelpers.EnsureBuffaloCMD(t))
-
-	for _, tc := range tt {
-		t.Run(tc.name, func(tx *testing.T) {
-			r := require.New(tx)
-
-			r.NoError(os.Chdir(filepath.Join(dir, tc.appname)))
-
-			out, err := testhelpers.RunBuffaloCMD(t, []string{"fix", "-y"})
-			tx.Log(out)
-			r.NoError(err)
-
-			out, err = testhelpers.RunBuffaloCMD(t, []string{"build"})
-			tx.Log(out)
-			r.NoError(err)
-		})
-	}
-
-	// TODO: is a successful build after fix enough for the test or should we check that the now fixed application actually matches a newly generated one?
 }
