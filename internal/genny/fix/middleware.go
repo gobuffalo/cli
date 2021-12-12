@@ -9,8 +9,29 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/gobuffalo/genny/v2"
 	"golang.org/x/tools/go/ast/astutil"
 )
+
+var mr = MiddlewareTransformer{
+	PackagesReplacement: map[string]string{
+		"github.com/gobuffalo/buffalo/middleware/basicauth": "github.com/gobuffalo/mw-basicauth",
+		"github.com/gobuffalo/buffalo/middleware/csrf":      "github.com/gobuffalo/mw-csrf",
+		"github.com/gobuffalo/buffalo/middleware/i18n":      "github.com/gobuffalo/mw-i18n",
+		"github.com/gobuffalo/buffalo/middleware/ssl":       "github.com/gobuffalo/mw-forcessl",
+		"github.com/gobuffalo/buffalo/middleware/tokenauth": "github.com/gobuffalo/mw-tokenauth",
+	},
+
+	Aliases: map[string]string{
+		"github.com/gobuffalo/mw-basicauth":   "basicauth",
+		"github.com/gobuffalo/mw-contenttype": "contenttype",
+		"github.com/gobuffalo/mw-csrf":        "csrf",
+		"github.com/gobuffalo/mw-forcessl":    "forcessl",
+		"github.com/gobuffalo/mw-i18n":        "i18n",
+		"github.com/gobuffalo/mw-paramlogger": "paramlogger",
+		"github.com/gobuffalo/mw-tokenauth":   "tokenauth",
+	},
+}
 
 // MiddlewareTransformer moves from our old middleware package to new one
 type MiddlewareTransformer struct {
@@ -18,9 +39,10 @@ type MiddlewareTransformer struct {
 	Aliases             map[string]string
 }
 
-func (mw MiddlewareTransformer) transformPackages(opts *Options) ([]string, error) {
-	err := filepath.Walk(".", mw.processFile)
-	return nil, err
+func (mw MiddlewareTransformer) ProcessPackages(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		return filepath.Walk(".", mw.processFile)
+	}
 }
 
 func (mw MiddlewareTransformer) processFile(p string, fi os.FileInfo, err error) error {

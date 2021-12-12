@@ -5,97 +5,12 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
-	"github.com/BurntSushi/toml"
 	"github.com/gobuffalo/cli/internal/runtime"
+	"github.com/gobuffalo/events"
 	"github.com/gobuffalo/genny/v2"
 )
-
-// Check interface for runnable checker functions
-type Check func(*Options) ([]string, error)
-
-var replace = map[string]string{
-	"github.com/gobuffalo/buffalo-plugins":          "github.com/gobuffalo/cli/internal/plugins",
-	"github.com/gobuffalo/buffalo-pop/":             "github.com/gobuffalo/buffalo-pop/v3",
-	"github.com/gobuffalo/buffalo-pop/v2/":          "github.com/gobuffalo/buffalo-pop/v3",
-	"github.com/gobuffalo/buffalo-pop/pop/popmw":    "github.com/gobuffalo/buffalo-pop/v3/pop/popmw",
-	"github.com/gobuffalo/buffalo-pop/v2/pop/popmw": "github.com/gobuffalo/buffalo-pop/v3/pop/popmw",
-	"github.com/gobuffalo/genny":                    "github.com/gobuffalo/genny/v2",
-	"github.com/gobuffalo/mw-i18n":                  "github.com/gobuffalo/mw-i18n/v2",
-	"github.com/gobuffalo/plush":                    "github.com/gobuffalo/plush/v4",
-	"github.com/gobuffalo/pop":                      "github.com/gobuffalo/pop/v6",
-	"github.com/gobuffalo/pop/v5":                   "github.com/gobuffalo/pop/v6",
-	"github.com/gobuffalo/pop/nulls":                "github.com/gobuffalo/nulls",
-	"github.com/gobuffalo/uuid":                     "github.com/gofrs/uuid",
-	"github.com/gobuffalo/validate":                 "github.com/gobuffalo/validate/v3",
-	"github.com/gobuffalo/validate/validators":      "github.com/gobuffalo/validate/v3/validators",
-	"github.com/gobuffalo/suite":                    "github.com/gobuffalo/suite/v4",
-	"github.com/markbates/pop":                      "github.com/gobuffalo/pop/v6",
-	"github.com/markbates/validate":                 "github.com/gobuffalo/validate/v3",
-	"github.com/markbates/willie":                   "github.com/gobuffalo/httptest",
-	"github.com/satori/go.uuid":                     "github.com/gofrs/uuid",
-	"github.com/shurcooL/github_flavored_markdown":  "github.com/gobuffalo/github_flavored_markdown",
-}
-
-var ic = ImportConverter{
-	Data: replace,
-}
-
-var mr = MiddlewareTransformer{
-	PackagesReplacement: map[string]string{
-		"github.com/gobuffalo/buffalo/middleware/basicauth": "github.com/gobuffalo/mw-basicauth",
-		"github.com/gobuffalo/buffalo/middleware/csrf":      "github.com/gobuffalo/mw-csrf",
-		"github.com/gobuffalo/buffalo/middleware/i18n":      "github.com/gobuffalo/mw-i18n",
-		"github.com/gobuffalo/buffalo/middleware/ssl":       "github.com/gobuffalo/mw-forcessl",
-		"github.com/gobuffalo/buffalo/middleware/tokenauth": "github.com/gobuffalo/mw-tokenauth",
-	},
-
-	Aliases: map[string]string{
-		"github.com/gobuffalo/mw-basicauth":   "basicauth",
-		"github.com/gobuffalo/mw-contenttype": "contenttype",
-		"github.com/gobuffalo/mw-csrf":        "csrf",
-		"github.com/gobuffalo/mw-forcessl":    "forcessl",
-		"github.com/gobuffalo/mw-i18n":        "i18n",
-		"github.com/gobuffalo/mw-paramlogger": "paramlogger",
-		"github.com/gobuffalo/mw-tokenauth":   "tokenauth",
-	},
-}
-
-var checks = []Check{
-	ic.Process,
-	mr.transformPackages,
-	WebpackCheck,
-	PackageJSONCheck,
-	AddPackageJSONScripts,
-	installTools,
-	DeprecrationsCheck,
-	fixDocker,
-	encodeApp,
-	RemoveOldPlugins,
-	CleanPluginCache,
-	ReinstallPlugins,
-	UpdatePlushTemplates,
-}
-
-func encodeApp(opts *Options) ([]string, error) {
-	p := filepath.Join("config", "buffalo-app.toml")
-	if _, err := os.Stat(p); err == nil {
-		return nil, nil
-	}
-	if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
-		return nil, err
-	}
-	f, err := os.Create(p)
-	if err != nil {
-		return nil, err
-	}
-	if err := toml.NewEncoder(f).Encode(opts.App); err != nil {
-		return nil, err
-	}
-	return nil, nil
-}
 
 func ask(q string) bool {
 	fmt.Printf("? %s [y/n]\n", q)
@@ -105,6 +20,21 @@ func ask(q string) bool {
 
 	text = strings.ToLower(strings.TrimSpace(text))
 	return text == "y" || text == "yes"
+}
+
+func printWarnings(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		if len(opts.warnings) == 0 {
+			return nil
+		}
+
+		fmt.Println("\n\n----------------------------")
+		fmt.Printf("!!! (%d) Warnings Were Found !!!\n\n", len(opts.warnings))
+		for _, w := range opts.warnings {
+			fmt.Printf("[WARNING]: %s\n", w)
+		}
+		return nil
+	}
 }
 
 func New(opts *Options) (*genny.Generator, error) {
@@ -120,30 +50,57 @@ func New(opts *Options) (*genny.Generator, error) {
 		return g, nil
 	}
 
-	for _, c := range checks {
-		cmd := exec.Command("go", "mod", "tidy")
-		cmd.Stderr = os.Stderr
-		g.Command(cmd)
-
-		warnings := []string{}
-		c := c
-		g.RunFn(func(r *genny.Runner) error {
-			warn, err := c(opts)
-			warnings = append(warnings, warn...)
-			return err
-		})
-		g.RunFn(func(r *genny.Runner) error {
-			if len(warnings) == 0 {
-				return nil
-			}
-
-			fmt.Println("\n\n----------------------------")
-			fmt.Printf("!!! (%d) Warnings Were Found !!!\n\n", len(warnings))
-			for _, w := range warnings {
-				fmt.Printf("[WARNING]: %s\n", w)
-			}
-			return nil
-		})
+	g.ErrorFn = func(err error) {
+		events.EmitError(EvtFixStopErr, err, events.Payload{"opts": opts})
 	}
+
+	g.RunFn(func(r *genny.Runner) error {
+		events.EmitPayload(EvtFixStart, events.Payload{"opts": opts})
+		return nil
+	})
+
+	tidyCmd := exec.Command("go", "mod", "tidy")
+	tidyCmd.Stderr = os.Stderr
+
+	// replace old imports with new ones
+	g.RunFn(ic.Process(opts))
+	g.Command(tidyCmd)
+
+	// replace old middleware package with new one
+	g.RunFn(mr.ProcessPackages(opts))
+	g.Command(tidyCmd)
+
+	// check webpack.config.json and package.json for updates
+	g.RunFn(WebpackCheck(opts))
+	g.RunFn(PackageJSONCheck(opts))
+	g.RunFn(AddPackageJSONScripts(opts))
+
+	// install required tools
+	g.RunFn(InstallTools(opts))
+	g.Command(tidyCmd)
+
+	// check for deprecations
+	g.RunFn(DeprecationsCheck(opts))
+
+	// fix Docker file
+	g.RunFn(FixDocker(opts))
+
+	g.RunFn(EncodeAppToml(opts))
+
+	// update plugins
+	g.RunFn(RemoveOldPlugins(opts))
+	g.RunFn(CleanPluginCache)
+	g.RunFn(ReinstallPlugins(opts))
+
+	// update plush templates
+	g.RunFn(UpdatePlushTemplates(opts))
+
+	// print all warnings that were captured
+	g.RunFn(printWarnings(opts))
+
+	g.RunFn(func(r *genny.Runner) error {
+		events.EmitPayload(EvtFixStop, events.Payload{"opts": opts})
+		return nil
+	})
 	return g, nil
 }

@@ -10,22 +10,50 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gobuffalo/genny/v2"
 	"golang.org/x/tools/go/ast/astutil"
 )
+
+var replace = map[string]string{
+	"github.com/gobuffalo/buffalo-plugins":          "github.com/gobuffalo/cli/internal/plugins",
+	"github.com/gobuffalo/buffalo-pop/":             "github.com/gobuffalo/buffalo-pop/v3",
+	"github.com/gobuffalo/buffalo-pop/v2/":          "github.com/gobuffalo/buffalo-pop/v3",
+	"github.com/gobuffalo/buffalo-pop/pop/popmw":    "github.com/gobuffalo/buffalo-pop/v3/pop/popmw",
+	"github.com/gobuffalo/buffalo-pop/v2/pop/popmw": "github.com/gobuffalo/buffalo-pop/v3/pop/popmw",
+	"github.com/gobuffalo/genny":                    "github.com/gobuffalo/genny/v2",
+	"github.com/gobuffalo/mw-i18n":                  "github.com/gobuffalo/mw-i18n/v2",
+	"github.com/gobuffalo/plush":                    "github.com/gobuffalo/plush/v4",
+	"github.com/gobuffalo/pop":                      "github.com/gobuffalo/pop/v6",
+	"github.com/gobuffalo/pop/v5":                   "github.com/gobuffalo/pop/v6",
+	"github.com/gobuffalo/pop/nulls":                "github.com/gobuffalo/nulls",
+	"github.com/gobuffalo/uuid":                     "github.com/gofrs/uuid",
+	"github.com/gobuffalo/validate":                 "github.com/gobuffalo/validate/v3",
+	"github.com/gobuffalo/validate/validators":      "github.com/gobuffalo/validate/v3/validators",
+	"github.com/gobuffalo/suite":                    "github.com/gobuffalo/suite/v4",
+	"github.com/markbates/pop":                      "github.com/gobuffalo/pop/v6",
+	"github.com/markbates/validate":                 "github.com/gobuffalo/validate/v3",
+	"github.com/markbates/willie":                   "github.com/gobuffalo/httptest",
+	"github.com/satori/go.uuid":                     "github.com/gofrs/uuid",
+	"github.com/shurcooL/github_flavored_markdown":  "github.com/gobuffalo/github_flavored_markdown",
+}
+
+var ic = ImportConverter{
+	Data: replace,
+}
 
 // ImportConverter will changes imports from a -> b
 type ImportConverter struct {
 	Data map[string]string
 }
 
-// Process will walk all the .go files in an application, excluding ./vendor.
+// Process walks all the .go files in an application, excluding ./vendor.
 // It will then attempt to convert any old import paths to any new import paths
 // used by this version Buffalo.
-func (c ImportConverter) Process(opts *Options) ([]string, error) {
-	fmt.Println("~~~ Rewriting Imports ~~~")
-
-	err := filepath.Walk(".", c.processFile)
-	return nil, err
+func (c ImportConverter) Process(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		fmt.Println("~~~ Rewriting Imports ~~~")
+		return filepath.Walk(".", c.processFile)
+	}
 }
 
 func (c ImportConverter) processFile(p string, info os.FileInfo, err error) error {

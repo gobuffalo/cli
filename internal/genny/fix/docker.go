@@ -1,7 +1,6 @@
 package fix
 
 import (
-	"context"
 	"fmt"
 	"path/filepath"
 	"regexp"
@@ -11,13 +10,13 @@ import (
 	"github.com/gobuffalo/genny/v2"
 )
 
-func fixDocker(opts *Options) ([]string, error) {
-	if !opts.App.WithDocker {
-		return nil, nil
-	}
-	fmt.Println("~~~ Upgrading Dockerfile ~~~")
-	run := genny.WetRunner(context.Background())
-	run.WithRun(func(r *genny.Runner) error {
+func FixDocker(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		if !opts.App.WithDocker {
+			return nil
+		}
+
+		fmt.Println("~~~ Upgrading Dockerfile ~~~")
 		dk, err := r.FindFile(filepath.Join(opts.App.Root, "Dockerfile"))
 		if err != nil {
 			return err
@@ -32,6 +31,5 @@ func fixDocker(opts *Options) ([]string, error) {
 			}
 		}
 		return r.File(genny.NewFileS(dk.Name(), strings.Join(lines, "\n")))
-	})
-	return nil, run.Run()
+	}
 }

@@ -1,7 +1,6 @@
 package fix
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -14,7 +13,6 @@ import (
 	"github.com/gobuffalo/cli/internal/plugins"
 	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
 	"github.com/gobuffalo/genny/v2"
-	"github.com/gobuffalo/meta"
 )
 
 var oldPlugins = []string{
@@ -23,55 +21,56 @@ var oldPlugins = []string{
 }
 
 // CleanPluginCache cleans the plugins cache folder by removing it
-func CleanPluginCache(opts *Options) ([]string, error) {
+func CleanPluginCache(r *genny.Runner) error {
 	fmt.Println("~~~ Cleaning plugins cache ~~~")
 	os.RemoveAll(plugins.CachePath)
-	return nil, nil
+	return nil
 }
 
 // ReinstallPlugins installs latest versions of the plugins
-func ReinstallPlugins(opts *Options) ([]string, error) {
-	plugs, err := plugdeps.List(opts.App)
-	if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
-		return nil, err
+func ReinstallPlugins(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		plugs, err := plugdeps.List(opts.App)
+		if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
+			return err
+		}
+
+		fmt.Println("~~~ Reinstalling plugins ~~~")
+
+		gg, err := install.New(&install.Options{
+			App:     opts.App,
+			Plugins: plugs.List(),
+		})
+		if err != nil {
+			return err
+		}
+
+		r.WithGroup(gg)
+		return nil
 	}
-
-	run := genny.WetRunner(context.Background())
-	gg, err := install.New(&install.Options{
-		App:     opts.App,
-		Plugins: plugs.List(),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	run.WithGroup(gg)
-
-	fmt.Println("~~~ Reinstalling plugins ~~~")
-	return nil, run.Run()
 }
 
 // RemoveOldPlugins removes old and deprecated plugins
-func RemoveOldPlugins(opts *Options) ([]string, error) {
-	fmt.Println("~~~ Removing old plugins ~~~")
+func RemoveOldPlugins(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		fmt.Println("~~~ Removing old plugins ~~~")
 
-	run := genny.WetRunner(context.Background())
-	app := meta.New(".")
-	plugs, err := plugdeps.List(app)
-	if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
-		return nil, err
+		plugs, err := plugdeps.List(opts.App)
+		if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
+			return err
+		}
+
+		for _, p := range oldPlugins {
+			a := strings.TrimSpace(p)
+			bin := path.Base(a)
+			plugs.Remove(plugdeps.Plugin{
+				Binary: bin,
+				GoGet:  a,
+			})
+
+			fmt.Println("~~~ Removing", p, "plugin ~~~")
+			r.WithRun(cmdPlugins.NewEncodePluginsRunner(opts.App, plugs))
+		}
+		return nil
 	}
-
-	for _, p := range oldPlugins {
-		a := strings.TrimSpace(p)
-		bin := path.Base(a)
-		plugs.Remove(plugdeps.Plugin{
-			Binary: bin,
-			GoGet:  a,
-		})
-
-		fmt.Println("~~~ Removing", p, "plugin ~~~")
-		run.WithRun(cmdPlugins.NewEncodePluginsRunner(app, plugs))
-	}
-	return nil, run.Run()
 }

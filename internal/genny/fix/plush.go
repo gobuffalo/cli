@@ -6,58 +6,63 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/gobuffalo/genny/v2"
 )
 
 // UpdatePlushTemplates will update foo.html templates to foo.plush.html templates
-func UpdatePlushTemplates(opts *Options) ([]string, error) {
-	templatesDir := filepath.Join(opts.App.Root, "templates")
-	if _, err := os.Stat(templatesDir); os.IsNotExist(err) {
-		// Skip if the templates dir doesn't exist (e.g. API apps)
-		return nil, nil
-	}
-	fmt.Println("~~~ Adding .plush extension to .html/.js/.md files ~~~")
-	err := filepath.Walk(templatesDir, func(p string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if info.IsDir() {
+func UpdatePlushTemplates(opts *Options) genny.RunFn {
+	return func(r *genny.Runner) error {
+		templatesDir := filepath.Join(opts.App.Root, "templates")
+		if _, err := os.Stat(templatesDir); os.IsNotExist(err) {
+			// Skip if the templates dir doesn't exist (e.g. API apps)
 			return nil
 		}
 
-		dir := filepath.Dir(p)
-		base := filepath.Base(p)
+		fmt.Println("~~~ Adding .plush extension to .html/.js/.md files ~~~")
+		err := filepath.Walk(templatesDir, func(p string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
 
-		var exts []string
-		ext := filepath.Ext(base)
-		for len(ext) != 0 {
-			if ext == ".plush" || ext == ".fizz" {
+			if info.IsDir() {
 				return nil
 			}
-			exts = append([]string{ext}, exts...)
-			base = strings.TrimSuffix(base, ext)
-			ext = filepath.Ext(base)
-		}
-		exts = append([]string{".plush"}, exts...)
 
-		pn := filepath.Join(dir, base+strings.Join(exts, ""))
+			dir := filepath.Dir(p)
+			base := filepath.Base(p)
 
-		fn, err := os.Create(pn)
-		if err != nil {
+			var exts []string
+			ext := filepath.Ext(base)
+			for len(ext) != 0 {
+				if ext == ".plush" || ext == ".fizz" {
+					return nil
+				}
+				exts = append([]string{ext}, exts...)
+				base = strings.TrimSuffix(base, ext)
+				ext = filepath.Ext(base)
+			}
+			exts = append([]string{".plush"}, exts...)
+
+			pn := filepath.Join(dir, base+strings.Join(exts, ""))
+
+			fn, err := os.Create(pn)
+			if err != nil {
+				return err
+			}
+			defer fn.Close()
+
+			fo, err := os.Open(p)
+			if err != nil {
+				return err
+			}
+			defer fo.Close()
+			_, err = io.Copy(fn, fo)
+
+			defer os.Remove(p)
+
 			return err
-		}
-		defer fn.Close()
-
-		fo, err := os.Open(p)
-		if err != nil {
-			return err
-		}
-		defer fo.Close()
-		_, err = io.Copy(fn, fo)
-
-		defer os.Remove(p)
-
+		})
 		return err
-	})
-	return nil, err
+	}
 }
