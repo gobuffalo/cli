@@ -2,7 +2,6 @@ package fix
 
 import (
 	"fmt"
-	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -17,7 +16,7 @@ func FixDocker(opts *Options) genny.RunFn {
 		}
 
 		fmt.Println("~~~ Upgrading Dockerfile ~~~")
-		dk, err := r.FindFile(filepath.Join(opts.App.Root, "Dockerfile"))
+		dk, err := r.FindFile("Dockerfile")
 		if err != nil {
 			return err
 		}

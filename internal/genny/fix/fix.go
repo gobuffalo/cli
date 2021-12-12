@@ -37,6 +37,12 @@ func printWarnings(opts *Options) genny.RunFn {
 	}
 }
 
+func tidyCmd() *exec.Cmd {
+	cmd := exec.Command("go", "mod", "tidy")
+	cmd.Stderr = os.Stderr
+	return cmd
+}
+
 func New(opts *Options) (*genny.Generator, error) {
 	g := genny.New()
 
@@ -59,16 +65,13 @@ func New(opts *Options) (*genny.Generator, error) {
 		return nil
 	})
 
-	tidyCmd := exec.Command("go", "mod", "tidy")
-	tidyCmd.Stderr = os.Stderr
-
 	// replace old imports with new ones
 	g.RunFn(ic.Process(opts))
-	g.Command(tidyCmd)
+	g.Command(tidyCmd())
 
 	// replace old middleware package with new one
 	g.RunFn(mr.ProcessPackages(opts))
-	g.Command(tidyCmd)
+	g.Command(tidyCmd())
 
 	// check webpack.config.json and package.json for updates
 	g.RunFn(WebpackCheck(opts))
@@ -77,7 +80,7 @@ func New(opts *Options) (*genny.Generator, error) {
 
 	// install required tools
 	g.RunFn(InstallTools(opts))
-	g.Command(tidyCmd)
+	g.Command(tidyCmd())
 
 	// check for deprecations
 	g.RunFn(DeprecationsCheck(opts))
