@@ -27,6 +27,7 @@ func TestFix(t *testing.T) {
 		"v0.18.0",
 		"v0.17.7",
 		"v0.16.26",
+		"v0.15.5",
 	}
 
 	tt := []struct {
