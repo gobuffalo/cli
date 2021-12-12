@@ -13,7 +13,7 @@ import (
 // ErrMissingConfig is if config/buffalo-plugins.toml file is not found. Use plugdeps#On(app) to test if plugdeps are being used
 var ErrMissingConfig = fmt.Errorf("could not find a buffalo-plugins config file at %s", ConfigPath(meta.New(".")))
 
-// List all of the plugins the application depeneds on. Will return ErrMissingConfig
+// List all of the plugins the application depends on. Will return ErrMissingConfig
 // if the app is not using config/buffalo-plugins.toml to manage their plugins.
 // Use plugdeps#On(app) to test if plugdeps are being used.
 func List(app meta.App) (*Plugins, error) {

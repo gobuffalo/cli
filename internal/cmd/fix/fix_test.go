@@ -28,7 +28,7 @@ func TestFix(t *testing.T) {
 	versions := []string{
 		"v0.18.0",
 		"v0.17.7",
-		"v0.16.26",
+		"v0.16.27",
 		"v0.15.5",
 	}
 

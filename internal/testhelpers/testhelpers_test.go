@@ -45,7 +45,7 @@ func Test_InstallOldBuffaloCMD(t *testing.T) {
 		},
 		{
 			name:    "existing old version",
-			version: "v0.16.26",
+			version: "v0.16.27",
 			err:     nil,
 		},
 	}
