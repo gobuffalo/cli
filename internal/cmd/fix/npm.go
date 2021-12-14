@@ -87,7 +87,7 @@ func PackageJSONCheck(r *Runner) error {
 		return err
 	}
 
-	tmpl, err := template.New("package.json").ParseFS(templates, "package.json.tmpl")
+	tmpl, err := template.New("package.json.tmpl").ParseFS(templates, "package.json.tmpl")
 	if err != nil {
 		return err
 	}
