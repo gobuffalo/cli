@@ -25,7 +25,7 @@ func WebpackCheck(r *Runner) error {
 		return err
 	}
 
-	tmpl, err := template.New("webpack").ParseFS(templates, "webpack.config.js.tmpl")
+	tmpl, err := template.New("webpack.config.js.tmpl").ParseFS(templates, "webpack.config.js.tmpl")
 	if err != nil {
 		return err
 	}
