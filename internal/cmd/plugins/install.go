@@ -5,9 +5,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"os"
-	"path"
-	"strings"
 
 	"github.com/gobuffalo/cli/internal/genny/plugins/install"
 	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
@@ -48,17 +45,7 @@ var installCmd = &cobra.Command{
 		}
 
 		for _, a := range args {
-			a = strings.TrimSpace(a)
-			bin := path.Base(a)
-			plug := plugdeps.Plugin{
-				Binary: bin,
-				GoGet:  a,
-			}
-			if _, err := os.Stat(a); err == nil {
-				plug.Local = a
-				plug.GoGet = ""
-			}
-			plugs.Add(plug)
+			plugs.Add(plugdeps.NewPlugin(a))
 		}
 		gg, err := install.New(&install.Options{
 			App:     app,

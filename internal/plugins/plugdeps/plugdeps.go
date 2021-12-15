@@ -18,9 +18,6 @@ var ErrMissingConfig = fmt.Errorf("could not find a buffalo-plugins config file 
 // Use plugdeps#On(app) to test if plugdeps are being used.
 func List(app meta.App) (*Plugins, error) {
 	plugs := New()
-	if app.WithPop {
-		plugs.Add(pop)
-	}
 
 	lp, err := listLocal(app)
 	if err != nil {

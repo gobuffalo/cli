@@ -18,5 +18,4 @@ func init() {
 	cacheCmd.AddCommand(cache.CleanCmd)
 	cacheCmd.AddCommand(cache.ListCmd)
 	cacheCmd.AddCommand(cache.BuildCmd)
-	PluginsCmd.AddCommand(cacheCmd)
 }

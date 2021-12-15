@@ -3,9 +3,6 @@ package plugins
 import (
 	"context"
 	"errors"
-	"os"
-	"path"
-	"strings"
 
 	"github.com/gobuffalo/cli/internal/genny/add"
 	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
@@ -36,18 +33,7 @@ var addCmd = &cobra.Command{
 
 		tags := app.BuildTags("", addOptions.buildTags...)
 		for _, a := range args {
-			a = strings.TrimSpace(a)
-			bin := path.Base(a)
-			plug := plugdeps.Plugin{
-				Binary: bin,
-				GoGet:  a,
-				Tags:   tags,
-			}
-			if _, err := os.Stat(a); err == nil {
-				plug.Local = a
-				plug.GoGet = ""
-			}
-			plugs.Add(plug)
+			plugs.Add(plugdeps.NewPlugin(a, tags))
 		}
 		g, err := add.New(&add.Options{
 			App:     app,
