@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"path"
 	"strings"
 
 	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
@@ -23,7 +22,7 @@ var removeCmd = &cobra.Command{
 	Short: "removes plugin from config/buffalo-plugins.toml",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
-			return fmt.Errorf("you must specify at least one package")
+			return fmt.Errorf("you must specify at least one plugin")
 		}
 		run := genny.WetRunner(context.Background())
 		if removeOptions.dryRun {
@@ -36,12 +35,10 @@ var removeCmd = &cobra.Command{
 			return err
 		}
 
-		for _, a := range args {
-			a = strings.TrimSpace(a)
-			bin := path.Base(a)
+		for _, bin := range args {
+			bin = strings.TrimSpace(bin)
 			plugs.Remove(plugdeps.Plugin{
 				Binary: bin,
-				GoGet:  a,
 			})
 		}
 

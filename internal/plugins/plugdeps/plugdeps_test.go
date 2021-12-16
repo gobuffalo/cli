@@ -10,6 +10,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var pop = Plugin{
+	Binary: "buffalo-pop",
+	GoGet:  "github.com/gobuffalo/buffalo-pop/v3@latest",
+}
+
 var heroku = Plugin{
 	Binary: "buffalo-heroku",
 	GoGet:  "github.com/gobuffalo/buffalo-heroku@latest",

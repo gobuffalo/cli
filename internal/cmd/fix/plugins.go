@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path"
-	"strings"
 
 	"github.com/gobuffalo/cli/internal/genny/plugins/install"
 
@@ -16,6 +14,8 @@ import (
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"
 )
+
+var current_pop = "github.com/gobuffalo/buffalo-pop/v3"
 
 //Plugins fixes the plugin configuration of the project by
 //manipulating the plugins .toml file.
@@ -35,6 +35,10 @@ func (pf Plugins) Reinstall(r *Runner) error {
 		return err
 	}
 
+	// TODO: generalize with meta/v2
+	if r.App.WithPop {
+		plugs.Add(plugdeps.NewPlugin(current_pop))
+	}
 	run := genny.WetRunner(context.Background())
 	gg, err := install.New(&install.Options{
 		App:     r.App,
@@ -61,14 +65,11 @@ func (pf Plugins) RemoveOld(r *Runner) error {
 		return err
 	}
 
-	a := strings.TrimSpace("github.com/gobuffalo/buffalo-pop")
-	bin := path.Base(a)
 	plugs.Remove(plugdeps.Plugin{
-		Binary: bin,
-		GoGet:  a,
+		Binary: "buffalo-pop",
 	})
 
-	fmt.Println("~~~ Removing github.com/gobuffalo/buffalo-pop plugin ~~~")
+	fmt.Println("~~~ Removing previous version of buffalo-pop plugin ~~~")
 
 	run.WithRun(cmdPlugins.NewEncodePluginsRunner(app, plugs))
 
