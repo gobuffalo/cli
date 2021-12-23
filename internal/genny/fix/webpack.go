@@ -33,12 +33,11 @@ func WebpackCheck(opts *Options) genny.RunFn {
 		}
 
 		bb := &bytes.Buffer{}
-		err = tmpl.ExecuteTemplate(bb, "webpack.config.js.tmpl", map[string]interface{}{
+		if err := tmpl.ExecuteTemplate(bb, "webpack.config.js.tmpl", map[string]interface{}{
 			"opts": &webpack.Options{
 				App: opts.App,
 			},
-		})
-		if err != nil {
+		}); err != nil {
 			return err
 		}
 
