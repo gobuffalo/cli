@@ -65,7 +65,6 @@ func RemoveOldPlugins(opts *Options) genny.RunFn {
 			bin := path.Base(a)
 			plugs.Remove(plugdeps.Plugin{
 				Binary: bin,
-				GoGet:  a,
 			})
 
 			fmt.Println("~~~ Removing", p, "plugin ~~~")
