@@ -1,6 +1,7 @@
 package fix
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/gobuffalo/flect/name"
@@ -35,7 +36,7 @@ func Test_EncodeAppToml_NotReplaceExisting(t *testing.T) {
 	r := require.New(t)
 
 	run := gentest.NewRunner()
-	run.Disk.Add(genny.NewFileS("config/buffalo-app.toml", `name = "pepsi"`))
+	run.Disk.Add(genny.NewFileS(filepath.Join("config", "buffalo-app.toml"), `name = "pepsi"`))
 
 	g := EncodeAppToml(&Options{
 		App: meta.App{
