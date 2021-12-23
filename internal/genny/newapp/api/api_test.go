@@ -62,7 +62,7 @@ func Test_New(t *testing.T) {
 	f, err = res.Find("actions/app.go")
 	r.NoError(err)
 	r.Contains(f.String(), `i18n "github.com/gobuffalo/mw-i18n/v2"`)
-	r.Contains(f.String(), `var T *i18n.Translator`)
+	r.Regexp(`T.*\*i18n\.Translator`, f.String())
 	r.Contains(f.String(), `func translations() buffalo.MiddlewareFunc {`)
 
 	f, err = res.Find("locales/all.en-us.yaml")
