@@ -3,11 +3,17 @@ package fix
 import (
 	"bytes"
 	"fmt"
+	"go/ast"
 	"go/format"
+	"go/parser"
+	"go/printer"
+	"go/token"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/gobuffalo/genny/v2"
@@ -34,16 +40,16 @@ func DeprecationsCheck(opts *Options) genny.RunFn {
 
 func actionsWalkFun(r *genny.Disk, opts *Options) func(path string, info os.FileInfo, err error) error {
 	return func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
 		if info.IsDir() {
 			return nil
 		}
 
 		if filepath.Ext(path) != ".go" {
 			return nil
-		}
-
-		if err != nil {
-			return err
 		}
 
 		f, err := r.Find(path)
@@ -56,11 +62,26 @@ func actionsWalkFun(r *genny.Disk, opts *Options) func(path string, info os.File
 		}
 
 		if bytes.Contains(b, []byte("AssetsBox")) {
-			b = bytes.Replace(b, []byte("AssetsBox:"), []byte("AssetsFS:"), -1)
+			b, err = addImport(path, b, fmt.Sprintf("%s/public", opts.App.PackagePkg))
+			if err != nil {
+				return err
+			}
+
+			rx := regexp.MustCompile("AssetsBox:.*,")
+			b = rx.ReplaceAll(b, []byte("AssetsFS: public.FS(),"))
+
+			rx = regexp.MustCompile(`^.*assetsBox.*=.*packr\.New.*$`)
+			b = rx.ReplaceAll(b, []byte(""))
 		}
 
 		if bytes.Contains(b, []byte("TemplatesBox")) {
-			b = bytes.Replace(b, []byte("TemplatesBox:"), []byte("TemplatesFS:"), -1)
+			b, err = addImport(path, b, fmt.Sprintf("%s/templates", opts.App.PackagePkg))
+			if err != nil {
+				return err
+			}
+
+			rx := regexp.MustCompile("TemplatesBox:.*,")
+			b = rx.ReplaceAll(b, []byte("TemplatesFS: templates.FS(),"))
 		}
 
 		b, err = format.Source(b)
@@ -101,4 +122,31 @@ func walkDisk(disk *genny.Disk, root string, walkFun filepath.WalkFunc) error {
 	}
 
 	return nil
+}
+
+func addImport(path string, src []byte, importSpec string) ([]byte, error) {
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, path, src, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := 0; i < len(f.Decls); i++ {
+		d := f.Decls[i]
+
+		switch dd := d.(type) {
+		case *ast.GenDecl:
+			if dd.Tok == token.IMPORT {
+				// Add the new import
+				iSpec := &ast.ImportSpec{Path: &ast.BasicLit{Value: strconv.Quote(importSpec)}}
+				dd.Specs = append(dd.Specs, iSpec)
+			}
+		default:
+			// no action
+		}
+	}
+
+	bb := &bytes.Buffer{}
+	err = printer.Fprint(bb, fset, f)
+	return bb.Bytes(), err
 }
