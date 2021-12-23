@@ -1,14 +1,15 @@
 package fix
 
 import (
+	"bytes"
 	"fmt"
 	"go/ast"
 	"go/parser"
+	"go/printer"
 	"go/token"
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 
 	"github.com/gobuffalo/genny/v2"
 	"golang.org/x/tools/go/ast/astutil"
@@ -37,66 +38,67 @@ var replace = map[string]string{
 	"github.com/shurcooL/github_flavored_markdown":  "github.com/gobuffalo/github_flavored_markdown",
 }
 
-var ic = ImportConverter{
-	Data: replace,
-}
-
-// ImportConverter will changes imports from a -> b
-type ImportConverter struct {
-	Data map[string]string
-}
-
-// Process walks all the .go files in an application, excluding ./vendor.
+// ReplaceOldImports walks all the .go files in an application
 // It will then attempt to convert any old import paths to any new import paths
 // used by this version Buffalo.
-func (c ImportConverter) Process(opts *Options) genny.RunFn {
+func ReplaceOldImports(opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
 		fmt.Println("~~~ Rewriting Imports ~~~")
-		return filepath.Walk(".", c.processFile)
+		return walkDisk(r.Disk, ".", func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			if info.IsDir() {
+				return nil
+			}
+
+			if filepath.Ext(path) != ".go" {
+				return nil
+			}
+
+			f, err := r.Disk.Find(path)
+			if err != nil {
+				return err
+			}
+			return rewriteFile(f)
+		})
 	}
 }
 
-func (c ImportConverter) processFile(p string, info os.FileInfo, err error) error {
-	er := onlyRelevantFiles(p, info, err, func(p string) error {
-		return c.rewriteFile(p)
-	})
-
-	return er
-}
-
-func (c ImportConverter) rewriteFile(name string) error {
-	// create an empty fileset.
+func rewriteFile(file genny.File) error {
 	fset := token.NewFileSet()
-
-	// parse the .go file.
-	// we are parsing the entire file with comments, so we don't lose anything
-	// if we need to write it back out.
-	f, err := parser.ParseFile(fset, name, nil, parser.ParseComments)
+	f, err := parser.ParseFile(fset, file.Name(), file.String(), parser.ParseComments)
 	if err != nil {
-		e := err.Error()
-		msg := "expected 'package', found 'EOF'"
-		if e[len(e)-len(msg):] == msg {
-			return nil
-		}
 		return err
+	}
+
+	names := make(map[string]string)
+	for _, imports := range astutil.Imports(fset, f) {
+		for _, imp := range imports {
+			i, err := strconv.Unquote(imp.Path.Value)
+			if err != nil {
+				return err
+			}
+			if imp.Name != nil {
+				names[i] = imp.Name.Name
+			} else {
+				names[i] = ""
+			}
+		}
 	}
 
 	changed := false
-	for key, value := range c.Data {
-		if !astutil.DeleteImport(fset, f, key) {
+	for key, value := range replace {
+		name, ok := names[key]
+		if !ok {
 			continue
 		}
 
+		astutil.DeleteNamedImport(fset, f, name, key)
 		astutil.AddImport(fset, f, value)
 		changed = true
 	}
-
-	commentsChanged, err := c.handleFileComments(f)
-	if err != nil {
-		return err
-	}
-
-	changed = changed || commentsChanged
 
 	// if no change occurred, then we don't need to write to disk, just return.
 	if !changed {
@@ -106,58 +108,11 @@ func (c ImportConverter) rewriteFile(name string) error {
 	// since the imports changed, resort them.
 	ast.SortImports(fset, f)
 
-	// create a temporary file, this easily avoids conflicts.
-	temp, err := writeTempResult(name, fset, f)
-	if err != nil {
+	bb := &bytes.Buffer{}
+	if err := printer.Fprint(bb, fset, f); err != nil {
 		return err
 	}
 
-	// rename the .temp to .go
-	return os.Rename(temp, name)
-}
-
-func (c ImportConverter) handleFileComments(f *ast.File) (bool, error) {
-	change := false
-
-	for _, cg := range f.Comments {
-		for _, cl := range cg.List {
-			if !strings.HasPrefix(cl.Text, "// import \"") {
-				continue
-			}
-
-			// trim off extra comment stuff
-			ctext := cl.Text
-			ctext = strings.TrimPrefix(ctext, "// import")
-			ctext = strings.TrimSpace(ctext)
-
-			// unquote the comment import path value
-			ctext, err := strconv.Unquote(ctext)
-			if err != nil {
-				return false, err
-			}
-
-			// match the comment import path with the given replacement map
-			if ctext, ok := c.match(ctext); ok {
-				cl.Text = "// import " + strconv.Quote(ctext)
-				change = true
-			}
-
-		}
-	}
-
-	return change, nil
-}
-
-// match takes an import path and replacement map.
-func (c ImportConverter) match(importpath string) (string, bool) {
-	for key, value := range c.Data {
-		if !strings.HasPrefix(importpath, key) {
-			continue
-		}
-
-		result := strings.Replace(importpath, key, value, 1)
-		return result, true
-	}
-
-	return importpath, false
+	_, err = file.Write(bb.Bytes())
+	return err
 }

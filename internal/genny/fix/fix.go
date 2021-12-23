@@ -66,7 +66,7 @@ func New(opts *Options) (*genny.Generator, error) {
 	})
 
 	// replace old imports with new ones
-	g.RunFn(ic.Process(opts))
+	g.RunFn(ReplaceOldImports(opts))
 	g.Command(tidyCmd())
 
 	// replace old middleware package with new one

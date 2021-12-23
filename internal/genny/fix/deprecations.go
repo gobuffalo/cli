@@ -9,14 +9,13 @@ import (
 	"go/printer"
 	"go/token"
 	"io"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/gobuffalo/genny/v2"
+	"golang.org/x/tools/go/ast/astutil"
 )
 
 // DeprecationsCheck will either log, or fix, deprecated items in the application
@@ -94,57 +93,15 @@ func actionsWalkFun(r *genny.Disk, opts *Options) func(path string, info os.File
 	}
 }
 
-func walkDisk(disk *genny.Disk, root string, walkFun filepath.WalkFunc) error {
-	for _, f := range disk.Files() {
-		rel, err := filepath.Rel(root, f.Name())
-		if err != nil {
-			err = walkFun(f.Name(), nil, fmt.Errorf("cannot process file %s", f.Name()))
-			if err != nil {
-				return err
-			}
-		}
-
-		if strings.HasPrefix(rel, "..") {
-			continue
-		}
-
-		file, ok := f.(fs.File)
-		if !ok {
-			return fmt.Errorf("cannot process file %s", f.Name())
-		}
-
-		info, err := file.Stat()
-
-		err = walkFun(f.Name(), info, err)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func addImport(path string, src []byte, importSpec string) ([]byte, error) {
 	fset := token.NewFileSet()
-	f, err := parser.ParseFile(fset, path, src, 0)
+	f, err := parser.ParseFile(fset, path, src, parser.ParseComments)
 	if err != nil {
 		return nil, err
 	}
 
-	for i := 0; i < len(f.Decls); i++ {
-		d := f.Decls[i]
-
-		switch dd := d.(type) {
-		case *ast.GenDecl:
-			if dd.Tok == token.IMPORT {
-				// Add the new import
-				iSpec := &ast.ImportSpec{Path: &ast.BasicLit{Value: strconv.Quote(importSpec)}}
-				dd.Specs = append(dd.Specs, iSpec)
-			}
-		default:
-			// no action
-		}
-	}
+	astutil.AddImport(fset, f, importSpec)
+	ast.SortImports(fset, f)
 
 	bb := &bytes.Buffer{}
 	err = printer.Fprint(bb, fset, f)
