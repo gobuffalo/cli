@@ -10,7 +10,7 @@ import (
 
 func EncodeAppToml(opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
-		p := filepath.Join("config", "buffalo-app.toml")
+		p := "config/buffalo-app.toml"
 		if _, err := r.FindFile(p); err == nil {
 			return nil
 		}
