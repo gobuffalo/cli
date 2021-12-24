@@ -7,6 +7,7 @@ import (
 
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
 	"github.com/gobuffalo/genny/v2"
+	"github.com/gobuffalo/meta"
 )
 
 // WebpackCheck will compare the current default Buffalo
@@ -20,23 +21,8 @@ func WebpackCheck(opts *Options) genny.RunFn {
 		}
 
 		fmt.Println("~~~ Checking webpack.config.js ~~~")
-
-		templates, err := webpack.Templates()
+		bb, err := defaultWebpack(opts.App)
 		if err != nil {
-			return err
-		}
-
-		tmpl, err := template.New("webpack").ParseFS(templates, "webpack.config.js.tmpl")
-		if err != nil {
-			return err
-		}
-
-		bb := &bytes.Buffer{}
-		if err := tmpl.ExecuteTemplate(bb, "webpack.config.js.tmpl", map[string]interface{}{
-			"opts": &webpack.Options{
-				App: opts.App,
-			},
-		}); err != nil {
 			return err
 		}
 
@@ -57,4 +43,25 @@ func WebpackCheck(opts *Options) genny.RunFn {
 		_, err = f.Write(bb.Bytes())
 		return err
 	}
+}
+
+func defaultWebpack(app meta.App) (*bytes.Buffer, error) {
+	templates, err := webpack.Templates()
+	if err != nil {
+		return nil, err
+	}
+
+	tmpl, err := template.New("webpack").ParseFS(templates, "webpack.config.js.tmpl")
+	if err != nil {
+		return nil, err
+	}
+
+	bb := &bytes.Buffer{}
+	err = tmpl.ExecuteTemplate(bb, "webpack.config.js.tmpl", map[string]interface{}{
+		"opts": &webpack.Options{
+			App: app,
+		},
+	})
+
+	return bb, err
 }
