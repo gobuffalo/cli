@@ -44,8 +44,10 @@ func UpdatePlushTemplates(opts *Options) genny.RunFn {
 			}
 
 			fn := genny.NewFile(pathNew, fo)
-			r.Disk.Add(fn)
-			return r.Disk.Delete(path)
+			if err := r.File(fn); err != nil {
+				return err
+			}
+			return r.Delete(path)
 		})
 		return err
 	}

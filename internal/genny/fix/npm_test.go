@@ -22,7 +22,7 @@ func Test_AddPackageJSONScripts_AddScriptSection(t *testing.T) {
 	}
 
 	run := gentest.NewRunner()
-	run.Disk.Add(genny.NewFileS("package.json", "{}"))
+	r.NoError(run.File(genny.NewFileS("package.json", "{}")))
 
 	run.WithRun(AddPackageJSONScripts(opts))
 	r.NoError(run.Run())
@@ -87,7 +87,7 @@ func Test_AddPackageJSONScripts_AddMissingScripts(t *testing.T) {
 			}
 			f := genny.NewFile("package.json", nil)
 			r.NoError(json.NewEncoder(f).Encode(packageJSON))
-			run.Disk.Add(f)
+			r.NoError(run.File(f))
 
 			run.WithRun(AddPackageJSONScripts(opts))
 			r.NoError(run.Run())
@@ -123,7 +123,7 @@ func Test_PackageJSONCheck_NoOverwriteExisting(t *testing.T) {
 	bb, err := defaultPackageJson(opts.App)
 	r.NoError(err)
 	fileContents := bb.String()
-	run.Disk.Add(genny.NewFileS("package.json", fileContents))
+	r.NoError(run.File(genny.NewFileS("package.json", fileContents)))
 
 	run.WithRun(PackageJSONCheck(opts))
 	r.NoError(run.Run())
@@ -169,8 +169,8 @@ func Test_PackageJSONCheck_UpdatingFileAndClearNodeModules(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			run := gentest.NewRunner()
-			run.Disk.Add(genny.NewFileS("package.json", "{}"))
-			run.Disk.Add(genny.NewFileS("node_modules/test.txt", "this file should be deleted"))
+			r.NoError(run.File(genny.NewFileS("package.json", "{}")))
+			r.NoError(run.File(genny.NewFileS("node_modules/test.txt", "this file should be deleted")))
 
 			opts.App.WithYarn = tc.WithYarn
 			run.WithRun(PackageJSONCheck(opts))

@@ -32,7 +32,7 @@ func Test_EncodeAppToml_NotReplaceExisting(t *testing.T) {
 	r := require.New(t)
 
 	run := gentest.NewRunner()
-	run.Disk.Add(genny.NewFileS("config/buffalo-app.toml", `name = "pepsi"`))
+	r.NoError(run.File(genny.NewFileS("config/buffalo-app.toml", `name = "pepsi"`)))
 
 	g := EncodeAppToml(&Options{
 		App: meta.Named("coke", "."),

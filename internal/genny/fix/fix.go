@@ -65,6 +65,10 @@ func New(opts *Options) (*genny.Generator, error) {
 		return nil
 	})
 
+	if err := g.FS(os.DirFS(opts.App.Root)); err != nil {
+		return nil, err
+	}
+
 	// replace old imports with new ones
 	g.RunFn(ReplaceOldImports(opts))
 	g.Command(tidyCmd())

@@ -15,7 +15,9 @@ func EncodeAppToml(opts *Options) genny.RunFn {
 			return nil
 		}
 		dir := genny.NewDir(filepath.Dir(p), 0o755)
-		r.Disk.Add(dir)
+		if err := r.File(dir); err != nil {
+			return err
+		}
 
 		bb := &bytes.Buffer{}
 		if err := toml.NewEncoder(bb).Encode(opts.App); err != nil {
@@ -23,7 +25,6 @@ func EncodeAppToml(opts *Options) genny.RunFn {
 		}
 
 		f := genny.NewFile(p, bb)
-		r.Disk.Add(f)
-		return nil
+		return r.File(f)
 	}
 }

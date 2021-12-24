@@ -57,11 +57,14 @@ func ReplaceOldImports(opts *Options) genny.RunFn {
 				return nil
 			}
 
-			f, err := r.Disk.Find(path)
+			f, err := r.FindFile(path)
 			if err != nil {
 				return err
 			}
-			return rewriteFile(f)
+			if err := rewriteFile(f); err != nil {
+				return err
+			}
+			return r.File(f)
 		})
 	}
 }

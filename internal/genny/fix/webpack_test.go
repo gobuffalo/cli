@@ -23,7 +23,7 @@ func Test_WebpackCheck_NoOverwriteExisting(t *testing.T) {
 	bb, err := defaultWebpack(opts.App)
 	r.NoError(err)
 	fileContents := bb.String()
-	run.Disk.Add(genny.NewFileS("webpack.config.js", fileContents))
+	r.NoError(run.File(genny.NewFileS("webpack.config.js", fileContents)))
 
 	run.WithRun(WebpackCheck(opts))
 	r.NoError(run.Run())
@@ -50,7 +50,7 @@ func Test_WebpackCheck_UpdatingFile(t *testing.T) {
 	fileContents := bb.String()
 
 	run := gentest.NewRunner()
-	run.Disk.Add(genny.NewFileS("webpack.config.js", "console.log('hello world')"))
+	r.NoError(run.File(genny.NewFileS("webpack.config.js", "console.log('hello world')")))
 
 	run.WithRun(WebpackCheck(opts))
 	r.NoError(run.Run())

@@ -27,11 +27,16 @@ func FixDocker(opts *Options) genny.RunFn {
 			return err
 		}
 
+		dockerOpts := &docker.Options{
+			App: opts.App,
+		}
+		if err := dockerOpts.Validate(); err != nil {
+			return err
+		}
+
 		bb := &bytes.Buffer{}
 		if err := tmpl.ExecuteTemplate(bb, "Dockerfile.tmpl", map[string]interface{}{
-			"opts": &docker.Options{
-				App: opts.App,
-			},
+			"opts": dockerOpts,
 		}); err != nil {
 			return err
 		}
@@ -51,6 +56,9 @@ func FixDocker(opts *Options) genny.RunFn {
 		}
 
 		_, err = f.Write(bb.Bytes())
-		return err
+		if err != nil {
+			return err
+		}
+		return r.File(f)
 	}
 }

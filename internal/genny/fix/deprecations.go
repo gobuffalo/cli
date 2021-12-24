@@ -71,6 +71,9 @@ func actionsWalkFun(r *genny.Disk, opts *Options) func(path string, info os.File
 
 			rx = regexp.MustCompile(`^.*assetsBox.*=.*packr\.New.*$`)
 			b = rx.ReplaceAll(b, []byte(""))
+
+			rx = regexp.MustCompile(`^.*AssetsBox.*=.*$`)
+			b = rx.ReplaceAll(b, []byte(""))
 		}
 
 		if bytes.Contains(b, []byte("TemplatesBox")) {
@@ -81,6 +84,9 @@ func actionsWalkFun(r *genny.Disk, opts *Options) func(path string, info os.File
 
 			rx := regexp.MustCompile("TemplatesBox:.*,")
 			b = rx.ReplaceAll(b, []byte("TemplatesFS: templates.FS(),"))
+
+			rx = regexp.MustCompile(`^.*TemplatesBox.*=.*$`)
+			b = rx.ReplaceAll(b, []byte(""))
 		}
 
 		b, err = format.Source(b)

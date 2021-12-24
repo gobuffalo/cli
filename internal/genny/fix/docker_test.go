@@ -13,7 +13,7 @@ func Test_FixDocker_SkipsExisting(t *testing.T) {
 	r := require.New(t)
 
 	run := gentest.NewRunner()
-	run.Disk.Add(genny.NewFileS("Dockerfile", "my custom Dockerfile"))
+	r.NoError(run.File(genny.NewFileS("Dockerfile", "my custom Dockerfile")))
 
 	opts := &Options{
 		App: meta.App{

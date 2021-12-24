@@ -120,7 +120,7 @@ func PackageJSONCheck(opts *Options) genny.RunFn {
 				continue
 			}
 
-			if err := r.Disk.Delete(f.Name()); err != nil {
+			if err := r.Delete(f.Name()); err != nil {
 				return err
 			}
 		}
