@@ -1,6 +1,7 @@
 package fix
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gobuffalo/genny/v2/gentest"
@@ -36,5 +37,6 @@ func Test_InstallTools_WithPop(t *testing.T) {
 
 	results := run.Results()
 	r.Len(results.Commands, 1)
-	r.Contains(results.Commands[0].String(), "go install github.com/gobuffalo/buffalo-pop/v3@latest")
+	c := results.Commands[0]
+	r.Equal("go install github.com/gobuffalo/buffalo-pop/v3@latest", strings.Join(c.Args, " "))
 }
