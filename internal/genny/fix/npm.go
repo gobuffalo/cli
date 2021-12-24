@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
 	"github.com/gobuffalo/genny/v2"
@@ -22,15 +22,14 @@ func AddPackageJSONScripts(opts *Options) genny.RunFn {
 		}
 
 		fmt.Println("~~~ Patching package.json to add dev and build scripts ~~~")
-
-		b, err := os.ReadFile("package.json")
+		f, err := r.FindFile("package.json")
 		if err != nil {
 			return err
 		}
 
 		needRewrite := false
 		packageJSON := map[string]interface{}{}
-		if err := json.Unmarshal(b, &packageJSON); err != nil {
+		if err := json.NewDecoder(f).Decode(&packageJSON); err != nil {
 			return fmt.Errorf("could not rewrite package.json: %s", err.Error())
 		}
 
@@ -58,17 +57,15 @@ func AddPackageJSONScripts(opts *Options) genny.RunFn {
 			packageJSON["scripts"] = scripts
 		}
 
-		if needRewrite {
-			b, err = json.MarshalIndent(packageJSON, "", "  ")
-			if err != nil {
-				return fmt.Errorf("could not rewrite package.json: %w", err)
-			}
-
-			if err := os.WriteFile("package.json", b, 0o644); err != nil {
-				return fmt.Errorf("could not rewrite package.json: %w", err)
-			}
-		} else {
+		if !needRewrite {
 			fmt.Println("~~~ package.json doesn't need to be patched, skipping. ~~~")
+			return nil
+		}
+
+		enc := json.NewEncoder(f)
+		enc.SetIndent("", "  ")
+		if err := enc.Encode(packageJSON); err != nil {
+			return fmt.Errorf("could not rewrite package.json: %w", err)
 		}
 
 		return nil
@@ -86,7 +83,6 @@ func PackageJSONCheck(opts *Options) genny.RunFn {
 		}
 
 		fmt.Println("~~~ Checking package.json ~~~")
-
 		templates, err := webpack.Templates()
 		if err != nil {
 			return err
@@ -98,21 +94,20 @@ func PackageJSONCheck(opts *Options) genny.RunFn {
 		}
 
 		bb := &bytes.Buffer{}
-		err = tmpl.ExecuteTemplate(bb, "package.json.tmpl", map[string]interface{}{
+		if err := tmpl.ExecuteTemplate(bb, "package.json.tmpl", map[string]interface{}{
 			"opts": &webpack.Options{
 				App: opts.App,
 			},
-		})
+		}); err != nil {
+			return err
+		}
+
+		f, err := r.FindFile("package.json")
 		if err != nil {
 			return err
 		}
 
-		b, err := os.ReadFile("package.json")
-		if err != nil {
-			return err
-		}
-
-		if string(b) == bb.String() {
+		if f.String() == bb.String() {
 			return nil
 		}
 
@@ -121,30 +116,31 @@ func PackageJSONCheck(opts *Options) genny.RunFn {
 			return nil
 		}
 
-		pf, err := os.Create("package.json")
-		if err != nil {
-			return err
-		}
-		_, err = pf.Write(bb.Bytes())
-		if err != nil {
-			return err
-		}
-		err = pf.Close()
+		_, err = f.Write(bb.Bytes())
 		if err != nil {
 			return err
 		}
 
-		os.RemoveAll(filepath.Join(opts.App.Root, "node_modules"))
-		var cmd *exec.Cmd
+		base := filepath.Join(opts.App.Root, "node_modules")
+		for _, f := range r.Disk.Files() {
+			rel, err := filepath.Rel(base, f.Name())
+			if err != nil {
+				return err
+			}
+
+			if strings.HasPrefix(rel, "..") {
+				continue
+			}
+
+			if err := r.Disk.Delete(f.Name()); err != nil {
+				return err
+			}
+		}
+
 		if opts.App.WithYarn {
-			cmd = exec.Command("yarnpkg", "install")
-		} else {
-			cmd = exec.Command("npm", "install")
+			return r.Exec(exec.Command("yarnpkg", "install"))
 		}
 
-		cmd.Stdin = os.Stdin
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		return cmd.Run()
+		return r.Exec(exec.Command("npm", "install"))
 	}
 }

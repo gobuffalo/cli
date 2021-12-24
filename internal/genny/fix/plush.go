@@ -2,7 +2,6 @@ package fix
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,14 +12,8 @@ import (
 // UpdatePlushTemplates will update foo.html templates to foo.plush.html templates
 func UpdatePlushTemplates(opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
-		templatesDir := filepath.Join(opts.App.Root, "templates")
-		if _, err := os.Stat(templatesDir); os.IsNotExist(err) {
-			// Skip if the templates dir doesn't exist (e.g. API apps)
-			return nil
-		}
-
 		fmt.Println("~~~ Adding .plush extension to .html/.js/.md files ~~~")
-		err := filepath.Walk(templatesDir, func(p string, info os.FileInfo, err error) error {
+		err := walkDisk(r.Disk, filepath.Join(opts.App.Root, "templates"), func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}
@@ -29,8 +22,8 @@ func UpdatePlushTemplates(opts *Options) genny.RunFn {
 				return nil
 			}
 
-			dir := filepath.Dir(p)
-			base := filepath.Base(p)
+			dir := filepath.Dir(path)
+			base := filepath.Base(path)
 
 			var exts []string
 			ext := filepath.Ext(base)
@@ -42,26 +35,17 @@ func UpdatePlushTemplates(opts *Options) genny.RunFn {
 				base = strings.TrimSuffix(base, ext)
 				ext = filepath.Ext(base)
 			}
-			exts = append([]string{".plush"}, exts...)
+			exts = append([]string{base, ".plush"}, exts...)
+			pathNew := filepath.Join(dir, strings.Join(exts, ""))
 
-			pn := filepath.Join(dir, base+strings.Join(exts, ""))
-
-			fn, err := os.Create(pn)
+			fo, err := r.FindFile(path)
 			if err != nil {
 				return err
 			}
-			defer fn.Close()
 
-			fo, err := os.Open(p)
-			if err != nil {
-				return err
-			}
-			defer fo.Close()
-			_, err = io.Copy(fn, fo)
-
-			defer os.Remove(p)
-
-			return err
+			fn := genny.NewFile(pathNew, fo)
+			r.Disk.Add(fn)
+			return r.Disk.Delete(path)
 		})
 		return err
 	}

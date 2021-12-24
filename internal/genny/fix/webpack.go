@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"os"
 
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
 	"github.com/gobuffalo/genny/v2"
@@ -41,12 +40,12 @@ func WebpackCheck(opts *Options) genny.RunFn {
 			return err
 		}
 
-		b, err := os.ReadFile("webpack.config.js")
+		f, err := r.FindFile("webpack.config.js")
 		if err != nil {
 			return err
 		}
 
-		if string(b) == bb.String() {
+		if f.String() == bb.String() {
 			return nil
 		}
 
@@ -55,14 +54,7 @@ func WebpackCheck(opts *Options) genny.RunFn {
 			return nil
 		}
 
-		wf, err := os.Create("webpack.config.js")
-		if err != nil {
-			return err
-		}
-		_, err = wf.Write(bb.Bytes())
-		if err != nil {
-			return err
-		}
-		return wf.Close()
+		_, err = f.Write(bb.Bytes())
+		return err
 	}
 }
