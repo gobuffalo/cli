@@ -2,7 +2,6 @@ package add
 
 import (
 	"bytes"
-	"path/filepath"
 
 	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
 	"github.com/gobuffalo/genny/v2"
@@ -23,8 +22,6 @@ func New(opts *Options) (*genny.Generator, error) {
 		return g, err
 	}
 
-	cpath := filepath.Join(opts.App.Root, "config", "buffalo-plugins.toml")
-	g.File(genny.NewFile(cpath, bb))
-
+	g.File(genny.NewFile(plugdeps.ConfigPath(opts.App), bb))
 	return g, nil
 }

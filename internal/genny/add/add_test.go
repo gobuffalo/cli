@@ -29,8 +29,7 @@ func Test_New(t *testing.T) {
 	run := gentest.NewRunner()
 	c := build.Default
 	run.Disk.Add(genny.NewFile(filepath.Join(c.GOPATH, "bin", "buffalo-pop"), &bytes.Buffer{}))
-
-	run.With(g)
+	r.NoError(run.With(g))
 
 	r.NoError(run.Run())
 
