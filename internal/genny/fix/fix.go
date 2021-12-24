@@ -69,10 +69,6 @@ func New(opts *Options) (*genny.Generator, error) {
 	g.RunFn(ReplaceOldImports(opts))
 	g.Command(tidyCmd())
 
-	// replace old middleware package with new one
-	g.RunFn(mr.ProcessPackages(opts))
-	g.Command(tidyCmd())
-
 	// check webpack.config.json and package.json for updates
 	g.RunFn(WebpackCheck(opts))
 	g.RunFn(PackageJSONCheck(opts))
