@@ -11,7 +11,14 @@ import (
 
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
 	"github.com/gobuffalo/genny/v2"
+	"github.com/gobuffalo/meta"
 )
+
+// default scripts for package.json
+var defaultScripts = map[string]string{
+	"dev":   "webpack --watch",
+	"build": "webpack -p --progress",
+}
 
 // AddPackageJSONScripts rewrites the package.json file
 // to add dev and build scripts if there are missing.
@@ -35,24 +42,19 @@ func AddPackageJSONScripts(opts *Options) genny.RunFn {
 
 		if _, ok := packageJSON["scripts"]; !ok {
 			needRewrite = true
-			// Add scripts
-			packageJSON["scripts"] = map[string]string{
-				"dev":   "webpack --watch",
-				"build": "webpack -p --progress",
-			}
+			packageJSON["scripts"] = defaultScripts
 		} else {
-			// Add missing scripts
 			scripts, ok := packageJSON["scripts"].(map[string]interface{})
 			if !ok {
 				return fmt.Errorf("could not rewrite package.json: invalid scripts section")
 			}
-			if _, ok := scripts["dev"]; !ok {
-				needRewrite = true
-				scripts["dev"] = "webpack --watch"
-			}
-			if _, ok := scripts["build"]; !ok {
-				needRewrite = true
-				scripts["build"] = "webpack -p --progress"
+
+			// Add missing scripts
+			for k, v := range defaultScripts {
+				if _, ok := scripts[k]; !ok {
+					scripts[k] = v
+					needRewrite = true
+				}
 			}
 			packageJSON["scripts"] = scripts
 		}
@@ -83,22 +85,8 @@ func PackageJSONCheck(opts *Options) genny.RunFn {
 		}
 
 		fmt.Println("~~~ Checking package.json ~~~")
-		templates, err := webpack.Templates()
+		bb, err := defaultPackageJson(opts.App)
 		if err != nil {
-			return err
-		}
-
-		tmpl, err := template.New("package.json").ParseFS(templates, "package.json.tmpl")
-		if err != nil {
-			return err
-		}
-
-		bb := &bytes.Buffer{}
-		if err := tmpl.ExecuteTemplate(bb, "package.json.tmpl", map[string]interface{}{
-			"opts": &webpack.Options{
-				App: opts.App,
-			},
-		}); err != nil {
 			return err
 		}
 
@@ -121,7 +109,7 @@ func PackageJSONCheck(opts *Options) genny.RunFn {
 			return err
 		}
 
-		base := filepath.Join(opts.App.Root, "node_modules")
+		base := "node_modules"
 		for _, f := range r.Disk.Files() {
 			rel, err := filepath.Rel(base, f.Name())
 			if err != nil {
@@ -143,4 +131,24 @@ func PackageJSONCheck(opts *Options) genny.RunFn {
 
 		return r.Exec(exec.Command("npm", "install"))
 	}
+}
+
+func defaultPackageJson(app meta.App) (*bytes.Buffer, error) {
+	templates, err := webpack.Templates()
+	if err != nil {
+		return nil, err
+	}
+
+	tmpl, err := template.New("package.json").ParseFS(templates, "package.json.tmpl")
+	if err != nil {
+		return nil, err
+	}
+
+	bb := &bytes.Buffer{}
+	err = tmpl.ExecuteTemplate(bb, "package.json.tmpl", map[string]interface{}{
+		"opts": &webpack.Options{
+			App: app,
+		},
+	})
+	return bb, err
 }
