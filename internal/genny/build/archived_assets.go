@@ -40,7 +40,7 @@ func archivedAssets(opts *Options) (*genny.Generator, error) {
 
 			file, ok := f.(fs.File)
 			if !ok {
-				return fmt.Errorf("cannot process file %s", f.Name())
+				return fmt.Errorf("cannot process file %s: cast failed", f.Name())
 			}
 
 			info, err := file.Stat()

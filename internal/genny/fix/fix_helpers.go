@@ -13,7 +13,7 @@ func walkDisk(disk *genny.Disk, root string, walkFun filepath.WalkFunc) error {
 	for _, f := range disk.Files() {
 		rel, err := filepath.Rel(root, f.Name())
 		if err != nil {
-			err = walkFun(f.Name(), nil, fmt.Errorf("cannot process file %s", f.Name()))
+			err = walkFun(f.Name(), nil, fmt.Errorf("cannot process file %s: %w", f.Name(), err))
 			if err != nil {
 				return err
 			}
@@ -32,7 +32,7 @@ func walkDisk(disk *genny.Disk, root string, walkFun filepath.WalkFunc) error {
 
 		file, ok := f.(fs.File)
 		if !ok {
-			return fmt.Errorf("cannot process file %s", f.Name())
+			return fmt.Errorf("cannot process file %s: cast failed", f.Name())
 		}
 
 		info, err := file.Stat()
