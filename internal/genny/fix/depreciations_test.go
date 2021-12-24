@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gobuffalo/flect/name"
 	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/gobuffalo/meta"
 	"github.com/stretchr/testify/require"
@@ -42,9 +41,7 @@ func Test_Depreciations_mainGo(t *testing.T) {
 			r.NoError(err)
 
 			opts := &Options{
-				App: meta.App{
-					Root: ".",
-				},
+				App: meta.Named("coke", "."),
 			}
 			g := DeprecationsCheck(opts)
 			run.WithRun(g)
@@ -92,11 +89,7 @@ func Test_Depreciations_ReplaceBoxes(t *testing.T) {
 			r.NoError(err)
 
 			opts := &Options{
-				App: meta.App{
-					Root:       ".",
-					Name:       name.New("coke"),
-					PackagePkg: "coke",
-				},
+				App: meta.Named("coke", "."),
 			}
 			g := DeprecationsCheck(opts)
 			run.WithRun(g)

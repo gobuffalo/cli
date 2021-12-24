@@ -13,7 +13,7 @@ import (
 func UpdatePlushTemplates(opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
 		fmt.Println("~~~ Adding .plush extension to .html/.js/.md files ~~~")
-		err := walkDisk(r.Disk, filepath.Join(opts.App.Root, "templates"), func(path string, info os.FileInfo, err error) error {
+		err := walkDisk(r.Disk, "templates", func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}

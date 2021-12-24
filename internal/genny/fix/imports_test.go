@@ -36,9 +36,7 @@ func Test_Imports(t *testing.T) {
 			r.NoError(err)
 
 			opts := &Options{
-				App: meta.App{
-					Root: ".",
-				},
+				App: meta.Named("coke", "."),
 			}
 			g := ReplaceOldImports(opts)
 			run.WithRun(g)

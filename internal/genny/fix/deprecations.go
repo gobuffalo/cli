@@ -31,7 +31,7 @@ func DeprecationsCheck(opts *Options) genny.RunFn {
 			opts.warnings = append(opts.warnings, "app.Start has been removed in v0.11.0. Use app.Serve Instead. [main.go]")
 		}
 
-		err = walkDisk(r.Disk, filepath.Join(opts.App.Root, "actions"), actionsWalkFun(r.Disk, opts))
+		err = walkDisk(r.Disk, "actions", actionsWalkFun(r.Disk, opts))
 		// TODO: add other folders to check
 		return err
 	}
