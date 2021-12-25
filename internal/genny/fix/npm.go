@@ -70,7 +70,7 @@ func AddPackageJSONScripts(opts *Options) genny.RunFn {
 			return fmt.Errorf("could not rewrite package.json: %w", err)
 		}
 
-		return nil
+		return r.File(f)
 	}
 }
 
@@ -104,8 +104,11 @@ func PackageJSONCheck(opts *Options) genny.RunFn {
 			return nil
 		}
 
-		_, err = f.Write(bb.Bytes())
-		if err != nil {
+		if _, err := f.Write(bb.Bytes()); err != nil {
+			return err
+		}
+
+		if err := r.File(f); err != nil {
 			return err
 		}
 

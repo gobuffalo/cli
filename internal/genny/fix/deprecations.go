@@ -115,8 +115,7 @@ func packrMigrateFun(r *genny.Runner, opts *Options) func(path string, info os.F
 			return err
 		}
 
-		_, err = f.Write(b)
-		if err != nil {
+		if _, err := f.Write(b); err != nil {
 			return err
 		}
 		return r.File(f)

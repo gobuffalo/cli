@@ -40,8 +40,10 @@ func WebpackCheck(opts *Options) genny.RunFn {
 			return nil
 		}
 
-		_, err = f.Write(bb.Bytes())
-		return err
+		if _, err := f.Write(bb.Bytes()); err != nil {
+			return err
+		}
+		return r.File(f)
 	}
 }
 
