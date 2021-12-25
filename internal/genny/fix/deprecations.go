@@ -95,6 +95,21 @@ func packrMigrateFun(r *genny.Runner, opts *Options) func(path string, info os.F
 			b = rx.ReplaceAll(b, []byte(new))
 		}
 
+		if bytes.Contains(b, []byte("app.ServeFiles(\"/\", assetsBox)")) {
+			b, err = addImport(path, b, fmt.Sprintf("%s/public", opts.App.PackagePkg))
+			if err != nil {
+				return err
+			}
+
+			b, err = addImport(path, b, "net/http")
+			if err != nil {
+				return err
+			}
+
+			rx := regexp.MustCompile(`app\.ServeFiles\(.*assetsBox\)`)
+			b = rx.ReplaceAll(b, []byte("app.ServeFiles(\"/\", http.FS(public.FS()))"))
+		}
+
 		b, err = format.Source(b)
 		if err != nil {
 			return err

@@ -85,6 +85,9 @@ func New(opts *Options) (*genny.Generator, error) {
 	// check for deprecations
 	g.RunFn(DeprecationsCheck(opts))
 
+	// add embed.go files
+	g.RunFn(FixEmbed(opts))
+
 	// fix Docker file
 	g.RunFn(FixDocker(opts))
 

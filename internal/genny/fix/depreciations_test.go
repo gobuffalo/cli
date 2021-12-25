@@ -57,7 +57,7 @@ func Test_Depreciations_mainGo(t *testing.T) {
 	}
 }
 
-func Test_Depreciations_ReplaceBoxes(t *testing.T) {
+func Test_Depreciations_ReplacePackr(t *testing.T) {
 	r := require.New(t)
 
 	tt := []struct {
@@ -87,6 +87,9 @@ func Test_Depreciations_ReplaceBoxes(t *testing.T) {
 			contains: map[string][]string{
 				"actions/app.go": {
 					"coke/locales",
+					"coke/public",
+					"net/http",
+					"app.ServeFiles(\"/\", http.FS(public.FS()))",
 					"i18n.New(locales.FS(), \"en-US\")",
 				},
 				"actions/render.go": {

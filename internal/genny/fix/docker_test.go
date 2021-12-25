@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_FixDocker_SkipsExisting(t *testing.T) {
+func Test_FixDocker(t *testing.T) {
 	r := require.New(t)
 
 	run := gentest.NewRunner()

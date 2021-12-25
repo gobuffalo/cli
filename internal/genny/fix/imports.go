@@ -23,6 +23,7 @@ var replace = map[string]string{
 	"github.com/gobuffalo/buffalo-pop/v2/pop/popmw": "github.com/gobuffalo/buffalo-pop/v3/pop/popmw",
 	"github.com/gobuffalo/genny":                    "github.com/gobuffalo/genny/v2",
 	"github.com/gobuffalo/mw-i18n":                  "github.com/gobuffalo/mw-i18n/v2",
+	"github.com/gobuffalo/packr/v2":                 "",
 	"github.com/gobuffalo/plush":                    "github.com/gobuffalo/plush/v4",
 	"github.com/gobuffalo/pop":                      "github.com/gobuffalo/pop/v6",
 	"github.com/gobuffalo/pop/v5":                   "github.com/gobuffalo/pop/v6",
@@ -99,7 +100,10 @@ func rewriteFile(file genny.File) error {
 		}
 
 		astutil.DeleteNamedImport(fset, f, name, key)
-		astutil.AddImport(fset, f, value)
+		if value != "" {
+			astutil.AddImport(fset, f, value)
+		}
+
 		changed = true
 	}
 
