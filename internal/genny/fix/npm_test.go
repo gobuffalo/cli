@@ -157,7 +157,7 @@ func Test_PackageJSONCheck_UpdatingFileAndClearNodeModules(t *testing.T) {
 		{
 			Name:     "WithYarn",
 			WithYarn: true,
-			Command:  "yarnpkg install",
+			Command:  "yarnpkg install --no-progress --save",
 		},
 		{
 			Name:     "WithoutYarn",

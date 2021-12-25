@@ -27,6 +27,14 @@ func UpdatePlushTemplates(opts *Options) genny.RunFn {
 
 			var exts []string
 			ext := filepath.Ext(base)
+			switch ext {
+			case ".html":
+			case ".js":
+			case ".md":
+			default:
+				return nil
+			}
+
 			for len(ext) != 0 {
 				if ext == ".plush" || ext == ".fizz" {
 					return nil
