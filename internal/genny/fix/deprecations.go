@@ -86,13 +86,14 @@ func packrMigrateFun(r *genny.Runner, opts *Options) func(path string, info os.F
 			b = rx.ReplaceAll(b, []byte("TemplatesFS: templates.FS(),"))
 		}
 
-		if bytes.Contains(b, []byte("i18n.New(packr.New(")) {
+		rx := regexp.MustCompile(`i18n\.New\(packr\.New\(.*\),(?P<Lang>.*)\)`)
+		if rx.Match(b) {
 			b, err = addImport(path, b, fmt.Sprintf("%s/locales", opts.App.PackagePkg))
 			if err != nil {
 				return err
 			}
 
-			rx := regexp.MustCompile(`i18n\.New\(packr\.New\(.*\),(?P<Lang>.*)\)`)
+			
 			match := rx.FindSubmatch(b)
 			new := fmt.Sprintf("i18n.New(locales.FS(),%s)", match[1])
 			b = rx.ReplaceAll(b, []byte(new))
@@ -150,6 +151,11 @@ func updateSuiteFun(r *genny.Runner, opts *Options) func(path string, info os.Fi
 
 		rx := regexp.MustCompile(`suite\.NewModelWithFixtures\(packr\.New\(".*", (?P<path>.*)\)\)`)
 		if rx.Match(b) {
+			b, err = addImport(path, b, "os")
+			if err != nil {
+				return err
+			}
+
 			match := rx.FindSubmatch(b)
 			new := fmt.Sprintf("suite.NewModelWithFixtures(os.DirFS(%s))", match[1])
 			b = rx.ReplaceAll(b, []byte(new))
@@ -157,6 +163,11 @@ func updateSuiteFun(r *genny.Runner, opts *Options) func(path string, info os.Fi
 
 		rx = regexp.MustCompile(`suite\.NewActionWithFixtures\((?P<app>.*), packr\.New\(".*", (?P<path>.*)\)\)`)
 		if rx.Match(b) {
+			b, err = addImport(path, b, "os")
+			if err != nil {
+				return err
+			}
+
 			match := rx.FindSubmatch(b)
 			new := fmt.Sprintf("suite.NewActionWithFixtures(%s, os.DirFS(%s))", match[1], match[2])
 			b = rx.ReplaceAll(b, []byte(new))
