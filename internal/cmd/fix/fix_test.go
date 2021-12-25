@@ -47,12 +47,17 @@ func TestFix_v0_18_0(t *testing.T) {
 				ex := exec.Command("buffalo", tc.newargs...)
 				ex.Stdout = os.Stdout
 				ex.Stderr = os.Stderr
-				ex.Run()
+				r.NoError(ex.Run())
 
 				r.NoError(os.Chdir(tc.appname))
 
-				r.NoError(testhelpers.RunBuffaloCMD(t, []string{"fix", "-y"}))
-				r.NoError(testhelpers.RunBuffaloCMD(t, []string{"build"}))
+				out, err := testhelpers.RunBuffaloCMD(t, []string{"fix", "-y"})
+				t.Log(out)
+				r.NoError(err)
+
+				out, err = testhelpers.RunBuffaloCMD(t, []string{"build"})
+				t.Log(out)
+				r.NoError(err)
 			})
 		})
 	}
@@ -92,12 +97,17 @@ func TestFix_v0_17_7(t *testing.T) {
 				ex := exec.Command("buffalo", tc.newargs...)
 				ex.Stdout = os.Stdout
 				ex.Stderr = os.Stderr
-				ex.Run()
+				r.NoError(ex.Run())
 
 				r.NoError(os.Chdir(tc.appname))
 
-				r.NoError(testhelpers.RunBuffaloCMD(t, []string{"fix", "-y"}))
-				r.NoError(testhelpers.RunBuffaloCMD(t, []string{"build"}))
+				out, err := testhelpers.RunBuffaloCMD(t, []string{"fix", "-y"})
+				t.Log(out)
+				r.NoError(err)
+
+				out, err = testhelpers.RunBuffaloCMD(t, []string{"build"})
+				t.Log(out)
+				r.NoError(err)
 			})
 		})
 	}
@@ -149,7 +159,7 @@ $(() => {
 				ex := exec.Command("buffalo", tc.newargs...)
 				ex.Stdout = os.Stdout
 				ex.Stderr = os.Stderr
-				ex.Run()
+				r.NoError(ex.Run())
 
 				r.NoError(os.Chdir(tc.appname))
 
@@ -157,8 +167,13 @@ $(() => {
 					r.NoError(os.WriteFile(k, []byte(v), 0644))
 				}
 
-				r.NoError(testhelpers.RunBuffaloCMD(t, []string{"fix", "-y"}))
-				r.NoError(testhelpers.RunBuffaloCMD(t, []string{"build"}))
+				out, err := testhelpers.RunBuffaloCMD(t, []string{"fix", "-y"})
+				t.Log(out)
+				r.NoError(err)
+
+				out, err = testhelpers.RunBuffaloCMD(t, []string{"build"})
+				t.Log(out)
+				r.NoError(err)
 			})
 		})
 	}
