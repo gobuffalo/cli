@@ -61,21 +61,44 @@ func Test_Depreciations_ReplaceBoxes(t *testing.T) {
 	r := require.New(t)
 
 	tt := []struct {
-		Name     string
-		contains map[string][]string
+		Name        string
+		contains    map[string][]string
+		notContains map[string][]string
 	}{
 		{
-			Name:     "buffaloPre0_18api",
-			contains: map[string][]string{},
+			Name: "buffaloPre0_18api",
+			contains: map[string][]string{
+				"actions/app.go": {
+					"coke/locales",
+					"i18n.New(locales.FS(), \"en-US\")",
+				},
+			},
+			notContains: map[string][]string{
+				"actions/app.go": {
+					"packr.New",
+				},
+				"actions/render.go": {
+					"packr.New",
+				},
+			},
 		},
 		{
 			Name: "buffaloPre0_18web",
 			contains: map[string][]string{
+				"actions/app.go": {
+					"coke/locales",
+					"i18n.New(locales.FS(), \"en-US\")",
+				},
 				"actions/render.go": {
 					"coke/public",
 					"coke/templates",
 					"AssetsFS: public.FS()",
 					"TemplatesFS: templates.FS()",
+				},
+			},
+			notContains: map[string][]string{
+				"actions/render.go": {
+					"packr.New",
 				},
 			},
 		},
@@ -113,6 +136,15 @@ func Test_Depreciations_ReplaceBoxes(t *testing.T) {
 
 				for _, c := range contains {
 					r.Contains(clean(f.String()), clean(c))
+				}
+			}
+
+			for file, notContains := range tc.notContains {
+				f, err := results.Find(file)
+				r.NoError(err)
+
+				for _, c := range notContains {
+					r.NotContains(clean(f.String()), clean(c))
 				}
 			}
 		})

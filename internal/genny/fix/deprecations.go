@@ -31,13 +31,13 @@ func DeprecationsCheck(opts *Options) genny.RunFn {
 			opts.warnings = append(opts.warnings, "app.Start has been removed in v0.11.0. Use app.Serve Instead. [main.go]")
 		}
 
-		err = walkDisk(r.Disk, "actions", actionsWalkFun(r.Disk, opts))
+		err = walkDisk(r.Disk, "actions", packrMigrateFun(r, opts))
 		// TODO: add other folders to check
 		return err
 	}
 }
 
-func actionsWalkFun(r *genny.Disk, opts *Options) func(path string, info os.FileInfo, err error) error {
+func packrMigrateFun(r *genny.Runner, opts *Options) func(path string, info os.FileInfo, err error) error {
 	return func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -51,7 +51,7 @@ func actionsWalkFun(r *genny.Disk, opts *Options) func(path string, info os.File
 			return nil
 		}
 
-		f, err := r.Find(path)
+		f, err := r.FindFile(path)
 		if err != nil {
 			return err
 		}
@@ -69,10 +69,7 @@ func actionsWalkFun(r *genny.Disk, opts *Options) func(path string, info os.File
 			rx := regexp.MustCompile("AssetsBox:.*,")
 			b = rx.ReplaceAll(b, []byte("AssetsFS: public.FS(),"))
 
-			rx = regexp.MustCompile(`^.*assetsBox.*=.*packr\.New.*$`)
-			b = rx.ReplaceAll(b, []byte(""))
-
-			rx = regexp.MustCompile(`^.*AssetsBox.*=.*$`)
+			rx = regexp.MustCompile(`(?m)^.*assetsBox.*=.*packr\.New.*$`)
 			b = rx.ReplaceAll(b, []byte(""))
 		}
 
@@ -84,9 +81,18 @@ func actionsWalkFun(r *genny.Disk, opts *Options) func(path string, info os.File
 
 			rx := regexp.MustCompile("TemplatesBox:.*,")
 			b = rx.ReplaceAll(b, []byte("TemplatesFS: templates.FS(),"))
+		}
 
-			rx = regexp.MustCompile(`^.*TemplatesBox.*=.*$`)
-			b = rx.ReplaceAll(b, []byte(""))
+		if bytes.Contains(b, []byte("i18n.New(packr.New(")) {
+			b, err = addImport(path, b, fmt.Sprintf("%s/locales", opts.App.PackagePkg))
+			if err != nil {
+				return err
+			}
+
+			rx := regexp.MustCompile(`i18n\.New\(packr\.New\(.*\),(?P<Lang>.*)\)`)
+			match := rx.FindSubmatch(b)
+			new := fmt.Sprintf("i18n.New(locales.FS(),%s)", match[1])
+			b = rx.ReplaceAll(b, []byte(new))
 		}
 
 		b, err = format.Source(b)
@@ -95,18 +101,21 @@ func actionsWalkFun(r *genny.Disk, opts *Options) func(path string, info os.File
 		}
 
 		_, err = f.Write(b)
-		return err
+		if err != nil {
+			return err
+		}
+		return r.File(f)
 	}
 }
 
-func addImport(path string, src []byte, importSpec string) ([]byte, error) {
+func addImport(path string, src []byte, value string) ([]byte, error) {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, path, src, parser.ParseComments)
 	if err != nil {
 		return nil, err
 	}
 
-	astutil.AddImport(fset, f, importSpec)
+	astutil.AddImport(fset, f, value)
 	ast.SortImports(fset, f)
 
 	bb := &bytes.Buffer{}
