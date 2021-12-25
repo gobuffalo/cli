@@ -82,8 +82,10 @@ $(() => {
 				r := require.New(t)
 				r.NoError(testhelpers.InstallOldBuffaloCMD(t, tc.version))
 
-				out, _ := exec.Command("buffalo", tc.newargs...).CombinedOutput()
-				t.Log(string(out))
+				ex := exec.Command("buffalo", tc.newargs...)
+				ex.Stdout = os.Stdout
+				ex.Stderr = os.Stderr
+				ex.Run()
 
 				r.NoError(os.Chdir(tc.appname))
 
@@ -91,13 +93,8 @@ $(() => {
 					r.NoError(os.WriteFile(k, []byte(v), 0644))
 				}
 
-				output, err := testhelpers.RunBuffaloCMD(t, []string{"fix", "-y"})
-				t.Log(output)
-				r.NoError(err)
-
-				output, err = testhelpers.RunBuffaloCMD(t, []string{"build"})
-				t.Log(output)
-				r.NoError(err)
+				r.NoError(testhelpers.RunBuffaloCMD(t, []string{"fix", "-y"}))
+				r.NoError(testhelpers.RunBuffaloCMD(t, []string{"build"}))
 			})
 		})
 	}

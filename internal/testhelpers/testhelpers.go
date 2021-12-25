@@ -97,14 +97,14 @@ func EnsureBuffaloCMD(t *testing.T) error {
 
 // RunBuffaloCMD is useful for integration tests where CMD would want
 // to run a Buffalo command from the fully compiled binary.
-func RunBuffaloCMD(t *testing.T, args []string) (string, error) {
+func RunBuffaloCMD(t *testing.T, args []string) error {
 	t.Helper()
 
 	ex := exec.Command(testingBinaryLocation(t))
 	ex.Args = append(ex.Args, args...)
-	output, err := ex.CombinedOutput()
-
-	return string(output), err
+	ex.Stdout = os.Stdout
+	ex.Stderr = os.Stderr
+	return ex.Run()
 }
 
 // testingBinaryLocation returns the location of the testing binary which is
