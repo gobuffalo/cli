@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"html/template"
 	"os/exec"
-	"path/filepath"
-	"strings"
 
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
 	"github.com/gobuffalo/genny/v2"
@@ -112,24 +110,12 @@ func PackageJSONCheck(opts *Options) genny.RunFn {
 			return err
 		}
 
-		base := "node_modules"
-		for _, f := range r.Disk.Files() {
-			rel, err := filepath.Rel(base, f.Name())
-			if err != nil {
-				return err
-			}
-
-			if strings.HasPrefix(rel, "..") {
-				continue
-			}
-
-			if err := r.Delete(f.Name()); err != nil {
-				return err
-			}
+		if err := r.Delete("node_modules"); err != nil {
+			return err
 		}
 
 		if opts.App.WithYarn {
-			return r.Exec(exec.Command("yarnpkg", "install"))
+			return r.Exec(exec.Command("yarnpkg", "install", "--no-progress", "--save"))
 		}
 
 		return r.Exec(exec.Command("npm", "install"))

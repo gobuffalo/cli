@@ -25,50 +25,80 @@ func TestFix(t *testing.T) {
 		}
 	})
 
-	versions := []string{
-		"v0.18.0",
-		"v0.17.7",
-		"v0.16.27",
-	}
-
 	tt := []struct {
-		newargs []string
-		appname string
+		version      string
+		newargs      []string
+		appname      string
+		replacements map[string]string // replace existing files that are not fixed by buffalo fix but need updates to compile
 	}{
 		{
+			version: "v0.18.0",
 			newargs: []string{"new", "api", "-f", "--api", "--vcs", "none"},
 			appname: "api",
 		},
 		{
+			version: "v0.18.0",
 			newargs: []string{"new", "web", "-f", "--vcs", "none"},
 			appname: "web",
 		},
+
+		{
+			version: "v0.17.7",
+			newargs: []string{"new", "api", "-f", "--api", "--vcs", "none"},
+			appname: "api",
+		},
+		{
+			version: "v0.17.7",
+			newargs: []string{"new", "web", "-f", "--vcs", "none"},
+			appname: "web",
+		},
+
+		{
+			version: "v0.16.27",
+			newargs: []string{"new", "api", "-f", "--api", "--vcs", "none"},
+			appname: "api",
+		},
+		{
+			version: "v0.16.27",
+			newargs: []string{"new", "web", "-f", "--vcs", "none"},
+			appname: "web",
+			replacements: map[string]string{
+				"assets/js/application.js": `
+require("expose-loader?exposes=$,jQuery!jquery");
+require("bootstrap/dist/js/bootstrap.bundle.js");
+require("@fortawesome/fontawesome-free/js/all.js");
+require("jquery-ujs/src/rails.js");
+
+$(() => {
+
+});`,
+			},
+		},
 	}
 
-	for _, version := range versions {
-		r.NoError(testhelpers.InstallOldBuffaloCMD(t, version))
+	for _, tc := range tt {
+		t.Run(fmt.Sprintf("%s %s", tc.appname, tc.version), func(t *testing.T) {
+			testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
+				r := require.New(t)
+				r.NoError(testhelpers.InstallOldBuffaloCMD(t, tc.version))
 
-		for _, tc := range tt {
-			testname := fmt.Sprintf("%s - %s", tc.appname, version)
+				out, _ := exec.Command("buffalo", tc.newargs...).CombinedOutput()
+				t.Log(string(out))
 
-			t.Run(testname, func(t *testing.T) {
-				testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
-					r := require.New(t)
+				r.NoError(os.Chdir(tc.appname))
 
-					out, _ := exec.Command("buffalo", tc.newargs...).CombinedOutput()
-					t.Log(string(out))
+				for k, v := range tc.replacements {
+					r.NoError(os.WriteFile(k, []byte(v), 0644))
+				}
 
-					r.NoError(os.Chdir(tc.appname))
+				output, err := testhelpers.RunBuffaloCMD(t, []string{"fix", "-y"})
+				t.Log(output)
+				r.NoError(err)
 
-					output, err := testhelpers.RunBuffaloCMD(t, []string{"fix", "-y"})
-					t.Log(output)
-					r.NoError(err)
-
-					output, err = testhelpers.RunBuffaloCMD(t, []string{"build"})
-					t.Log(output)
-					r.NoError(err)
-				})
+				output, err = testhelpers.RunBuffaloCMD(t, []string{"build"})
+				t.Log(output)
+				r.NoError(err)
 			})
-		}
+		})
 	}
 }
