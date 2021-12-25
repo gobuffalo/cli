@@ -32,8 +32,11 @@ func DeprecationsCheck(opts *Options) genny.RunFn {
 		}
 
 		err = walkDisk(r.Disk, "actions", packrMigrateFun(r, opts))
-		// TODO: add other folders to check
-		return err
+		if err != nil {
+			return err
+		}
+
+		return walkDisk(r.Disk, ".", updateSuiteFun(r, opts))
 	}
 }
 
@@ -108,6 +111,55 @@ func packrMigrateFun(r *genny.Runner, opts *Options) func(path string, info os.F
 
 			rx := regexp.MustCompile(`app\.ServeFiles\(.*assetsBox\)`)
 			b = rx.ReplaceAll(b, []byte("app.ServeFiles(\"/\", http.FS(public.FS()))"))
+		}
+
+		b, err = format.Source(b)
+		if err != nil {
+			return err
+		}
+
+		if _, err := f.Write(b); err != nil {
+			return err
+		}
+		return r.File(f)
+	}
+}
+
+func updateSuiteFun(r *genny.Runner, opts *Options) func(path string, info os.FileInfo, err error) error {
+	return func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			return nil
+		}
+
+		if filepath.Ext(path) != ".go" {
+			return nil
+		}
+
+		f, err := r.FindFile(path)
+		if err != nil {
+			return err
+		}
+		b, err := io.ReadAll(f)
+		if err != nil {
+			return err
+		}
+
+		rx := regexp.MustCompile(`suite\.NewModelWithFixtures\(packr\.New\(".*", (?P<path>.*)\)\)`)
+		if rx.Match(b) {
+			match := rx.FindSubmatch(b)
+			new := fmt.Sprintf("suite.NewModelWithFixtures(os.DirFS(%s))", match[1])
+			b = rx.ReplaceAll(b, []byte(new))
+		}
+
+		rx = regexp.MustCompile(`suite\.NewActionWithFixtures\((?P<app>.*), packr\.New\(".*", (?P<path>.*)\)\)`)
+		if rx.Match(b) {
+			match := rx.FindSubmatch(b)
+			new := fmt.Sprintf("suite.NewActionWithFixtures(%s, os.DirFS(%s))", match[1], match[2])
+			b = rx.ReplaceAll(b, []byte(new))
 		}
 
 		b, err = format.Source(b)

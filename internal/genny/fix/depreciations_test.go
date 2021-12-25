@@ -153,3 +153,98 @@ func Test_Depreciations_ReplacePackr(t *testing.T) {
 		})
 	}
 }
+
+func Test_Depreciations_ReplaceSuite(t *testing.T) {
+	r := require.New(t)
+
+	tt := []struct {
+		Name        string
+		contains    map[string][]string
+		notContains map[string][]string
+	}{
+		{
+			Name: "buffaloPre0_18api",
+			contains: map[string][]string{
+				"actions/actions_test.go": {
+					"suite.NewActionWithFixtures(App(), os.DirFS(\"../fixtures\"))",
+				},
+				"models/models_test.go": {
+					"suite.NewModelWithFixtures(os.DirFS(\"../fixtures\"))",
+				},
+			},
+			notContains: map[string][]string{
+				"actions/actions_test.go": {
+					"packr.New",
+				},
+				"models/models_test.go": {
+					"packr.New",
+				},
+			},
+		},
+		{
+			Name: "buffaloPre0_18web",
+			contains: map[string][]string{
+				"actions/actions_test.go": {
+					"suite.NewActionWithFixtures(App(), os.DirFS(\"../fixtures\"))",
+				},
+				"models/models_test.go": {
+					"suite.NewModelWithFixtures(os.DirFS(\"../fixtures\"))",
+				},
+			},
+			notContains: map[string][]string{
+				"actions/actions_test.go": {
+					"packr.New",
+				},
+				"models/models_test.go": {
+					"packr.New",
+				},
+			},
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.Name, func(t *testing.T) {
+			run := gentest.NewRunner()
+
+			err := run.Disk.AddFS(os.DirFS(filepath.Join("_fixtures", tc.Name)))
+			r.NoError(err)
+
+			opts := &Options{
+				App: meta.Named("coke", "."),
+			}
+			g := DeprecationsCheck(opts)
+			run.WithRun(g)
+
+			r.NoError(run.Run())
+			results := run.Results()
+
+			clean := func(s string) string {
+				s = strings.TrimSpace(s)
+				s = strings.ReplaceAll(s, "\n", "")
+				s = strings.ReplaceAll(s, "\t", "")
+				s = strings.ReplaceAll(s, "\r", "")
+
+				spaces := regexp.MustCompile(`\s+`)
+				return spaces.ReplaceAllString(s, " ")
+			}
+
+			for file, contains := range tc.contains {
+				f, err := results.Find(file)
+				r.NoError(err)
+
+				for _, c := range contains {
+					r.Contains(clean(f.String()), clean(c))
+				}
+			}
+
+			for file, notContains := range tc.notContains {
+				f, err := results.Find(file)
+				r.NoError(err)
+
+				for _, c := range notContains {
+					r.NotContains(clean(f.String()), clean(c))
+				}
+			}
+		})
+	}
+}
