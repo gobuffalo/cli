@@ -47,7 +47,7 @@ func TestFix_v0_18_0(t *testing.T) {
 				ex := exec.Command("buffalo", tc.newargs...)
 				ex.Stdout = os.Stdout
 				ex.Stderr = os.Stderr
-				r.NoError(ex.Run())
+				ex.Run()
 
 				r.NoError(os.Chdir(tc.appname))
 
@@ -97,7 +97,7 @@ func TestFix_v0_17_7(t *testing.T) {
 				ex := exec.Command("buffalo", tc.newargs...)
 				ex.Stdout = os.Stdout
 				ex.Stderr = os.Stderr
-				r.NoError(ex.Run())
+				ex.Run()
 
 				r.NoError(os.Chdir(tc.appname))
 
@@ -159,7 +159,7 @@ $(() => {
 				ex := exec.Command("buffalo", tc.newargs...)
 				ex.Stdout = os.Stdout
 				ex.Stderr = os.Stderr
-				r.NoError(ex.Run())
+				ex.Run()
 
 				r.NoError(os.Chdir(tc.appname))
 
