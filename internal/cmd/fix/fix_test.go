@@ -1,4 +1,5 @@
 // +build integration
+// +build linux
 
 package fix_test
 
@@ -12,6 +13,8 @@ import (
 	"github.com/gobuffalo/cli/internal/testhelpers"
 	"github.com/stretchr/testify/require"
 )
+
+// The tests here are quite slow, so we only run them on linux.
 
 func TestFix_v0_18_0(t *testing.T) {
 	r := require.New(t)
