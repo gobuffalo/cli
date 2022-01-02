@@ -48,7 +48,6 @@ const configurator = {
             ignore: [
               "**/css/**", 
               "**/js/**", 
-              "**/src/**",
             ]
           }
         }],
