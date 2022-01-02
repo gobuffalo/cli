@@ -88,15 +88,19 @@ func New(opts *Options) (*genny.Generator, error) {
 
 func installPkgs(r *genny.Runner, opts *Options) error {
 	command := "yarnpkg"
+	args := []string{"install", "--silent"}
 
 	if !opts.App.WithYarn {
 		command = "npm"
+		args = []string{"install", "--no-progress", "--save"}
 	} else {
 		if err := installYarn(r); err != nil {
 			return err
 		}
+		if err := r.Exec(exec.Command(command, []string{"set", "version", "berry"}...)); err != nil {
+			return err
+		}
 	}
-	args := []string{"install", "--no-progress", "--save"}
 
 	c := exec.Command(command, args...)
 	c.Stdout = yarnWriter{
