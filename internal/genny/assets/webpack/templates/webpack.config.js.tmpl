@@ -36,10 +36,6 @@ const configurator = {
 
   plugins() {
     var plugins = [
-      new Webpack.ProvidePlugin({
-        $: "jquery",
-        jQuery: "jquery"
-      }),
       new MiniCssExtractPlugin({filename: "[name].[contenthash].css"}),
       new CopyWebpackPlugin({
         patterns: [{
