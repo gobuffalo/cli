@@ -1,4 +1,5 @@
-[{
+[
+  {
     "path": "mailers/mailers.go",
     "contains": [
       "github.com/gobuffalo/buffalo/mail",

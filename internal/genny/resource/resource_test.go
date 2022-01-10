@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -30,7 +31,7 @@ func Test_New(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	table := []pass{
+	tt := []pass{
 		{"default", Options{Name: "widget", Attrs: ats}},
 		{"nested", Options{Name: "admin/widget", Attrs: ats}},
 	}
@@ -38,8 +39,8 @@ func Test_New(t *testing.T) {
 	app := meta.New(".")
 	app.PackageRoot("github.com/markbates/coke")
 
-	for _, tt := range table {
-		t.Run(tt.Name, func(st *testing.T) {
+	for _, tc := range tt {
+		t.Run(tc.Name, func(st *testing.T) {
 			r := require.New(st)
 
 			opts := &web.Options{}
@@ -47,8 +48,8 @@ func Test_New(t *testing.T) {
 			run, err := testrunner.WebApp(opts)
 			r.NoError(err)
 
-			tt.Options.App = app
-			g, err := New(&tt.Options)
+			tc.Options.App = app
+			g, err := New(&tc.Options)
 			r.NoError(err)
 
 			r.NoError(run.With(g))
@@ -61,7 +62,7 @@ func Test_New(t *testing.T) {
 			r.Equal("buffalo-pop pop g model widget name desc:nulls.Text", strings.Join(c.Args, " "))
 			r.Len(res.Files, 30)
 
-			nn := name.New(tt.Options.Name).Pluralize().String()
+			nn := name.New(tc.Options.Name).Pluralize().String()
 			actions := []string{"_form", "index", "show", "new", "edit"}
 			for _, s := range actions {
 				p := path.Join("templates", nn, s+".plush.html")
@@ -69,7 +70,7 @@ func Test_New(t *testing.T) {
 				r.NoError(err)
 			}
 
-			fsys := os.DirFS(filepath.Join("_fixtures", tt.Name))
+			fsys := os.DirFS(filepath.Join("_fixtures", tc.Name))
 			err = fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
 				if err != nil {
 					return err
@@ -86,10 +87,12 @@ func Test_New(t *testing.T) {
 
 				clean := func(s string) string {
 					s = strings.TrimSpace(s)
-					s = strings.Replace(s, "\n", "", -1)
-					s = strings.Replace(s, "\t", "", -1)
-					s = strings.Replace(s, "\r", "", -1)
-					return s
+					s = strings.ReplaceAll(s, "\n", "")
+					s = strings.ReplaceAll(s, "\t", "")
+					s = strings.ReplaceAll(s, "\r", "")
+
+					spaces := regexp.MustCompile(`\s+`)
+					return spaces.ReplaceAllString(s, " ")
 				}
 
 				r.Equal(clean(string(s)), clean(f.String()))
@@ -230,7 +233,6 @@ func Test_New_UseModel(t *testing.T) {
 	f, err := res.Find("actions/widgets.go")
 	r.NoError(err)
 	r.Contains(f.String(), "users := &models.Users{}")
-
 }
 
 func Test_New_SkipModel(t *testing.T) {

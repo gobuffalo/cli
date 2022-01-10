@@ -20,8 +20,7 @@ func Test_New(t *testing.T) {
 	r := require.New(t)
 
 	app := meta.Named("web", ".")
-	(&app).PackageRoot("web")
-	app.WithModules = true
+	app.PackageRoot("web")
 
 	gg, err := New(&Options{
 		Options: &core.Options{

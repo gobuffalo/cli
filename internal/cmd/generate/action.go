@@ -18,7 +18,7 @@ var actionOptions = struct {
 	Options: &actions.Options{},
 }
 
-//ActionCmd is the cmd that generates actions.
+// ActionCmd is the cmd that generates actions.
 var ActionCmd = &cobra.Command{
 	Use:     "action [name] [handler name...]",
 	Aliases: []string{"a", "actions"},

@@ -19,8 +19,7 @@ func Test_New(t *testing.T) {
 	r := require.New(t)
 	envy.Temp(func() {
 		app := meta.Named("coke", ".")
-		(&app).PackageRoot("coke")
-		app.WithModules = true
+		app.PackageRoot("coke")
 
 		gg, err := New(&Options{
 			App: app,
@@ -62,9 +61,6 @@ func Test_New(t *testing.T) {
 
 func Test_New_Docker(t *testing.T) {
 	r := require.New(t)
-
-	app := meta.New(".")
-	app.WithModules = false
 
 	gg, err := New(&Options{
 		Docker: &docker.Options{},

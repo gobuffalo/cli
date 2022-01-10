@@ -1,4 +1,5 @@
-[{
+[
+  {
     "path": "actions/admin_planes.go",
     "contains": [
       "type AdminPlanesResource struct",

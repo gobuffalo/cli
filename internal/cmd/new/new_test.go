@@ -1,4 +1,3 @@
-//go:build integration
 // +build integration
 
 package new
@@ -17,7 +16,7 @@ func TestNew(t *testing.T) {
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 
-	tcases := []struct {
+	tt := []struct {
 		name  string
 		args  []string
 		check func(*require.Assertions, string, error)
@@ -67,12 +66,12 @@ func TestNew(t *testing.T) {
 		},
 	}
 
-	for _, v := range tcases {
-		t.Run(v.name, func(tt *testing.T) {
-			testhelpers.RunWithinTempFolder(tt, func(ttt *testing.T) {
-				r := require.New(ttt)
-				out, err := testhelpers.RunBuffaloCMD(ttt, v.args)
-				v.check(r, out, err)
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
+				r := require.New(t)
+				out, err := testhelpers.RunBuffaloCMD(t, tc.args)
+				tc.check(r, out, err)
 			})
 		})
 	}
@@ -82,7 +81,7 @@ func TestNewAppAPIContent(t *testing.T) {
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 
-	checks := []struct {
+	tt := []struct {
 		path  string
 		check func(*require.Assertions, string, bool)
 	}{
@@ -138,33 +137,32 @@ func TestNewAppAPIContent(t *testing.T) {
 		},
 	}
 
-	testhelpers.RunWithinTempFolder(t, func(ttt *testing.T) {
-		r := require.New(ttt)
-		_, err := testhelpers.RunBuffaloCMD(ttt, []string{"new", "apicontent", "--api", "-f", "--vcs", "none"})
+	testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
+		r := require.New(t)
+		_, err := testhelpers.RunBuffaloCMD(t, []string{"new", "apicontent", "--api", "-f", "--vcs", "none"})
 		r.NoError(err)
 
-		for _, v := range checks {
-			ttt.Run(v.path, func(tt *testing.T) {
-				r := require.New(tt)
+		for _, tc := range tt {
+			t.Run(tc.path, func(t *testing.T) {
+				r := require.New(t)
 				exists := true
 
-				b, err := os.ReadFile(v.path)
+				b, err := os.ReadFile(tc.path)
 				if err != nil && errors.Is(err, os.ErrNotExist) {
 					exists = false
 				}
 
-				v.check(r, string(b), exists)
+				tc.check(r, string(b), exists)
 			})
 		}
 	})
-
 }
 
 func TestNewAppTravis(t *testing.T) {
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 
-	checks := []struct {
+	tt := []struct {
 		path  string
 		check func(*require.Assertions, string, bool)
 	}{
@@ -190,22 +188,22 @@ func TestNewAppTravis(t *testing.T) {
 		},
 	}
 
-	testhelpers.RunWithinTempFolder(t, func(ttt *testing.T) {
+	testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
 		out, err := testhelpers.RunBuffaloCMD(t, []string{"new", "apitravis", "--api", "-f", "--vcs", "none", "--ci-provider", "travis", "--db-type", "sqlite3"})
 		t.Log(out)
 		r.NoError(err)
 
-		r := require.New(ttt)
-		for _, v := range checks {
-			ttt.Run(v.path, func(tt *testing.T) {
-				b, err := os.ReadFile(v.path)
+		r := require.New(t)
+		for _, tc := range tt {
+			t.Run(tc.path, func(t *testing.T) {
+				b, err := os.ReadFile(tc.path)
 
 				exists := true
 				if err != nil && errors.Is(err, os.ErrNotExist) {
 					exists = false
 				}
 
-				v.check(r, string(b), exists)
+				tc.check(r, string(b), exists)
 			})
 		}
 	})

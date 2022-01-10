@@ -6,7 +6,7 @@ import (
 )
 
 func Test_CutArg(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		arg      string
 		args     []string
 		expected []string
