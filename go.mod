@@ -6,7 +6,7 @@ require (
 	github.com/BurntSushi/toml v0.4.1
 	github.com/fatih/color v1.13.0
 	github.com/gobuffalo/attrs v1.0.1
-	github.com/gobuffalo/buffalo-pop/v3 v3.0.1
+	github.com/gobuffalo/buffalo-pop/v3 v3.0.2
 	github.com/gobuffalo/clara/v2 v2.0.5
 	github.com/gobuffalo/envy v1.10.1
 	github.com/gobuffalo/events v1.4.2
