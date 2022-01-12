@@ -16,9 +16,7 @@ func Cmd() *cobra.Command {
 		Use:     "fix",
 		Aliases: []string{"update"},
 		Short:   fmt.Sprintf("Attempt to fix a Buffalo application's API to match version %s", runtime.Version),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return Run()
-		},
+		RunE:    RunE,
 	}
 
 	cmd.Flags().BoolVarP(&yesToAll, "y", "y", false, "update all without asking for confirmation")

@@ -45,7 +45,6 @@ var MailCmd = &cobra.Command{
 
 		gg.With(run)
 		return run.Run()
-
 	},
 }
 

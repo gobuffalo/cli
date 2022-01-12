@@ -1,7 +1,9 @@
-[{
+[
+  {
     "path": "actions/people.go",
     "contains": [
       "type PeopleResource struct",
       "func (v PeopleResource)"
     ]
-}]
+  }
+]

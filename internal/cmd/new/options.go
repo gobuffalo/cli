@@ -141,7 +141,6 @@ func initConfig(skipConfig *bool, cfgFile *string) func() {
 			viper.AutomaticEnv()            // read in environment variables that match
 			viper.ReadInConfig()
 		}
-
 	}
 }
 

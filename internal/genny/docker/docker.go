@@ -13,6 +13,12 @@ import (
 //go:embed templates/*
 var templates embed.FS
 
+// Templates used for generating Dockerfile
+// (exported mostly for the "fix" command)
+func Templates() (fs.FS, error) {
+	return fs.Sub(templates, "templates")
+}
+
 func New(opts *Options) (*genny.Generator, error) {
 	g := genny.New()
 
@@ -24,7 +30,7 @@ func New(opts *Options) (*genny.Generator, error) {
 		"opts": opts,
 	}
 
-	sub, err := fs.Sub(templates, "templates")
+	sub, err := Templates()
 	if err != nil {
 		return g, err
 	}

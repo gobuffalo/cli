@@ -22,7 +22,7 @@ Feel free to ask for help, but don't target a specific person (unless you're rep
 
 ### Making your Pull Request
 
-Open a PR against the `development` branch. **_DO NOT_** open one against `master`. All "unreleased" work happens in the `development` branch, and we will fix the master branch if necessary.
+Open a PR against the `development` branch. **_DO NOT_** open one against `main`. All "unreleased" work happens in the `development` branch, and we will fix the main branch if necessary.
 
 **WE WILL CLOSE ANY PR OPENED AGAINST MASTER BRANCH**.
 

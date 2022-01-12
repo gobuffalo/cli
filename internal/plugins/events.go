@@ -61,7 +61,6 @@ func Load() error {
 						return nil
 					})
 				}(c)
-
 				if err != nil {
 					errResult = err
 					return

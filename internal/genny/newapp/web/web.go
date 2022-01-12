@@ -15,6 +15,12 @@ import (
 //go:embed templates/* templates/templates/_flash.plush.html.tmpl
 var templates embed.FS
 
+// Templates used for web project files
+// (exported mostly for the "fix" command)
+func Templates() (fs.FS, error) {
+	return fs.Sub(templates, "templates")
+}
+
 // New generator for creating a Buffalo Web application
 func New(opts *Options) (*genny.Group, error) {
 	if err := opts.Validate(); err != nil {
@@ -36,7 +42,7 @@ func New(opts *Options) (*genny.Group, error) {
 
 	t := gogen.TemplateTransformer(data, helpers)
 	g.Transformer(t)
-	sub, err := fs.Sub(templates, "templates")
+	sub, err := Templates()
 	if err != nil {
 		return gg, err
 	}

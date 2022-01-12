@@ -2,7 +2,6 @@ package setup
 
 import (
 	_ "embed"
-
 	"os"
 	"os/exec"
 	"strings"

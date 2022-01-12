@@ -2,6 +2,7 @@ package testhelpers
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -10,6 +11,59 @@ import (
 
 	"golang.org/x/mod/modfile"
 )
+
+var buffaloVersions = []struct {
+	installUrl string
+	apiUrl     string
+}{
+	{
+		"github.com/gobuffalo/cli/cmd/buffalo",
+		"https://api.github.com/repos/gobuffalo/cli/releases/tags/%s",
+	},
+	{
+		"github.com/gobuffalo/buffalo/buffalo",
+		"https://api.github.com/repos/gobuffalo/buffalo/releases/tags/%s",
+	},
+}
+
+func getBuffaloUrl(version string) (string, error) {
+	for _, v := range buffaloVersions {
+		url := fmt.Sprintf(v.apiUrl, version)
+		resp, err := http.Get(url)
+		if err != nil {
+			return "", fmt.Errorf("failed to fetch url %s: %w", v, err)
+		}
+		if resp.StatusCode == http.StatusOK {
+			return fmt.Sprintf("%s@%s", v.installUrl, version), nil
+		}
+	}
+
+	return "", fmt.Errorf("unknown gobuffalo cli version %s", version)
+}
+
+// InstallOldBuffaloCMD installs a specific version of buffalo for
+// integration tests.
+func InstallOldBuffaloCMD(t *testing.T, version string) error {
+	t.Helper()
+
+	url, err := getBuffaloUrl(version)
+	if err != nil {
+		return err
+	}
+	t.Log("installing", url)
+
+	ex := exec.Command("go")
+	ex.Args = append(ex.Args,
+		"install",
+		"-tags",
+		"sqlite",
+		url,
+	)
+
+	ex.Stdout = os.Stdout
+	ex.Stderr = os.Stderr
+	return ex.Run()
+}
 
 // EnsureBuffaloCMD installs current version of buffalo, it should be run before
 // calling RunBuffaloCMD to ensure this is the version of buffalo that is being tested.

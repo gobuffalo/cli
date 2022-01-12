@@ -10,6 +10,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var pop = Plugin{
+	Binary: "buffalo-pop",
+	GoGet:  "github.com/gobuffalo/buffalo-pop/v3@latest",
+}
+
 var heroku = Plugin{
 	Binary: "buffalo-heroku",
 	GoGet:  "github.com/gobuffalo/buffalo-heroku@latest",
@@ -47,7 +52,7 @@ func Test_List_On(t *testing.T) {
 	app := meta.New(os.TempDir())
 
 	p := ConfigPath(app)
-	r.NoError(os.MkdirAll(filepath.Dir(p), 0755))
+	r.NoError(os.MkdirAll(filepath.Dir(p), 0o755))
 	f, err := os.Create(p)
 	r.NoError(err)
 	_, err = f.WriteString(eToml)
