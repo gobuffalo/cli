@@ -12,12 +12,12 @@ func yarnCheck(app meta.App) error {
 		return err
 	}
 	if _, err := exec.LookPath("yarnpkg"); err != nil {
-		err := run(exec.Command("npm", "install", "-g", "yarn@berry"))
+		err := run(exec.Command("npm", "install", "-g", "yarn"))
 		if err != nil {
 			return fmt.Errorf("This application require yarn, and we could not find it installed on your system. We tried to install it for you, but ran into the following error:\n%s", err)
 		}
 	}
-	if err := run(exec.Command("yarnpkg", "install", "--silent")); err != nil {
+	if err := run(exec.Command("yarnpkg", "install")); err != nil {
 		return fmt.Errorf("We encountered the following error when trying to install your asset dependencies using yarn:\n%s", err)
 	}
 	return nil

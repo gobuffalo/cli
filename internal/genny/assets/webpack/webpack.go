@@ -88,7 +88,7 @@ func New(opts *Options) (*genny.Generator, error) {
 
 func installPkgs(r *genny.Runner, opts *Options) error {
 	command := "yarnpkg"
-	args := []string{"install", "--silent"}
+	args := []string{"install"}
 
 	if !opts.App.WithYarn {
 		command = "npm"
