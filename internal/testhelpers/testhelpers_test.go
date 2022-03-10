@@ -28,6 +28,12 @@ func Test_EnsureBuffaloCMD(t *testing.T) {
 }
 
 func Test_InstallOldBuffaloCMD(t *testing.T) {
+	if runtime.GOOS != "linux" {
+		// this test calls api.github.com too much.
+		// no reason for linux, but just reduce the calls as 1/3
+		t.Skip("skipping Test_InstallOldBuffaloCMD (non-linux env)")
+	}
+
 	tt := []struct {
 		name    string
 		version string

@@ -35,6 +35,8 @@ func getBuffaloUrl(version string) (string, error) {
 		}
 		if resp.StatusCode == http.StatusOK {
 			return fmt.Sprintf("%s@%s", v.installUrl, version), nil
+		} else if resp.StatusCode != http.StatusNotFound {
+			return "", fmt.Errorf("unexpected response for %v: %v", url, resp.StatusCode)
 		}
 	}
 
