@@ -27,7 +27,8 @@ func runE(c *cobra.Command, args []string) error {
 
 		// drop the test db:
 		if err := test.Dialect.DropDB(); err != nil {
-			return err
+			// not an error, since the database will be created in the next step anyway
+			logrus.Info("no test database to drop")
 		}
 
 		// create the test db:
