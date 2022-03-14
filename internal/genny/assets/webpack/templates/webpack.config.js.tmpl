@@ -46,9 +46,9 @@ const configurator = {
           from: "./assets",
           globOptions: {
             ignore: [
-              "**/css/**", 
-              "**/js/**", 
-              "**/src/**",
+              "**/assets/css/**",
+              "**/assets/js/**",
+              "**/assets/src/**",
             ]
           }
         }],

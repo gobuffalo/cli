@@ -30,8 +30,10 @@ func Test_Webpack_New(t *testing.T) {
 	r.NoError(run.Run())
 
 	res := run.Results()
-	r.Len(res.Commands, 1)
+	r.Len(res.Commands, 2)
 	c := res.Commands[0]
+	r.Equal("npm --version", strings.Join(c.Args, " "))
+	c = res.Commands[1]
 	r.Equal("npm install --no-progress --save", strings.Join(c.Args, " "))
 
 	files := []string{
@@ -70,11 +72,17 @@ func Test_Webpack_New_WithYarn(t *testing.T) {
 	r.NoError(run.Run())
 
 	res := run.Results()
-	r.Len(res.Commands, 1)
-	r.Len(res.Files, 11)
+	r.Len(res.Commands, 6)
+	r.Len(res.Files, 11) // see file list in Test_Webpack_New
 
-	c := res.Commands[0]
-	r.Equal("yarnpkg install --no-progress --save", strings.Join(c.Args, " "))
+	versionCommand := res.Commands[0]
+	r.Equal("yarn --version", strings.Join(versionCommand.Args, " "))
+
+	berryCommand := res.Commands[1]
+	r.Equal("yarn set version berry", strings.Join(berryCommand.Args, " "))
+
+	installCommand := res.Commands[5]
+	r.Equal("yarn install", strings.Join(installCommand.Args, " "))
 }
 
 const layout = `<!DOCTYPE html>

@@ -13,6 +13,8 @@ import (
 	"github.com/gobuffalo/genny/v2/gogen"
 )
 
+const YARN = "yarn"
+
 //go:embed templates/* templates/assets/css/_buffalo.scss.tmpl
 var templates embed.FS
 
@@ -41,7 +43,7 @@ func New(opts *Options) (*genny.Generator, error) {
 
 	g.RunFn(func(r *genny.Runner) error {
 		if opts.App.WithYarn {
-			if _, err := r.LookPath("yarnpkg"); err == nil {
+			if _, err := r.LookPath(YARN); err == nil {
 				return nil
 			}
 			// If yarn is not installed, it still can be installed with npm.
@@ -87,17 +89,22 @@ func New(opts *Options) (*genny.Generator, error) {
 }
 
 func installPkgs(r *genny.Runner, opts *Options) error {
-	command := "yarnpkg"
+	command := YARN
+	args := []string{"install"}
 
 	if !opts.App.WithYarn {
 		command = "npm"
+		args = []string{"install", "--no-progress", "--save"}
 	} else {
 		if err := installYarn(r); err != nil {
 			return err
 		}
+		if err := setupYarnBerry(r); err != nil {
+			return err
+		}
 	}
-	args := []string{"install", "--no-progress", "--save"}
 
+	r.Exec(exec.Command(command, "--version"))
 	c := exec.Command(command, args...)
 	c.Stdout = yarnWriter{
 		fn: r.Logger.Debug,
@@ -119,9 +126,27 @@ func (y yarnWriter) Write(p []byte) (int, error) {
 
 func installYarn(r *genny.Runner) error {
 	// if there's no yarn, install it!
-	if _, err := r.LookPath("yarnpkg"); err == nil {
+	if _, err := r.LookPath(YARN); err == nil {
 		return nil
 	}
 	yargs := []string{"install", "-g", "yarn"}
 	return r.Exec(exec.Command("npm", yargs...))
+}
+
+func setupYarnBerry(r *genny.Runner) error {
+	if err := r.Exec(exec.Command(YARN, "--version")); err != nil {
+		return err
+	}
+	if err := r.Exec(exec.Command(YARN, "set", "version", "berry")); err != nil {
+		return err
+	}
+	// the yarnrc config format is different between classic and berry so
+	// it should be configured after berry installation (set version)
+	if err := r.Exec(exec.Command(YARN, "config", "set", "enableGlobalCache", "true")); err != nil {
+		return err
+	}
+	if err := r.Exec(exec.Command(YARN, "config", "set", "logFilters", "--json", `[{"code":"YN0013","level":"discard"}]`)); err != nil {
+		return err
+	}
+	return nil
 }

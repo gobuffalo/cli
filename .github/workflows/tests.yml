@@ -20,7 +20,7 @@ jobs:
           - "ubuntu-latest"
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Go ${{ matrix.go }}
         uses: actions/setup-go@v2
         with:
@@ -29,7 +29,9 @@ jobs:
       - name: Test
         run: |
           go test -tags "sqlite" -cover  ./...
-      
+
       - name: Integration tests
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: 0
         run: |
           go test -v -p 1 -tags "sqlite,integration" -cover  ./...
