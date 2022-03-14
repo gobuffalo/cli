@@ -65,7 +65,9 @@ func New(opts *Options) (*genny.Generator, error) {
 		return nil
 	})
 
-	if err := g.FS(os.DirFS(opts.App.Root)); err != nil {
+	// ExceptFS will not scan any files that the path starts with given strings
+	// excluded files include such as `.git/`, `.github/`, `.gitignore`, `.yarn/`, `.yarnrc`, etc.
+	if err := g.ExceptFS(os.DirFS(opts.App.Root), []string{"node_modules", ".git", ".yarn"}, nil); err != nil {
 		return nil, err
 	}
 
