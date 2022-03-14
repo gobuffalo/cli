@@ -41,10 +41,13 @@ func TestBuild(t *testing.T) {
 			appname:      "sqlite",
 		},
 		{
+			// this test covers too things at once (to save testing time)
+			// 1. originally this test case is for `--skip-pop`
+			// 2. by using "src" as appname, it covers webpack-copy glob issue (pull/119)
 			name:         "skipop",
-			newargs:      []string{"new", "skipop", "-f", "--skip-pop", "--vcs", "none"},
+			newargs:      []string{"new", "src", "-f", "--skip-pop", "--vcs", "none"},
 			resourceargs: []string{"g", "action", "phone", "new"},
-			appname:      "skipop",
+			appname:      "src",
 		},
 	}
 
