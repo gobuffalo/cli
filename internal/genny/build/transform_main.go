@@ -1,7 +1,6 @@
 package build
 
 import (
-	"path/filepath"
 	"strings"
 	"sync"
 
@@ -13,7 +12,7 @@ func transformMain(opts *Options) genny.RunFn {
 		opts.rollback = &sync.Map{}
 	}
 	return func(r *genny.Runner) error {
-		f, err := r.FindFile(filepath.Join("cmd", "app", "main.go"))
+		f, err := r.FindFile("cmd/app/main.go")
 		if err != nil {
 			return err
 		}
