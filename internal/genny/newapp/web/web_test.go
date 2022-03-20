@@ -1,6 +1,7 @@
 package web
 
 import (
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -90,6 +91,6 @@ var commonExpected = []string{
 	".codeclimate.yml",
 	".env",
 	"inflections.json",
-	"main.go",
+	filepath.Join("cmd", "app", "main.go"),
 	"README.md",
 }
