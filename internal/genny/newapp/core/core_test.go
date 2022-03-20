@@ -1,7 +1,6 @@
 package core
 
 import (
-	"path/filepath"
 	"testing"
 
 	"github.com/gobuffalo/cli/internal/genny/docker"
@@ -93,6 +92,6 @@ var commonExpected = []string{
 	".codeclimate.yml",
 	".env",
 	"inflections.json",
-	filepath.Join("cmd", "app", "main.go"),
+	"cmd/app/main.go",
 	"README.md",
 }
