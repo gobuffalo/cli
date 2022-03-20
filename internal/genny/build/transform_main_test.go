@@ -1,6 +1,7 @@
 package build
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/gobuffalo/cli/internal/genny/newapp/web"
@@ -14,7 +15,7 @@ func Test_transformMain(t *testing.T) {
 
 	ref, err := testrunner.WebApp(&web.Options{})
 	r.NoError(err)
-	main, err := ref.Disk.Find("main.go")
+	main, err := ref.Disk.Find(filepath.Join("cmd", "app", "main.go"))
 	r.NoError(err)
 
 	run := gentest.NewRunner()

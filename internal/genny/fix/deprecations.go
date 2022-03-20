@@ -22,7 +22,7 @@ import (
 func DeprecationsCheck(opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
 		fmt.Println("~~~ Checking for deprecations ~~~")
-		f, err := r.FindFile("main.go")
+		f, err := r.FindFile(filepath.Join("main.go"))
 		if err != nil {
 			return err
 		}
@@ -93,7 +93,6 @@ func packrMigrateFun(r *genny.Runner, opts *Options) func(path string, info os.F
 				return err
 			}
 
-			
 			match := rx.FindSubmatch(b)
 			new := fmt.Sprintf("i18n.New(locales.FS(),%s)", match[1])
 			b = rx.ReplaceAll(b, []byte(new))
