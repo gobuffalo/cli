@@ -22,7 +22,7 @@ import (
 func DeprecationsCheck(opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
 		fmt.Println("~~~ Checking for deprecations ~~~")
-		f, err := r.FindFile(filepath.Join("main.go"))
+		f, err := r.FindFile("main.go")
 		if err != nil {
 			return err
 		}
