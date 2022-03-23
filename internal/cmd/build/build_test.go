@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package build_test
@@ -89,9 +90,9 @@ func TestBuildNoAssets(t *testing.T) {
 		t.Log(out)
 		r.NoError(err)
 
-		t.Cleanup(func() {
-			os.RemoveAll("noassets")
-		})
+		// t.Cleanup(func() {
+		// 	os.RemoveAll("noassets")
+		// })
 
 		r.NoError(os.Chdir("noassets"))
 

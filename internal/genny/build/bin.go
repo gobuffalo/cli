@@ -2,6 +2,7 @@ package build
 
 import (
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -46,9 +47,14 @@ func buildCmd(opts *Options) (*exec.Cmd, error) {
 	if len(opts.LDFlags) > 0 {
 		flags = append(flags, opts.LDFlags)
 	}
+
 	if len(flags) > 0 {
 		buildArgs = append(buildArgs, "-ldflags", strings.Join(flags, " "))
 	}
+
+	prefix := "." + string(filepath.Separator)
+	path := filepath.Join("cmd", "app")
+	buildArgs = append(buildArgs, prefix+path)
 
 	return exec.Command("go", buildArgs...), nil
 }
