@@ -115,7 +115,7 @@ func Test_buildCmd_Windows_AddsExe(t *testing.T) {
 		}
 		c, err := buildCmd(opts)
 		r.NoError(err)
-		eq("go build -o bin\\build.exe", c)
+		eq("go build -o bin\\build.exe "+appBinaryFolder(), c)
 	}
 }
 
