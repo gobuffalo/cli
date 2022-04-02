@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 
 	"github.com/gobuffalo/genny/v2"
-	"github.com/markbates/refresh/refresh"
+	"github.com/gobuffalo/refresh/refresh"
 	"gopkg.in/yaml.v2"
 )
 
