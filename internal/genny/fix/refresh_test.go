@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMoveMain(t *testing.T) {
+func TestRefresh(t *testing.T) {
 	r := require.New(t)
 
 	tt := []struct {
@@ -42,17 +42,16 @@ func TestMoveMain(t *testing.T) {
 				App: meta.Named("coke", "."),
 			}
 
-			g := MoveMain(opts)
+			g := Refresh(opts)
 			run.WithRun(g)
 
 			r.NoError(run.Run())
-
 			results := run.Results()
-			_, err = results.Find("cmd/app/main.go")
-			r.NoError(err)
 
-			_, err = results.Find("main.go")
-			r.Error(err)
+			f, err := results.Find(".buffalo.dev.yml")
+
+			r.NoError(err)
+			r.Contains(f.String(), "./cmd/app")
 		})
 	}
 }

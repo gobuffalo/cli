@@ -26,7 +26,10 @@ func MoveMain(opts *Options) genny.RunFn {
 		}
 
 		nf := genny.NewFileS("cmd/app/main.go", f.String())
-		r.Disk.Remove("main.go")
+		err = r.Disk.Delete("main.go")
+		if err != nil {
+			return fmt.Errorf("could not delete main.go: %w", err)
+		}
 
 		return r.File(nf)
 	}
