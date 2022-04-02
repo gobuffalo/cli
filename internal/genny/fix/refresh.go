@@ -2,7 +2,7 @@ package fix
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/refresh/refresh"
@@ -19,7 +19,7 @@ func Refresh(opts *Options) genny.RunFn {
 			return err
 		}
 
-		data, err := ioutil.ReadAll(f)
+		data, err := io.ReadAll(f)
 		if err != nil {
 			return err
 		}
