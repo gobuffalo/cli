@@ -51,7 +51,13 @@ func Test_New(t *testing.T) {
 	r.Len(res.Files, 4)
 
 	fsys := os.DirFS("../actions/_fixtures/outputs/clean")
-	files := []string{"actions/user.go.tmpl", "actions/app.go.tmpl", "actions/user_test.go.tmpl", "templates/user/index.plush.html"}
+	files := []string{
+		"actions/user.go.tmpl",
+		"actions/app.go.tmpl",
+		"actions/user_test.go.tmpl",
+		"templates/user/index.plush.html",
+	}
+
 	for _, s := range files {
 		x, err := fs.ReadFile(fsys, s)
 		r.NoError(err)

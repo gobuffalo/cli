@@ -26,11 +26,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Test
-        run: |
-          go test -tags "sqlite" -cover  ./...
-
-      - name: Integration tests
+      - name: Tests
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: 0
         run: |

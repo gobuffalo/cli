@@ -43,7 +43,7 @@ func Test_New(t *testing.T) {
 
 	cmds := []string{
 		"go mod tidy",
-		"go build -tags bar -o bin/foo",
+		"go build -tags bar -o bin/foo " + appBinaryFolder(),
 		"go mod tidy",
 	}
 	r.Len(res.Commands, len(cmds))
@@ -73,7 +73,7 @@ func Test_NewWithoutBuildDeps(t *testing.T) {
 
 		res := run.Results()
 
-		cmds := []string{"go mod tidy", "go build -tags bar -o bin/foo"}
+		cmds := []string{"go mod tidy", "go build -tags bar -o bin/foo " + appBinaryFolder()}
 		r.Len(res.Commands, len(cmds))
 		for i, c := range res.Commands {
 			eq(r, cmds[i], c)

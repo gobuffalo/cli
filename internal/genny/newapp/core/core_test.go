@@ -92,6 +92,6 @@ var commonExpected = []string{
 	".codeclimate.yml",
 	".env",
 	"inflections.json",
-	"main.go",
+	"cmd/app/main.go",
 	"README.md",
 }

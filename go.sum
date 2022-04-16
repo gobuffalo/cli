@@ -200,6 +200,8 @@ github.com/gobuffalo/plush/v4 v4.1.10/go.mod h1:9OOII9uAM5pZnhWu1OkQnboXJjaWMQ7k
 github.com/gobuffalo/pop/v6 v6.0.0/go.mod h1:5rd3OnViLhjteR8+0i/mT9Q4CzkTzCoR7tm/9mmAic4=
 github.com/gobuffalo/pop/v6 v6.0.1 h1:4YhzxW4hVvf0xLW9zVkhPZFuH5VmBc4ffIIP/C++SLQ=
 github.com/gobuffalo/pop/v6 v6.0.1/go.mod h1:5NO7ehmyRjRctnbMDhIqKkkg6zvdueufYltxErfp9BU=
+github.com/gobuffalo/refresh v1.13.0 h1:jte5Ch/ZBO+APssLbwbbAr89D4crrYxg2KC5GVyImN4=
+github.com/gobuffalo/refresh v1.13.0/go.mod h1:10LiYMO/b19hQVO8q+Z/nBXEBTDGF2u97RJpu82Uu58=
 github.com/gobuffalo/tags/v3 v3.0.2/go.mod h1:ZQeN6TCTiwAFnS0dNcbDtSgZDwNKSpqajvVtt6mlYpA=
 github.com/gobuffalo/tags/v3 v3.1.2 h1:68sHcwFFDstXyfbk5ovbGcQFDsupgVLs+lw1XZinHJw=
 github.com/gobuffalo/tags/v3 v3.1.2/go.mod h1:o3ldUfKv50jxWAC8eZHXMm8dnKW3YvyZUMr0xqUcZTI=
