@@ -22,15 +22,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup Go ${{ matrix.go }}
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Test
-        run: |
-          go test -tags "sqlite" -cover  ./...
-
-      - name: Integration tests
+      - name: Tests
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: 0
         run: |

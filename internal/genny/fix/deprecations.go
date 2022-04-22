@@ -93,7 +93,6 @@ func packrMigrateFun(r *genny.Runner, opts *Options) func(path string, info os.F
 				return err
 			}
 
-			
 			match := rx.FindSubmatch(b)
 			new := fmt.Sprintf("i18n.New(locales.FS(),%s)", match[1])
 			b = rx.ReplaceAll(b, []byte(new))

@@ -103,6 +103,9 @@ func New(opts *Options) (*genny.Generator, error) {
 	// update plush templates
 	g.RunFn(UpdatePlushTemplates(opts))
 
+	g.RunFn(MoveMain(opts))
+	g.RunFn(Refresh(opts))
+
 	// print all warnings that were captured
 	g.RunFn(printWarnings(opts))
 

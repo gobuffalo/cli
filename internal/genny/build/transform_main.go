@@ -12,10 +12,11 @@ func transformMain(opts *Options) genny.RunFn {
 		opts.rollback = &sync.Map{}
 	}
 	return func(r *genny.Runner) error {
-		f, err := r.FindFile("main.go")
+		f, err := r.FindFile("cmd/app/main.go")
 		if err != nil {
 			return err
 		}
+
 		opts.rollback.Store(f.Name(), f.String())
 		s := strings.Replace(f.String(), "func main()", "func originalMain()", -1)
 		f = genny.NewFileS(f.Name(), s)

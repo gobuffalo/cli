@@ -14,7 +14,7 @@ func Test_transformMain(t *testing.T) {
 
 	ref, err := testrunner.WebApp(&web.Options{})
 	r.NoError(err)
-	main, err := ref.Disk.Find("main.go")
+	main, err := ref.Disk.Find("cmd/app/main.go")
 	r.NoError(err)
 
 	run := gentest.NewRunner()
