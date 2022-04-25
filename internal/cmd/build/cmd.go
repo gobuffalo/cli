@@ -23,6 +23,7 @@ func Cmd() *cobra.Command {
 	cmd.Flags().BoolVar(&buildOptions.CleanAssets, "clean-assets", false, "will delete public/assets before calling webpack")
 	cmd.Flags().StringVarP(&buildOptions.Environment, "environment", "", "development", "set the environment for the binary")
 	cmd.Flags().StringVar(&buildOptions.Mod, "mod", "", "-mod flag for go build")
+	cmd.Flags().StringSliceVar(&buildOptions.BuildFlags, "build-flags", nil, "Additional comma-separated build flags to feed to go build")
 
 	return cmd
 }
