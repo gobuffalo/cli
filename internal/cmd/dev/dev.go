@@ -87,7 +87,8 @@ func runDevScript(ctx context.Context, app meta.App) error {
 	}
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
-	return cmd.Run()
+
+	return contextAwareRun(ctx, cmd.Run)
 }
 
 func startDevServer(ctx context.Context, args []string) error {
@@ -117,5 +118,21 @@ func startDevServer(ctx context.Context, args []string) error {
 	}
 	r := refresh.NewWithContext(c, ctx)
 	r.CommandFlags = args
-	return r.Start()
+
+	return contextAwareRun(ctx, r.Start)
+}
+
+func contextAwareRun(ctx context.Context, f func() error) error {
+	var out = make(chan error)
+
+	go func() {
+		out <- f()
+	}()
+
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case err := <-out:
+		return err
+	}
 }
