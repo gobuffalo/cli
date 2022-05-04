@@ -13,7 +13,7 @@ import (
 	rg "github.com/gobuffalo/cli/internal/genny/refresh"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"
-	"github.com/markbates/refresh/refresh"
+	"github.com/gobuffalo/refresh/refresh"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
