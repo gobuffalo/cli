@@ -1,16 +1,18 @@
 package cmd
 
 import (
+	"sync"
+
 	"github.com/gobuffalo/cli/internal/plugins"
-	"github.com/markbates/oncer"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 var _plugs plugins.List
+var initPlugsOnce sync.Once
 
 func plugs() plugins.List {
-	oncer.Do("buffalo/cmd/plugins", func() {
+	initPlugsOnce.Do(func() {
 		var err error
 		_plugs, err = plugins.Available()
 		if err == nil {

@@ -6,10 +6,10 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/events"
-	"github.com/markbates/oncer"
 	"github.com/markbates/safe"
 )
 
@@ -19,10 +19,12 @@ const (
 	EvtSetupFinished = "buffalo-plugins:setup:finished"
 )
 
+var loadPluginsOnce sync.Once
+
 // Load will add listeners for any plugins that support "events"
 func Load() error {
 	var errResult error
-	oncer.Do("events.LoadPlugins", func() {
+	loadPluginsOnce.Do(func() {
 		// don't send plugins events during testing
 		if envy.Get("GO_ENV", "development") == "test" {
 			return
