@@ -12,7 +12,6 @@ require (
 	github.com/gobuffalo/events v1.4.2
 	github.com/gobuffalo/flect v0.2.5
 	github.com/gobuffalo/genny/v2 v2.0.9
-	github.com/gobuffalo/here v0.6.6 // indirect
 	github.com/gobuffalo/logger v1.0.6
 	github.com/gobuffalo/meta v0.3.1
 	github.com/gobuffalo/plush/v4 v4.1.11
@@ -20,7 +19,6 @@ require (
 	github.com/gobuffalo/refresh v1.13.1
 	github.com/google/go-cmp v0.5.8
 	github.com/markbates/grift v1.5.0
-	github.com/markbates/oncer v1.0.0
 	github.com/markbates/safe v1.0.1
 	github.com/markbates/sigtx v1.0.0
 	github.com/psanford/memfs v0.0.0-20210214183328-a001468d78ef
