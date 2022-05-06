@@ -16,7 +16,7 @@ require (
 	github.com/gobuffalo/meta v0.3.1
 	github.com/gobuffalo/plush/v4 v4.1.10
 	github.com/gobuffalo/pop/v6 v6.0.2
-	github.com/gobuffalo/refresh v1.13.0
+	github.com/gobuffalo/refresh v1.13.1
 	github.com/google/go-cmp v0.5.8
 	github.com/markbates/grift v1.5.0
 	github.com/markbates/oncer v1.0.0
