@@ -14,7 +14,7 @@ require (
 	github.com/gobuffalo/genny/v2 v2.0.9
 	github.com/gobuffalo/logger v1.0.6
 	github.com/gobuffalo/meta v0.3.1
-	github.com/gobuffalo/plush/v4 v4.1.10
+	github.com/gobuffalo/plush/v4 v4.1.11
 	github.com/gobuffalo/pop/v6 v6.0.2
 	github.com/gobuffalo/refresh v1.13.0
 	github.com/google/go-cmp v0.5.8
