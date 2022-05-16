@@ -1,6 +1,7 @@
 package build
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"io/fs"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/plush/v4"
-	"github.com/markbates/safe"
 )
 
 // TemplateValidator is given a file and returns an
@@ -17,7 +17,7 @@ import (
 type TemplateValidator func(f genny.File) error
 
 // ValidateTemplates returns a genny.RunFn that will walk the
-// given box and run each of the files found through each of the
+// given filesystem and run each of the files found through each of the
 // template validators
 func ValidateTemplates(fsys fs.FS, tvs []TemplateValidator) genny.RunFn {
 	if len(tvs) == 0 {
@@ -42,7 +42,7 @@ func ValidateTemplates(fsys fs.FS, tvs []TemplateValidator) genny.RunFn {
 			}
 			f := genny.NewFile(path, b)
 			for _, tv := range tvs {
-				err := safe.Run(func() {
+				err := safeRun(func() {
 					if err := tv(f); err != nil {
 						errs = append(errs, fmt.Sprintf("template error in file %s: %s", path, err.Error()))
 					}
@@ -84,4 +84,21 @@ func GoTemplateValidator(f genny.File) error {
 	t := template.New(f.Name())
 	_, err := t.Parse(f.String())
 	return err
+}
+
+// safeRun the function safely knowing that if it panics
+// the panic will be caught and returned as an error
+func safeRun(fn func()) (err error) {
+	defer func() {
+		if ex := recover(); ex != nil {
+			if e, ok := ex.(error); ok {
+				err = e
+				return
+			}
+			err = errors.New(fmt.Sprint(ex))
+		}
+	}()
+
+	fn()
+	return nil
 }
