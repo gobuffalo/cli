@@ -10,7 +10,7 @@ import (
 )
 
 // bin, module version, and tag
-var re = regexp.MustCompile(`.*(buffalo-[^/]+)/?(v[0-9]+)?@?(.*)?`)
+var re = regexp.MustCompile(`.*(buffalo-[^/@]+)/?(v[0-9]+)?@?(.*)?`)
 
 // Plugin represents a Go plugin for Buffalo applications
 type Plugin struct {
