@@ -46,7 +46,7 @@ func RunE(cmd *cobra.Command, args []string) error {
 	}
 
 	run.Root = app.Root
-	if nopts.Force {
+	if nopts.Force && !nopts.DryRun {
 		os.RemoveAll(app.Root)
 	}
 

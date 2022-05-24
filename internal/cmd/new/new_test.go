@@ -77,6 +77,21 @@ func TestNew(t *testing.T) {
 	}
 }
 
+func TestNewDryRun(t *testing.T) {
+	r := require.New(t)
+	r.NoError(testhelpers.EnsureBuffaloCMD(t))
+
+	testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
+		r := require.New(t)
+		_, err := testhelpers.RunBuffaloCMD(t, []string{"new", "app", "-f", "--api"})
+		r.NoError(err)
+		r.DirExists("app")
+		_, err = testhelpers.RunBuffaloCMD(t, []string{"new", "app", "-d", "-f", "--api"})
+		r.NoError(err)
+		r.DirExists("app", "dryrun should not destroy anything but...")
+	})
+}
+
 func TestNewAppAPIContent(t *testing.T) {
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
