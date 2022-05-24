@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package new
@@ -83,10 +84,12 @@ func TestNewDryRun(t *testing.T) {
 
 	testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
 		r := require.New(t)
-		_, err := testhelpers.RunBuffaloCMD(t, []string{"new", "app", "-f", "--api"})
+		out, err := testhelpers.RunBuffaloCMD(t, []string{"new", "app", "--api", "-f", "--vcs", "none"})
+		r.Contains(out, "Congratulations", "out: %s", out)
 		r.NoError(err)
 		r.DirExists("app")
-		_, err = testhelpers.RunBuffaloCMD(t, []string{"new", "app", "-d", "-f", "--api"})
+		out, err = testhelpers.RunBuffaloCMD(t, []string{"new", "app", "--api", "-f", "-d", "--vcs", "none"})
+		r.Contains(out, "Congratulations", "out: %s", out)
 		r.NoError(err)
 		r.DirExists("app", "dryrun should not destroy anything but...")
 	})
