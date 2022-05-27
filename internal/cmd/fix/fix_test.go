@@ -1,5 +1,5 @@
-// +build integration
-// +build linux
+//go:build integration && linux
+// +build integration,linux
 
 package fix_test
 
@@ -15,6 +15,47 @@ import (
 )
 
 // The tests here are quite slow, so we only run them on linux.
+
+func TestFix_Self(t *testing.T) {
+	r := require.New(t)
+	r.NoError(testhelpers.EnsureBuffaloCMD(t))
+
+	tt := []struct {
+		newargs []string
+		appname string
+	}{
+		{
+			newargs: []string{"new", "api", "-f", "--api", "--vcs", "none"},
+			appname: "api",
+		},
+		{
+			newargs: []string{"new", "web", "-f", "--vcs", "none"},
+			appname: "web",
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.appname, func(t *testing.T) {
+			testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
+				r := require.New(t)
+
+				out, err := testhelpers.RunBuffaloCMD(t, tc.newargs)
+				t.Log(out)
+				r.NoError(err)
+
+				r.NoError(os.Chdir(tc.appname))
+
+				out, err = testhelpers.RunBuffaloCMD(t, []string{"fix", "-y"})
+				t.Log(out)
+				r.NoError(err)
+
+				out, err = testhelpers.RunBuffaloCMD(t, []string{"build"})
+				t.Log(out)
+				r.NoError(err)
+			})
+		})
+	}
+}
 
 func TestFix_v0_18_0(t *testing.T) {
 	r := require.New(t)

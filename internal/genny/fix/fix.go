@@ -13,7 +13,7 @@ import (
 )
 
 func ask(q string) bool {
-	fmt.Printf("? %s [y/n]\n", q)
+	fmt.Printf("? %s [y/n] ", q)
 
 	reader := bufio.NewReader(os.Stdin)
 	text, _ := reader.ReadString('\n')
@@ -71,6 +71,10 @@ func New(opts *Options) (*genny.Generator, error) {
 		return nil, err
 	}
 
+	// structural fixes go first so the others can use the expected structure.
+	g.RunFn(MoveMain(opts))
+	g.RunFn(Refresh(opts))
+
 	// replace old imports with new ones
 	g.RunFn(ReplaceOldImports(opts))
 	g.Command(tidyCmd())
@@ -102,9 +106,6 @@ func New(opts *Options) (*genny.Generator, error) {
 
 	// update plush templates
 	g.RunFn(UpdatePlushTemplates(opts))
-
-	g.RunFn(MoveMain(opts))
-	g.RunFn(Refresh(opts))
 
 	// print all warnings that were captured
 	g.RunFn(printWarnings(opts))
