@@ -91,7 +91,7 @@ const configurator = {
       mode: env,
       entry: configurator.entries(),
       output: {
-        filename: "[name].[contenthash].js", 
+        filename: "[name].[contenthash].js",
         path: `${__dirname}/public/assets`,
         clean: true,
       },
