@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Depreciations_mainGo(t *testing.T) {
+func Test_Deprecations_mainGo(t *testing.T) {
 	r := require.New(t)
 
 	tt := []struct {
@@ -43,13 +43,14 @@ func Test_Depreciations_mainGo(t *testing.T) {
 			opts := &Options{
 				App: meta.Named("coke", "."),
 			}
+			run.WithRun(MoveMain(opts)) // structural test should go first
 			g := DeprecationsCheck(opts)
 			run.WithRun(g)
 
 			r.NoError(run.Run())
 
 			results := run.Results()
-			_, err = results.Find("main.go")
+			_, err = results.Find("cmd/app/main.go")
 			r.NoError(err)
 
 			r.ElementsMatch(opts.warnings, tc.warnings)
@@ -57,7 +58,7 @@ func Test_Depreciations_mainGo(t *testing.T) {
 	}
 }
 
-func Test_Depreciations_ReplacePackr(t *testing.T) {
+func Test_Deprecations_ReplacePackr(t *testing.T) {
 	r := require.New(t)
 
 	tt := []struct {
@@ -117,6 +118,7 @@ func Test_Depreciations_ReplacePackr(t *testing.T) {
 			opts := &Options{
 				App: meta.Named("coke", "."),
 			}
+			run.WithRun(MoveMain(opts)) // structural test should go first
 			g := DeprecationsCheck(opts)
 			run.WithRun(g)
 
@@ -154,7 +156,7 @@ func Test_Depreciations_ReplacePackr(t *testing.T) {
 	}
 }
 
-func Test_Depreciations_ReplaceSuite(t *testing.T) {
+func Test_Deprecations_ReplaceSuite(t *testing.T) {
 	r := require.New(t)
 
 	tt := []struct {
@@ -214,6 +216,7 @@ func Test_Depreciations_ReplaceSuite(t *testing.T) {
 			opts := &Options{
 				App: meta.Named("coke", "."),
 			}
+			run.WithRun(MoveMain(opts)) // structural test should go first
 			g := DeprecationsCheck(opts)
 			run.WithRun(g)
 
