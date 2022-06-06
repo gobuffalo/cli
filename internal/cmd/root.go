@@ -82,10 +82,11 @@ func preRunCheck(cmd *cobra.Command, args []string) error {
 
 func cmd() *cobra.Command {
 	rootCmd := &cobra.Command{
-		SilenceErrors:     true,
 		Use:               "buffalo",
 		Short:             "Build Buffalo applications with ease",
 		PersistentPreRunE: preRunCheck,
+		TraverseChildren:  true,
+		SilenceErrors:     true,
 	}
 
 	newCmd := new.Cmd()
