@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gobuffalo/cli/internal/cmd/version"
 	"github.com/gobuffalo/cli/internal/runtime"
+	"github.com/gobuffalo/cli/internal/version"
 )
 
 func TestCommand(t *testing.T) {

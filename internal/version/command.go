@@ -28,6 +28,10 @@ func (c *command) Name() string {
 	return "version"
 }
 
+func (c command) HelpText() string {
+	return "Prints the version of the CLI in plan and JSON formats."
+}
+
 func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	c.flags.BoolVar(&c.json, "json", false, "Print information in json format")
 	c.flags.Parse(args)
@@ -52,8 +56,4 @@ func (c *command) Main(ctx context.Context, pwd string, args []string) error {
 func (c *command) SetIO(stdout io.Writer, stderr io.Writer, stdin io.Reader) {
 	c.stdout = stdout
 	c.stderr = stderr
-}
-
-func (c command) HelpText() string {
-	return "Prints the version of the CLI in plan and JSON formats."
 }

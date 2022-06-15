@@ -24,6 +24,19 @@ func (cc Commands) Find(name string) Command {
 		if v.Name() == name {
 			return v
 		}
+
+		al, ok := v.(Aliaser)
+		if !ok {
+			continue
+		}
+
+		// If the command is an alias we need to check if one the
+		// alias is the one we are looking for.
+		for _, a := range al.Aliases() {
+			if a == name {
+				return v
+			}
+		}
 	}
 
 	return nil

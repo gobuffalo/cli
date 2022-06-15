@@ -3,31 +3,32 @@ package pop
 import (
 	"bytes"
 	"context"
+	"errors"
 	"flag"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 
 	"github.com/gobuffalo/pop/v6"
-	"github.com/sirupsen/logrus"
 )
 
-// SetupDatabase is a before tester that will load the schema
+// SetupTestDatabase is a before tester that will load the schema
 // from the migrations folder if found. This is useful to speed
 // tests from running migrations on each iteration.
-type SetupDatabase struct {
+type SetupTestDatabase struct {
 	forceMigrations bool
 }
 
-func (ls SetupDatabase) Name() string {
+func (ls SetupTestDatabase) Name() string {
 	return "pop/setup-database"
 }
 
-func (ls SetupDatabase) HelpText() string {
+func (ls SetupTestDatabase) HelpText() string {
 	return "Sets the database up before the tests run."
 }
 
-func (ls *SetupDatabase) ParseFlags(args []string) (*flag.FlagSet, error) {
+func (ls *SetupTestDatabase) ParseFlags(args []string) (*flag.FlagSet, error) {
 	fls := flag.NewFlagSet("pop/setup-database", flag.ContinueOnError)
 	fls.BoolVar(&ls.forceMigrations, "force-migrations", false, "force migrations to run")
 	_ = fls.Parse(args)
@@ -35,9 +36,16 @@ func (ls *SetupDatabase) ParseFlags(args []string) (*flag.FlagSet, error) {
 	return fls, nil
 }
 
-func (ls *SetupDatabase) BeforeTest(ctx context.Context, pwd string, args []string) error {
-	// there's a database
+func (ls *SetupTestDatabase) BeforeTest(ctx context.Context, pwd string, args []string) error {
 	test, err := pop.Connect("test")
+
+	// If its that it could not find the database config
+	// file we should simply return  as the database cannot
+	// be reset.
+	if errors.Is(err, pop.ErrConfigFileNotFound) {
+		return nil
+	}
+
 	if err != nil {
 		return err
 	}
@@ -45,7 +53,7 @@ func (ls *SetupDatabase) BeforeTest(ctx context.Context, pwd string, args []stri
 	// drop the test db:
 	if err := test.Dialect.DropDB(); err != nil {
 		// not an error, since the database will be created in the next step anyway
-		logrus.Info("no test database to drop")
+		fmt.Println("[Info] no test database to drop")
 	}
 
 	// create the test db:

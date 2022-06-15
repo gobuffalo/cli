@@ -54,7 +54,8 @@ func (c HelpCommand) general() error {
 			if len(text) > 70 {
 				text = text[0:70] + "..."
 			}
-			fmt.Fprintf(c.Stdout(), "%v\t%v\n", v.Name(), text)
+
+			fmt.Fprintf(c.Stdout(), "%v\t\t%v\n", v.Name(), text)
 			continue
 		}
 

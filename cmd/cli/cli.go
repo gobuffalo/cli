@@ -1,7 +1,9 @@
 package cli
 
 import (
+	"github.com/gobuffalo/cli/internal/routes"
 	"github.com/gobuffalo/cli/internal/test"
+	"github.com/gobuffalo/cli/internal/tools/grift"
 	"github.com/gobuffalo/cli/internal/version"
 )
 
@@ -12,7 +14,14 @@ var (
 	// with custom plugins.
 	DefaultApp = NewApp(
 		test.Command,
+
 		// The version command
 		version.Command,
+
+		// The task command
+		grift.Command,
+
+		// The routes command
+		routes.Command,
 	)
 )

@@ -9,6 +9,13 @@ import (
 
 type testCommand string
 
+func (t testCommand) Aliases() []string {
+	return []string{
+		"tc",
+		"test-command",
+	}
+}
+
 func (t testCommand) Name() string {
 	return string(t)
 }
