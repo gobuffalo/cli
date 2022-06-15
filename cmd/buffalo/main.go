@@ -27,7 +27,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = cli.DefaultApp.Run(ctx, pwd, os.Args[1:])
+	err = cli.DefaultApp.Main(ctx, pwd, os.Args[1:])
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 

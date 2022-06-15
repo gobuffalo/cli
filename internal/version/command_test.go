@@ -13,9 +13,9 @@ func TestCommand(t *testing.T) {
 	out := bytes.NewBuffer([]byte{})
 
 	// Using the SetIO method to set the stdout and stderr
-	version.Plugin.SetIO(nil, out, out)
+	version.Command.SetIO(nil, out, out)
 
-	err := version.Plugin.Run(nil, "", []string{"version"})
+	err := version.Command.Main(nil, "", []string{"version"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -33,9 +33,10 @@ func TestCommandJSON(t *testing.T) {
 	out := bytes.NewBuffer([]byte{})
 
 	// Using the SetIO method to set the stdout and stderr
-	version.Plugin.SetIO(nil, out, out)
-	args, err := version.Plugin.ParseFlags([]string{"version", "--json"})
-	err = version.Plugin.Run(nil, "", args)
+	version.Command.SetIO(nil, out, out)
+	flgs, _ := version.Command.ParseFlags([]string{"--json"})
+
+	err := version.Command.Main(nil, "", flgs.Args())
 	if err != nil {
 		t.Fatal(err)
 	}

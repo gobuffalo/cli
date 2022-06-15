@@ -1,12 +1,18 @@
 package cli
 
 import (
-	"github.com/gobuffalo/cli/internal/cmd/version"
+	"github.com/gobuffalo/cli/internal/test"
+	"github.com/gobuffalo/cli/internal/version"
 )
 
 var (
-	// App is the default CLI app with the default plugin set.
-	DefaultApp = New(
-		WithPlugins(version.Plugin),
+	// DefaultApp is an instance of the CLI application
+	// loaded with `default` plugins. The `NewApp` function
+	// could be used to create a custom instance of the CLI
+	// with custom plugins.
+	DefaultApp = NewApp(
+		test.Command,
+		// The version command
+		version.Command,
 	)
 )

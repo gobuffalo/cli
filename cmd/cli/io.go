@@ -5,7 +5,12 @@ import (
 	"os"
 )
 
-// IO contains the IN, OUT and ERR streams for the CLI.
+// IOSetter will be most of the commands for testing purposes.
+type IOSetter interface {
+	SetIO(stdout io.Writer, stderr io.Writer, stdin io.Reader)
+}
+
+// IO represents the standard input, output, and error stream.
 type IO struct {
 	In  io.Reader // standard input
 	Out io.Writer // standard output

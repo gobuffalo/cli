@@ -3,51 +3,63 @@ package cli
 import (
 	"context"
 	"fmt"
-	"sync"
-
-	flag "github.com/spf13/pflag"
 )
 
-// app is the first point of entry for the CLI
-// with the IO and plugins.
 type App struct {
-	*IO
-	*flag.FlagSet
+	IO
 
-	plock   sync.RWMutex
-	plugins Plugins
+	commands Commands
+	usage    func() error
 }
 
-func (a *App) Run(ctx context.Context, pwd string, args []string) error {
-	a.plock.RLock()
-	defer a.plock.RUnlock()
+// Main entry point for the application. This method finds the passed command
+// and executes it with the passed arguments. If there is no command passed
+// it will print the usage.
+func (app *App) Main(ctx context.Context, pwd string, args []string) error {
+	if app == nil {
+		return fmt.Errorf("app is nil")
+	}
 
 	if len(args) == 0 {
-		// TODO: Print help
-		return nil
+		return app.usage()
 	}
 
-	// Find the command that should run.
-	cmd := a.plugins.FindCommand(args[0])
-	if cmd == nil {
-		// TODO: Print help
-		return fmt.Errorf("no command found for %s", args[0])
+	command := app.commands.Find(args[0])
+	if command == nil {
+		return app.usage()
 	}
 
-	// Set the IO if the command supports it
-	if is, ok := cmd.(IOSetter); ok {
-		is.SetIO(a.Stdin(), a.Stdout(), a.Stderr())
-	}
-
-	// Call the flag parsing on the command and
-	// update the args after the flag parsing.
-	if fp, ok := cmd.(FlagParser); ok {
-		var err error
-		args, err = fp.ParseFlags(args)
+	args = args[1:]
+	if fp, ok := command.(FlagParser); ok {
+		fs, err := fp.ParseFlags(args)
 		if err != nil {
 			return err
 		}
+
+		// We update the args to remove the parsed flags.
+		args = fs.Args()
 	}
 
-	return cmd.Run(ctx, pwd, args)
+	if ist, ok := command.(IOSetter); ok {
+		ist.SetIO(app.Stdout(), app.Stderr(), app.Stdin())
+	}
+
+	return command.Main(ctx, pwd, args)
+}
+
+// NewApp creates a CLI app with the given commands.
+// It prepends the `help` command to the list of commands.
+func NewApp(commands ...Command) *App {
+	// An instance of the help command, to be able to reference
+	// its general function.
+	help := &HelpCommand{}
+
+	// Adding the help command always.
+	cmms := append(Commands{help}, commands...)
+	help.Commands = cmms
+
+	return &App{
+		commands: cmms,
+		usage:    help.general,
+	}
 }

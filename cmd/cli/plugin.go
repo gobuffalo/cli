@@ -1,20 +1,8 @@
 package cli
 
+// The Plugin interface is used to identify plugins
+// that can be loaded into the CLI. Plugins get specific
+// depending on its usage. p.e. Command or BeforeTester.
 type Plugin interface {
 	Name() string
-}
-
-type Plugins []Plugin
-
-func (pl Plugins) FindCommand(name string) Command {
-	for _, p := range pl {
-		cmd, ok := p.(Command)
-		if !ok || p.Name() != name {
-			continue
-		}
-
-		return cmd
-	}
-
-	return nil
 }
