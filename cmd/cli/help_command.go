@@ -19,7 +19,7 @@ func (c HelpCommand) Name() string {
 }
 
 func (c HelpCommand) HelpText() string {
-	return "Provides help for a given command, p.e. depbot help list."
+	return "Provides help for a given command, p.e. buffalo help list."
 }
 
 func (c HelpCommand) Main(ctx context.Context, pwd string, args []string) error {
@@ -40,7 +40,7 @@ func (c HelpCommand) Main(ctx context.Context, pwd string, args []string) error 
 
 //general method prints the
 func (c HelpCommand) general() error {
-	fmt.Fprint(c.Stdout(), "Usage: depbot [command] [options]\n\n")
+	fmt.Fprint(c.Stdout(), "Usage: buffalo [command] [options]\n\n")
 
 	// If there are no commands it just prints the usage.
 	if len(c.Commands) == 0 {
@@ -63,13 +63,13 @@ func (c HelpCommand) general() error {
 	}
 
 	fmt.Fprintln(c.Stdout(), "\nFor command specific information use the help command, p.e.")
-	fmt.Fprintln(c.Stdout(), "$ depbot help [command]")
+	fmt.Fprintln(c.Stdout(), "$ buffalo help [command]")
 
 	return nil
 }
 
 func (c HelpCommand) specific(cm Command) error {
-	fmt.Fprintf(c.Stdout(), "Usage: depbot %v [options]\n\n", cm.Name())
+	fmt.Fprintf(c.Stdout(), "Usage: buffalo %v [options]\n\n", cm.Name())
 
 	if ht, ok := cm.(HelpTexter); ok {
 		fmt.Fprintf(c.Stdout(), ht.HelpText()+"\n\n")

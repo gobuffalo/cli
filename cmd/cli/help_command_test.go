@@ -10,7 +10,6 @@ import (
 )
 
 func TestHelpCommand(t *testing.T) {
-
 	hc := cli.HelpCommand{
 		Commands: cli.Commands{
 			testCommand("test"),
@@ -27,8 +26,8 @@ func TestHelpCommand(t *testing.T) {
 			t.Fatalf("error running help: %v", err)
 		}
 
-		if !bytes.Contains(out.Bytes(), []byte("Usage: depbot [command] [options]")) {
-			t.Fatalf("expected output to contain 'Usage: depbot [command] [options]'")
+		if !bytes.Contains(out.Bytes(), []byte("Usage: buffalo [command] [options]")) {
+			t.Fatalf("expected output to contain 'Usage: buffalo [command] [options]'")
 		}
 
 		for _, v := range hc.Commands {
@@ -51,8 +50,8 @@ func TestHelpCommand(t *testing.T) {
 			t.Fatalf("Expected to print \"Error: did not find `unexisting` command\"")
 		}
 
-		if !bytes.Contains(out.Bytes(), []byte("Usage: depbot [command] [options]")) {
-			t.Fatalf("expected output to contain 'Usage: depbot [command] [options]'")
+		if !bytes.Contains(out.Bytes(), []byte("Usage: buffalo [command] [options]")) {
+			t.Fatalf("expected output to contain 'Usage: buffalo [command] [options]'")
 		}
 	})
 
@@ -66,7 +65,7 @@ func TestHelpCommand(t *testing.T) {
 		}
 
 		contents := []string{
-			"Usage: depbot test [options]",
+			"Usage: buffalo test [options]",
 			"--output",
 			"--toggle",
 		}
@@ -89,8 +88,8 @@ func TestHelpCommand(t *testing.T) {
 			t.Fatalf("error running help: %v", err)
 		}
 
-		if !bytes.Contains(out.Bytes(), []byte("Usage: depbot test [options]")) {
-			t.Fatalf("expected output to contain 'Usage: depbot test [options]'")
+		if !bytes.Contains(out.Bytes(), []byte("Usage: buffalo test [options]")) {
+			t.Fatalf("expected output to contain 'Usage: buffalo test [options]'")
 		}
 	})
 
