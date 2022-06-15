@@ -18,7 +18,7 @@ import (
 var Command = &command{
 	before: []BeforeTester{
 		TestEnvironment,
-		&pop.SetupTestDatabase{},
+		&pop.BeforeTester{},
 	},
 
 	testers: []Tester{

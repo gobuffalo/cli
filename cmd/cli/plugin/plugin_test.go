@@ -1,4 +1,4 @@
-package cli_test
+package plugin_test
 
 import (
 	"bytes"

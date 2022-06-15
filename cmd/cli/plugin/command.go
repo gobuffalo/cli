@@ -1,4 +1,4 @@
-package cli
+package plugin
 
 import (
 	"context"
@@ -19,6 +19,8 @@ func (cc Commands) Contains(name string) bool {
 	return cc.Find(name) != nil
 }
 
+// Find a command from the list given his name
+// or aliases if the command is Aliaser.
 func (cc Commands) Find(name string) Command {
 	for _, v := range cc {
 		if v.Name() == name {
@@ -40,4 +42,20 @@ func (cc Commands) Find(name string) Command {
 	}
 
 	return nil
+}
+
+// Commands returns the list of commands within
+// a list of plugins.
+func CommandsFrom(pls Plugins) Commands {
+	cmds := Commands{}
+	for _, v := range pls {
+		c, ok := v.(Command)
+		if !ok {
+			continue
+		}
+
+		cmds = append(cmds, c)
+	}
+
+	return cmds
 }

@@ -12,12 +12,12 @@ var Command = command("Grift")
 
 type command string
 
-func (tc command) Aliases() []string {
-	return []string{"t", "tasks"}
-}
-
 func (tc command) Name() string {
 	return "task"
+}
+
+func (tc command) Aliases() []string {
+	return []string{"t", "tasks"}
 }
 
 func (tc command) HelpText() string {

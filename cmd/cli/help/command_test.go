@@ -1,4 +1,4 @@
-package cli_test
+package help_test
 
 import (
 	"bytes"

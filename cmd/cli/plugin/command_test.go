@@ -1,13 +1,11 @@
-package cli_test
+package plugin_test
 
 import (
 	"testing"
-
-	"github.com/gobuffalo/cli/cmd/cli"
 )
 
 func TestCommandFind(t *testing.T) {
-	cc := cli.Commands{
+	cc := Commands{
 		testCommand("tt"),
 	}
 

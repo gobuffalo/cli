@@ -1,29 +1,32 @@
-package cli
+package help
 
 import (
 	"context"
 	"flag"
 	"fmt"
+
+	"github.com/gobuffalo/cli/cmd/cli/clio"
+	"github.com/gobuffalo/cli/cmd/cli/plugin"
 )
 
-// HelpCommand is in charge of printing the help text for a given command.
+// Command is in charge of printing the help text for a given command.
 // its flags and any other information available to make it easy for the user.
-type HelpCommand struct {
-	IO
+type Command struct {
+	clio.Container
 
-	Commands Commands
+	Commands plugin.Commands
 }
 
-func (c HelpCommand) Name() string {
+func (c Command) Name() string {
 	return "help"
 }
 
-func (c HelpCommand) HelpText() string {
+func (c Command) HelpText() string {
 	return "Provides help for a given command, p.e. buffalo help list."
 }
 
-func (c HelpCommand) Main(ctx context.Context, pwd string, args []string) error {
-	var command Command
+func (c Command) Main(ctx context.Context, pwd string, args []string) error {
+	var command plugin.Command
 	if len(args) > 0 {
 		command = c.Commands.Find(args[0])
 		if command == nil {
@@ -32,14 +35,20 @@ func (c HelpCommand) Main(ctx context.Context, pwd string, args []string) error 
 	}
 
 	if len(args) == 0 || command == nil {
-		return c.general()
+		return c.General()
 	}
 
-	return c.specific(command)
+	return c.Specific(command)
 }
 
-//general method prints the
-func (c HelpCommand) general() error {
+// ReceivePlugins and keep the commands for the help
+// command to use.
+func (c *Command) Receive(plugins plugin.Plugins) {
+	c.Commands = plugin.CommandsFrom(plugins)
+}
+
+// general method prints help text for all of the commands.
+func (c Command) General() error {
 	fmt.Fprint(c.Stdout(), "Usage: buffalo [command] [options]\n\n")
 
 	// If there are no commands it just prints the usage.
@@ -68,15 +77,23 @@ func (c HelpCommand) general() error {
 	return nil
 }
 
-func (c HelpCommand) specific(cm Command) error {
+// specific method prints help text for a specific command
+// if the command is a FlagParser it uses the flagSet to
+// print help text for the flags.
+func (c Command) Specific(cm plugin.Command) error {
 	fmt.Fprintf(c.Stdout(), "Usage: buffalo %v [options]\n\n", cm.Name())
 
 	if ht, ok := cm.(HelpTexter); ok {
 		fmt.Fprintf(c.Stdout(), ht.HelpText()+"\n\n")
 	}
 
-	if fl, ok := cm.(FlagParser); ok {
+	if ht, ok := cm.(LongHelpTexter); ok {
+		fmt.Fprintf(c.Stdout(), ht.LongHelpText())
+	}
+
+	if fl, ok := cm.(clio.FlagParser); ok {
 		fl, _ := fl.ParseFlags([]string{})
+
 		fmt.Fprintf(c.Stdout(), "Flags:\n")
 		fl.VisitAll(func(ff *flag.Flag) {
 			fmt.Fprintf(c.Stdout(), "--%v\t%v\n", ff.Name, ff.Usage)

@@ -1,17 +1,12 @@
-package cli
+package clio
 
 import (
 	"io"
 	"os"
 )
 
-// IOSetter will be most of the commands for testing purposes.
-type IOSetter interface {
-	SetIO(stdout io.Writer, stderr io.Writer, stdin io.Reader)
-}
-
-// IO represents the standard input, output, and error stream.
-type IO struct {
+// Container represents the standard input, output, and error stream.
+type Container struct {
 	In  io.Reader // standard input
 	Out io.Writer // standard output
 	Err io.Writer // standard error
@@ -19,7 +14,7 @@ type IO struct {
 
 // Stdout returns IO.In.
 // Defaults to os.Stdout.
-func (oi IO) Stdout() io.Writer {
+func (oi Container) Stdout() io.Writer {
 	if oi.Out == nil {
 		return os.Stdout
 	}
@@ -29,7 +24,7 @@ func (oi IO) Stdout() io.Writer {
 
 // Stderr returns IO.Err.
 // Defaults to os.Stderr.
-func (oi IO) Stderr() io.Writer {
+func (oi Container) Stderr() io.Writer {
 	if oi.Err == nil {
 		return os.Stderr
 	}
@@ -39,7 +34,7 @@ func (oi IO) Stderr() io.Writer {
 
 // Stdin returns IO.In.
 // Defaults to os.Stdin.
-func (oi IO) Stdin() io.Reader {
+func (oi Container) Stdin() io.Reader {
 	if oi.In == nil {
 		return os.Stdin
 	}

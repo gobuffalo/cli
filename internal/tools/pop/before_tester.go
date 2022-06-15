@@ -13,22 +13,22 @@ import (
 	"github.com/gobuffalo/pop/v6"
 )
 
-// SetupTestDatabase is a before tester that will load the schema
+// BeforeTester will load the schema
 // from the migrations folder if found. This is useful to speed
 // tests from running migrations on each iteration.
-type SetupTestDatabase struct {
+type BeforeTester struct {
 	forceMigrations bool
 }
 
-func (ls SetupTestDatabase) Name() string {
+func (ls BeforeTester) Name() string {
 	return "pop/setup-database"
 }
 
-func (ls SetupTestDatabase) HelpText() string {
+func (ls BeforeTester) HelpText() string {
 	return "Sets the database up before the tests run."
 }
 
-func (ls *SetupTestDatabase) ParseFlags(args []string) (*flag.FlagSet, error) {
+func (ls *BeforeTester) ParseFlags(args []string) (*flag.FlagSet, error) {
 	fls := flag.NewFlagSet("pop/setup-database", flag.ContinueOnError)
 	fls.BoolVar(&ls.forceMigrations, "force-migrations", false, "force migrations to run")
 	_ = fls.Parse(args)
@@ -36,7 +36,7 @@ func (ls *SetupTestDatabase) ParseFlags(args []string) (*flag.FlagSet, error) {
 	return fls, nil
 }
 
-func (ls *SetupTestDatabase) BeforeTest(ctx context.Context, pwd string, args []string) error {
+func (ls *BeforeTester) BeforeTest(ctx context.Context, pwd string, args []string) error {
 	test, err := pop.Connect("test")
 
 	// If its that it could not find the database config
