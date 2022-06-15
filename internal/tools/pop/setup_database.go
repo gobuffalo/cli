@@ -84,6 +84,7 @@ func findSchema() io.Reader {
 	if f, err := os.Open(filepath.Join("migrations", "schema.sql")); err == nil {
 		return f
 	}
+
 	if dev, err := pop.Connect("development"); err == nil {
 		schema := &bytes.Buffer{}
 		if err = dev.Dialect.DumpSchema(schema); err == nil {

@@ -49,7 +49,7 @@ func (c *command) Main(ctx context.Context, pwd string, args []string) error {
 	return nil
 }
 
-func (c *command) SetIO(stdin io.Reader, stdout, stderr io.Writer) {
+func (c *command) SetIO(stdout io.Writer, stderr io.Writer, stdin io.Reader) {
 	c.stdout = stdout
 	c.stderr = stderr
 }
