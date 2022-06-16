@@ -59,12 +59,8 @@ func (c Command) General() error {
 	fmt.Fprintln(c.Stdout(), "Available Commands:")
 	for _, v := range c.Commands {
 		if ht, ok := v.(HelpTexter); ok {
-			text := ht.HelpText()
-			if len(text) > 70 {
-				text = text[0:70] + "..."
-			}
+			fmt.Fprintf(c.Stdout(), "%v\t\t%v\n", v.Name(), ht.HelpText())
 
-			fmt.Fprintf(c.Stdout(), "%v\t\t%v\n", v.Name(), text)
 			continue
 		}
 

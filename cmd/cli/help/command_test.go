@@ -28,6 +28,10 @@ func (t testCommand) HelpText() string {
 	return fmt.Sprintf("runs the %v thing basically", t)
 }
 
+func (t testCommand) LongHelpText() string {
+	return fmt.Sprintf("Long text for the command that runs the %v thing. We could list here subcommands and steps.", t)
+}
+
 func (t testCommand) ParseFlags(args []string) (*flag.FlagSet, error) {
 	var value string
 	var toggle bool
@@ -118,6 +122,11 @@ func TestHelpCommand(t *testing.T) {
 
 			t.Fatalf("expected output to contain '%s'", v)
 		}
+
+		if !bytes.Contains(out.Bytes(), []byte("Long text for the command that runs")) {
+			t.Fatalf("expected output to contain 'Long text for the command that runs'")
+		}
+
 	})
 
 	t.Run("specific command and subcommands", func(t *testing.T) {
@@ -134,4 +143,24 @@ func TestHelpCommand(t *testing.T) {
 		}
 	})
 
+}
+
+type simplePlugin string
+
+func (tc simplePlugin) Name() string {
+	return string(tc)
+}
+
+func TestReceivePlugins(t *testing.T) {
+	plugins := plugin.Plugins{
+		testCommand("test"),
+		simplePlugin("simple"),
+	}
+
+	hc := &help.Command{}
+	hc.Receive(plugins)
+
+	if len(hc.Commands) != 1 {
+		t.Fatalf("expected 1 command, got %v", len(hc.Commands))
+	}
 }
