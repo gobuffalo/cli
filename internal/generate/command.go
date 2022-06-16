@@ -17,7 +17,7 @@ var Command = &generate{}
 // Generate command is the root command for the
 // different generators that CLI could have.
 type generate struct {
-	generators []Generator
+	generators Generators
 }
 
 func (g generate) Name() string {
@@ -68,6 +68,10 @@ func (g *generate) Receive(plugins plugin.Plugins) {
 }
 
 func (g generate) Main(ctx context.Context, pwd string, args []string) error {
-	// TODO: find generator and run it
-	return nil
+	gg := g.generators.Find(args[0])
+	if gg == nil {
+		return nil
+	}
+
+	return gg.Generate(ctx, pwd, args)
 }
