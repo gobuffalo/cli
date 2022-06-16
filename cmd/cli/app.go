@@ -7,6 +7,7 @@ import (
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
+	"github.com/gobuffalo/cli/internal/info"
 	"github.com/gobuffalo/cli/internal/routes"
 	"github.com/gobuffalo/cli/internal/setup"
 	"github.com/gobuffalo/cli/internal/test"
@@ -28,6 +29,7 @@ var (
 		grift.Command,
 		routes.Command,
 		setup.Command,
+		info.Command,
 
 		// Setup plugins
 		grift.SetupSeedDatabase,

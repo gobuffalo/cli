@@ -36,7 +36,7 @@ func (c command) Name() string {
 }
 
 func (c command) HelpText() string {
-	return "Setup a newly created, or recently checked out application."
+	return "Setups a newly created, or recently checked out application."
 }
 
 func (c *command) LongHelpText() string {
