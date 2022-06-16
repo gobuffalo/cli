@@ -47,7 +47,7 @@ func (c *Command) Receive(plugins plugin.Plugins) {
 	c.Commands = plugin.CommandsFrom(plugins)
 }
 
-// general method prints help text for all of the commands.
+// General method prints help text for all of the commands.
 func (c Command) General() error {
 	fmt.Fprint(c.Stdout(), "Usage: buffalo [command] [options]\n\n")
 
@@ -73,9 +73,10 @@ func (c Command) General() error {
 	return nil
 }
 
-// specific method prints help text for a specific command
+// Specific help text for a command passed.
 // if the command is a FlagParser it uses the flagSet to
-// print help text for the flags.
+// print help text for the flags. Also if the command implements
+// LongHelpTexter it prints the long help text.
 func (c Command) Specific(cm plugin.Command) error {
 	fmt.Fprintf(c.Stdout(), "Usage: buffalo %v [options]\n\n", cm.Name())
 
