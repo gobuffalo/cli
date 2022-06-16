@@ -78,7 +78,12 @@ func (c Command) General() error {
 // print help text for the flags. Also if the command implements
 // LongHelpTexter it prints the long help text.
 func (c Command) Specific(cm plugin.Command) error {
-	fmt.Fprintf(c.Stdout(), "Usage: buffalo %v [options]\n\n", cm.Name())
+	usage := fmt.Sprintf("buffalo %v [options]", cm.Name())
+	if fp, ok := cm.(Usager); ok {
+		usage = fp.Usage()
+	}
+
+	fmt.Fprintf(c.Stdout(), "Usage: %v \n\n", usage)
 
 	if ht, ok := cm.(HelpTexter); ok {
 		fmt.Fprintf(c.Stdout(), ht.HelpText()+"\n\n")

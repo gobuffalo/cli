@@ -7,6 +7,7 @@ import (
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
+	"github.com/gobuffalo/cli/internal/generate"
 	"github.com/gobuffalo/cli/internal/info"
 	"github.com/gobuffalo/cli/internal/routes"
 	"github.com/gobuffalo/cli/internal/setup"
@@ -30,6 +31,13 @@ var (
 		routes.Command,
 		setup.Command,
 		info.Command,
+		generate.Command,
+
+		// Generators
+		generate.ActionGenerator,
+		generate.MailerGenerator,
+		generate.ResourceGenerator,
+		grift.Generator,
 
 		// Setup plugins
 		grift.SetupSeedDatabase,
