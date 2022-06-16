@@ -2,10 +2,12 @@ package plugin_test
 
 import (
 	"testing"
+
+	"github.com/gobuffalo/cli/cmd/cli/plugin"
 )
 
 func TestCommandFind(t *testing.T) {
-	cc := Commands{
+	cc := plugin.Commands{
 		testCommand("tt"),
 	}
 
@@ -18,5 +20,4 @@ func TestCommandFind(t *testing.T) {
 	if c == nil {
 		t.Fatalf("did not find test command by its alias: tc")
 	}
-
 }
