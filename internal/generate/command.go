@@ -7,6 +7,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
 )
 
@@ -54,6 +55,31 @@ func (g *generate) LongHelpText() string {
 	w.Flush()
 
 	return buf.String()
+}
+
+func (g *generate) Help(ctx context.Context, args []string) error {
+	// Find the generator
+	// Print its help text
+	gg := g.generators.Find(args[0])
+	if gg == nil {
+		fmt.Printf("Error: No generator found for '%v'\n\n", args[0])
+		fmt.Println(g.LongHelpText())
+
+		return nil
+	}
+
+	usage := "buffalo generate " + gg.Name()
+	if hh, ok := gg.(help.Usager); ok {
+		usage = hh.Usage()
+	}
+
+	fmt.Printf("Usage: %v\n\n", usage)
+	fmt.Println(gg.HelpText())
+	if ht, ok := gg.(help.LongHelpTexter); ok {
+		fmt.Println(ht.LongHelpText())
+	}
+
+	return nil
 }
 
 func (g *generate) Receive(plugins plugin.Plugins) {

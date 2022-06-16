@@ -38,7 +38,15 @@ func (c Command) Main(ctx context.Context, pwd string, args []string) error {
 		return c.General()
 	}
 
-	return c.Specific(command)
+	hh, ok := command.(Helper)
+	if !ok || len(args) == 1 {
+		return c.Specific(command)
+	}
+
+	// If the command implements Helper
+	// the command itself will take care
+	// of printing the help with the args.
+	return hh.Help(ctx, args[1:])
 }
 
 // ReceivePlugins and keep the commands for the help
