@@ -24,6 +24,7 @@ var (
 	//go:embed setupdescription.txt
 	setupLongDescription string
 
+	// Command instance of the setup command to be used outside of this package.
 	Command = &command{}
 )
 

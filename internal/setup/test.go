@@ -26,7 +26,7 @@ func (ts test) HelpText() string {
 func (ts test) Setup(app meta.App) error {
 
 	var run = func(cmd *exec.Cmd) error {
-		fmt.Println("--> %s", strings.Join(cmd.Args, " "))
+		fmt.Printf("--> %s\n", strings.Join(cmd.Args, " "))
 		cmd.Stdin = os.Stdin
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
