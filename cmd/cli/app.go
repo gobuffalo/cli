@@ -76,13 +76,10 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 
 	args = args[1:]
 	if fp, ok := command.(clio.FlagParser); ok {
-		fs, err := fp.ParseFlags(args)
+		_, err := fp.ParseFlags(args)
 		if err != nil {
 			return err
 		}
-
-		// We update the args to remove the parsed flags.
-		args = fs.Args()
 	}
 
 	if ist, ok := command.(clio.Setter); ok {

@@ -3,10 +3,12 @@ package generate
 import (
 	"bytes"
 	"context"
+	"flag"
 	"fmt"
 	"strings"
 	"text/tabwriter"
 
+	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
 )
@@ -57,7 +59,23 @@ func (g *generate) LongHelpText() string {
 	return buf.String()
 }
 
+func (g *generate) ParseFlags(args []string) (*flag.FlagSet, error) {
+	for _, v := range g.generators {
+		if pf, ok := v.(clio.FlagParser); ok {
+			pf.ParseFlags(args)
+		}
+	}
+
+	return flag.NewFlagSet("generate", flag.ContinueOnError), nil
+}
+
 func (g *generate) Help(ctx context.Context, args []string) error {
+	if len(args) < 1 {
+		fmt.Println(g.LongHelpText())
+
+		return nil
+	}
+
 	// Find the generator
 	// Print its help text
 	gg := g.generators.Find(args[0])
@@ -79,6 +97,15 @@ func (g *generate) Help(ctx context.Context, args []string) error {
 		fmt.Println(ht.LongHelpText())
 	}
 
+	if fl, ok := gg.(clio.FlagParser); ok {
+		fl, _ := fl.ParseFlags([]string{})
+
+		fmt.Printf("\nFlags:\n")
+		fl.VisitAll(func(ff *flag.Flag) {
+			fmt.Printf("--%v\t%v\n", ff.Name, ff.Usage)
+		})
+	}
+
 	return nil
 }
 
@@ -94,6 +121,12 @@ func (g *generate) Receive(plugins plugin.Plugins) {
 }
 
 func (g generate) Main(ctx context.Context, pwd string, args []string) error {
+	fmt.Println("Got here:", args)
+
+	if len(args) < 1 {
+		return g.Help(ctx, args)
+	}
+
 	gg := g.generators.Find(args[0])
 	if gg == nil {
 		return nil

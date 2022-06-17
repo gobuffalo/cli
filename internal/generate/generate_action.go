@@ -12,6 +12,7 @@ import (
 
 var ActionGenerator = &actionGenerator{
 	flagSet: flag.NewFlagSet("action", flag.ContinueOnError),
+	options: &actions.Options{},
 }
 
 type actionGenerator struct {
@@ -20,6 +21,10 @@ type actionGenerator struct {
 
 	dryRun  bool
 	verbose bool
+}
+
+func (ag actionGenerator) Usage() string {
+	return "generate action [name] [handler name...]"
 }
 
 func (ag actionGenerator) Name() string {
@@ -34,10 +39,21 @@ func (ag actionGenerator) Aliases() []string {
 	return []string{"a"}
 }
 
+func (ag *actionGenerator) ParseFlags(args []string) (*flag.FlagSet, error) {
+	ag.flagSet.BoolVar(&ag.dryRun, "dry-run", false, "Runs the generator without writing any files.")
+	ag.flagSet.BoolVar(&ag.verbose, "verbose", false, "Prints more verbose output.")
+
+	_ = ag.flagSet.Parse(args)
+
+	return ag.flagSet, nil
+}
+
 func (ag actionGenerator) Generate(ctx context.Context, pwd string, args []string) error {
 	if len(args) == 0 {
 		return fmt.Errorf("you must provide a name")
 	}
+
+	fmt.Println("Got here:", args)
 
 	ag.options.Name = args[0]
 	if len(args) == 1 {
@@ -47,6 +63,7 @@ func (ag actionGenerator) Generate(ctx context.Context, pwd string, args []strin
 	ag.options.Actions = args[1:]
 	run := genny.WetRunner(ctx)
 
+	fmt.Println("Dry Run >> ", ag.dryRun)
 	if ag.dryRun {
 		run = genny.DryRunner(ctx)
 	}
@@ -61,13 +78,3 @@ func (ag actionGenerator) Generate(ctx context.Context, pwd string, args []strin
 
 	return run.Run()
 }
-
-// ActionCmd is the cmd that generates actions.
-// var ActionCmd = &cobra.Command{
-// 	Use:     "action [name] [handler name...]",
-// 	Aliases: []string{"a", "actions"},
-// 	Short:   "Generate new action(s)",
-// 	RunE: func(cmd *cobra.Command, args []string) error {
-
-// 	},
-// }
