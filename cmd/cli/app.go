@@ -101,7 +101,7 @@ func NewApp(plugins ...plugin.Plugin) *App {
 	plugins = append(plugin.Plugins{help}, plugins...)
 
 	// Pass all of the plugins to the PluginsReceivers in the
-	// list of plugins.
+	// list of plugins so that they can keep copy of these.
 	for _, v := range plugins {
 		pr, ok := v.(plugin.Receiver)
 		if !ok {
