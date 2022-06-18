@@ -118,7 +118,12 @@ func (g *generate) Help(ctx context.Context, args []string) error {
 	return nil
 }
 
+// Receive the plugins and select the ones that implement the
+// Generator interface, these will be stored within the
+// generators variable.
 func (g *generate) Receive(plugins plugin.Plugins) {
+	g.generators = Generators{}
+
 	for _, p := range plugins {
 		gg, ok := p.(Generator)
 		if !ok {

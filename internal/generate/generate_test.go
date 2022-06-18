@@ -5,13 +5,13 @@ import (
 	"fmt"
 )
 
-type testGenerator string
+type tplugin string
 
-func (tg testGenerator) Name() string {
+func (tg tplugin) Name() string {
 	return string(tg)
 }
 
-func (tg testGenerator) Aliases() []string {
+func (tg tplugin) Aliases() []string {
 	return []string{
 		// Adding some aliases
 		string(tg)[:1],
@@ -19,8 +19,12 @@ func (tg testGenerator) Aliases() []string {
 	}
 }
 
+type testGenerator struct {
+	tplugin
+}
+
 func (tg testGenerator) HelpText() string {
-	return fmt.Sprintf("%v test help text", string(tg))
+	return fmt.Sprintf("%v test help text", string(tg.tplugin))
 }
 
 func (tg testGenerator) Generate(context.Context, string, []string) error {

@@ -22,8 +22,12 @@ func TestCommandLongHelpText(t *testing.T) {
 
 	t.Run("generator added", func(t *testing.T) {
 		generate.Command.Receive(plugin.Plugins{
-			testGenerator("something"),
-			testGenerator("other"),
+			testGenerator{
+				tplugin("something"),
+			},
+			testGenerator{
+				tplugin("other"),
+			},
 		})
 
 		exp := []string{
@@ -48,6 +52,47 @@ func TestCommandLongHelpText(t *testing.T) {
 	})
 }
 
-func TestCommandHelp(t *testing.T) {
+func TestReceive(t *testing.T) {
+	t.Run("no generators", func(t *testing.T) {
+		var g = generate.Command
+		g.Receive(plugin.Plugins{
+			tplugin("ax"),
+			tplugin("bw"),
+		})
 
+		ht := g.LongHelpText()
+		t.Log(ht)
+		if !strings.Contains(ht, "No generators registered") {
+			t.Fatalf("expected to find `No generators registered` in the long help text")
+		}
+	})
+
+	t.Run("generators passed", func(t *testing.T) {
+		var g = generate.Command
+		g.Receive(plugin.Plugins{
+			tplugin("ax"),
+			tplugin("bw"),
+
+			testGenerator{tplugin("mw")},
+		})
+
+		ht := g.LongHelpText()
+		t.Log(ht)
+
+		if strings.Contains(ht, "No generators registered") {
+			t.Fatalf("expected not to find `No generators registered` in the long help text")
+		}
+
+		exp := []string{
+			"mw",
+			"m, mw",
+			"Registered Generators",
+		}
+
+		for _, e := range exp {
+			if !strings.Contains(ht, e) {
+				t.Fatalf("expected to find `%v` in the long help text", e)
+			}
+		}
+	})
 }
