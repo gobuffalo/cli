@@ -53,8 +53,6 @@ func (ag actionGenerator) Generate(ctx context.Context, pwd string, args []strin
 		return fmt.Errorf("you must provide a name")
 	}
 
-	fmt.Println("Got here:", args)
-
 	ag.options.Name = args[0]
 	if len(args) == 1 {
 		return fmt.Errorf("you must provide at least one action name")
@@ -63,7 +61,6 @@ func (ag actionGenerator) Generate(ctx context.Context, pwd string, args []strin
 	ag.options.Actions = args[1:]
 	run := genny.WetRunner(ctx)
 
-	fmt.Println("Dry Run >> ", ag.dryRun)
 	if ag.dryRun {
 		run = genny.DryRunner(ctx)
 	}

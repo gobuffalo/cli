@@ -20,6 +20,8 @@ var Command = &generate{}
 // Generate command is the root command for the
 // different generators that CLI could have.
 type generate struct {
+	*clio.IO
+
 	generators Generators
 }
 
@@ -40,6 +42,10 @@ func (g generate) Usage() string {
 }
 
 func (g *generate) LongHelpText() string {
+	if len(g.generators) == 0 {
+		return "No generators registered.\n"
+	}
+
 	buf := bytes.NewBuffer([]byte{})
 	w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', 0)
 
@@ -50,8 +56,7 @@ func (g *generate) LongHelpText() string {
 			aliases = gh.Aliases()
 		}
 
-		line := fmt.Sprintf("%s\t%+v\t%s\n", gg.Name(), strings.Join(aliases, ", "), gg.HelpText())
-		w.Write([]byte(line))
+		fmt.Fprintf(w, "%s\t%+v\t%s\n", gg.Name(), strings.Join(aliases, ", "), gg.HelpText())
 	}
 
 	w.Flush()
@@ -60,6 +65,10 @@ func (g *generate) LongHelpText() string {
 }
 
 func (g *generate) ParseFlags(args []string) (*flag.FlagSet, error) {
+	if len(args) > 0 {
+		args = args[1:]
+	}
+
 	for _, v := range g.generators {
 		if pf, ok := v.(clio.FlagParser); ok {
 			pf.ParseFlags(args)
@@ -71,7 +80,7 @@ func (g *generate) ParseFlags(args []string) (*flag.FlagSet, error) {
 
 func (g *generate) Help(ctx context.Context, args []string) error {
 	if len(args) < 1 {
-		fmt.Println(g.LongHelpText())
+		fmt.Fprintln(g.Stdout(), g.LongHelpText())
 
 		return nil
 	}
@@ -80,8 +89,8 @@ func (g *generate) Help(ctx context.Context, args []string) error {
 	// Print its help text
 	gg := g.generators.Find(args[0])
 	if gg == nil {
-		fmt.Printf("Error: No generator found for '%v'\n\n", args[0])
-		fmt.Println(g.LongHelpText())
+		fmt.Fprintf(g.Stdout(), "Error: No generator found for '%v'\n\n", args[0])
+		fmt.Fprintln(g.Stdout(), g.LongHelpText())
 
 		return nil
 	}
@@ -91,18 +100,18 @@ func (g *generate) Help(ctx context.Context, args []string) error {
 		usage = hh.Usage()
 	}
 
-	fmt.Printf("Usage: %v\n\n", usage)
-	fmt.Println(gg.HelpText())
+	fmt.Fprintf(g.Stdout(), "Usage: %v\n\n", usage)
+	fmt.Fprintln(g.Stdout(), gg.HelpText())
 	if ht, ok := gg.(help.LongHelpTexter); ok {
-		fmt.Println(ht.LongHelpText())
+		fmt.Fprintln(g.Stdout(), ht.LongHelpText())
 	}
 
 	if fl, ok := gg.(clio.FlagParser); ok {
 		fl, _ := fl.ParseFlags([]string{})
 
-		fmt.Printf("\nFlags:\n")
+		fmt.Fprint(g.Stdout(), "\nFlags:\n")
 		fl.VisitAll(func(ff *flag.Flag) {
-			fmt.Printf("--%v\t%v\n", ff.Name, ff.Usage)
+			fmt.Fprintf(g.Stdout(), "--%v\t%v\n", ff.Name, ff.Usage)
 		})
 	}
 
@@ -121,8 +130,6 @@ func (g *generate) Receive(plugins plugin.Plugins) {
 }
 
 func (g generate) Main(ctx context.Context, pwd string, args []string) error {
-	fmt.Println("Got here:", args)
-
 	if len(args) < 1 {
 		return g.Help(ctx, args)
 	}

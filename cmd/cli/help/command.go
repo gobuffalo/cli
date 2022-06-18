@@ -12,7 +12,7 @@ import (
 // Command is in charge of printing the help text for a given command.
 // its flags and any other information available to make it easy for the user.
 type Command struct {
-	clio.IO
+	*clio.IO
 
 	Commands plugin.Commands
 }
