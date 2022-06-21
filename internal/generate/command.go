@@ -15,7 +15,10 @@ import (
 
 // Command instance to be used outside of the
 // generate package
-var Command = &generate{}
+var Command = &generate{
+	IO:         &clio.IO{},
+	generators: Generators{},
+}
 
 // Generate command is the root command for the
 // different generators that CLI could have.
@@ -141,7 +144,7 @@ func (g generate) Main(ctx context.Context, pwd string, args []string) error {
 
 	gg := g.generators.Find(args[0])
 	if gg == nil {
-		return nil
+		return g.Help(ctx, args)
 	}
 
 	return gg.Generate(ctx, pwd, args)
