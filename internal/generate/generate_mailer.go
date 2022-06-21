@@ -3,6 +3,7 @@ package generate
 import (
 	"context"
 	"flag"
+	"io/ioutil"
 
 	"github.com/gobuffalo/cli/internal/genny/mail"
 	"github.com/gobuffalo/flect/name"
@@ -11,13 +12,7 @@ import (
 	"github.com/gobuffalo/meta"
 )
 
-// func init() {
-// 	MailCmd.Flags().BoolVarP(&mailOptions.dryRun, "dry-run", "d", false, "dry run of the generator")
-// 	MailCmd.Flags().BoolVar(&mailOptions.SkipInit, "skip-init", false, "skip initializing mailers/")
-// }
-
 var MailerGenerator = &mailerGenerator{
-	flagSet: flag.NewFlagSet("action", flag.ContinueOnError),
 	options: &mail.Options{},
 }
 
@@ -26,8 +21,7 @@ type mailerGenerator struct {
 	options *mail.Options
 	flagSet *flag.FlagSet
 
-	dryRun   bool
-	SkipInit bool
+	dryRun bool
 }
 
 func (ag mailerGenerator) Name() string {
@@ -40,6 +34,21 @@ func (ag mailerGenerator) HelpText() string {
 
 func (ag mailerGenerator) Aliases() []string {
 	return []string{"m"}
+}
+
+func (ag *mailerGenerator) ParseFlags(args []string) (*flag.FlagSet, error) {
+	if ag.flagSet == nil {
+		ag.flagSet = flag.NewFlagSet("mailer", flag.ContinueOnError)
+		ag.flagSet.Usage = func() {}
+		ag.flagSet.SetOutput(ioutil.Discard)
+	}
+
+	ag.flagSet.BoolVar(&ag.dryRun, "dry-run", false, "Runs the generator without writing any files.")
+	ag.flagSet.BoolVar(&ag.options.SkipInit, "skip-init", false, "skip initializing mailers folder")
+
+	_ = ag.flagSet.Parse(args)
+
+	return ag.flagSet, nil
 }
 
 func (ag mailerGenerator) Generate(ctx context.Context, pwd string, args []string) error {

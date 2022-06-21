@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io/ioutil"
 
 	"github.com/gobuffalo/attrs"
 	"github.com/gobuffalo/cli/internal/genny/resource"
@@ -42,6 +43,26 @@ func (ag resourceGenerator) Name() string {
 
 func (ag resourceGenerator) HelpText() string {
 	return "Generate a new actions/resource file"
+}
+
+func (ag *resourceGenerator) ParseFlags(args []string) (*flag.FlagSet, error) {
+	if ag.flagSet == nil {
+		ag.flagSet = flag.NewFlagSet("mailer", flag.ContinueOnError)
+		ag.flagSet.Usage = func() {}
+		ag.flagSet.SetOutput(ioutil.Discard)
+	}
+
+	ag.flagSet.BoolVar(&ag.dryRun, "dry-run", false, "Runs the generator without writing any files.")
+	ag.flagSet.BoolVar(&ag.options.SkipMigration, "skip-migration", false, "tells resource generator not-to add model migration")
+	ag.flagSet.BoolVar(&ag.options.SkipModel, "skip-model", false, "tells resource generator not to generate model nor migrations")
+	ag.flagSet.BoolVar(&ag.options.SkipTemplates, "skip-templates", false, "tells resource generator not to generate templates for the resource")
+	ag.flagSet.StringVar(&ag.options.Model, "use-model", "", "tells resource generator to reference an existing model in generated code")
+	ag.flagSet.StringVar(&ag.options.Name, "name", "", "allows to define a different model name for the resource being generated.")
+	ag.flagSet.BoolVar(&ag.verbose, "verbose", false, "verbosely print out the go get commands")
+
+	_ = ag.flagSet.Parse(args)
+
+	return ag.flagSet, nil
 }
 
 func (ag resourceGenerator) LongHelpText() string {
