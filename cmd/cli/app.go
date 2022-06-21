@@ -7,6 +7,7 @@ import (
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
+	"github.com/gobuffalo/cli/internal/fix"
 	"github.com/gobuffalo/cli/internal/generate"
 	"github.com/gobuffalo/cli/internal/info"
 	"github.com/gobuffalo/cli/internal/routes"
@@ -29,9 +30,12 @@ var (
 		version.Command,
 		grift.Command,
 		routes.Command,
+		// TODO: Document how to wire things here
 		setup.Command,
 		info.Command,
+		// TODO: Document how to wire things here
 		generate.Command,
+		fix.Command,
 
 		// Generators
 		generate.ActionGenerator,
@@ -97,7 +101,10 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 func NewApp(plugins ...plugin.Plugin) *App {
 	// Initializing the Help command and prepending it to
 	// the list of plugins passed.
-	help := &help.Command{}
+	help := &help.Command{
+		IO: &clio.IO{},
+	}
+
 	plugins = append(plugin.Plugins{help}, plugins...)
 
 	// Pass all of the plugins to the PluginsReceivers in the
