@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package new
@@ -31,7 +32,7 @@ func TestNew(t *testing.T) {
 		},
 		{
 			name: "skip docker",
-			args: []string{"new", "nodocker", "--api", "--skip-docker", "-f", "--vcs", "none"},
+			args: []string{"new", "--api", "--skip-docker", "-f", "--vcs", "none", "nodocker"},
 			check: func(r *require.Assertions, out string, err error) {
 				r.NoError(err)
 				r.NoFileExists(filepath.Join("nodocker", "Dockerfile"))
@@ -40,7 +41,7 @@ func TestNew(t *testing.T) {
 
 		{
 			name: "docker there",
-			args: []string{"new", "wdocker", "--api", "-f", "--vcs", "none"},
+			args: []string{"new", "--api", "-f", "--vcs", "none", "wdocker"},
 			check: func(r *require.Assertions, out string, err error) {
 				r.NoError(err)
 				r.FileExists(filepath.Join("wdocker", "Dockerfile"))
@@ -49,7 +50,7 @@ func TestNew(t *testing.T) {
 
 		{
 			name: "invalid db type",
-			args: []string{"new", "api", "--api", "-f", "--db-type", "a"},
+			args: []string{"new", "--api", "-f", "--db-type", "a", "api"},
 			check: func(r *require.Assertions, out string, err error) {
 				r.Error(err)
 				r.Contains(out, `unknown dialect`)
@@ -58,7 +59,7 @@ func TestNew(t *testing.T) {
 
 		{
 			name: "forbidden application name",
-			args: []string{"new", "buffalo", "-f", "--api"},
+			args: []string{"new", "-f", "--api", "buffalo"},
 			check: func(r *require.Assertions, out string, err error) {
 				r.Error(err)
 				r.Contains(out, `name buffalo is not allowed, try a different application name`)
