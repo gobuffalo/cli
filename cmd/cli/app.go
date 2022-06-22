@@ -10,6 +10,7 @@ import (
 	"github.com/gobuffalo/cli/internal/fix"
 	"github.com/gobuffalo/cli/internal/generate"
 	"github.com/gobuffalo/cli/internal/info"
+	"github.com/gobuffalo/cli/internal/new"
 	"github.com/gobuffalo/cli/internal/routes"
 	"github.com/gobuffalo/cli/internal/setup"
 	"github.com/gobuffalo/cli/internal/test"
@@ -30,12 +31,15 @@ var (
 		version.Command,
 		grift.Command,
 		routes.Command,
-		// TODO: Document how to wire things here
+
+		// TODO: Document how to wire setuppers here.
 		setup.Command,
 		info.Command,
-		// TODO: Document how to wire things here
+
+		// TODO: DOCS: Document how to add generators
 		generate.Command,
 		fix.Command,
+		new.Command,
 
 		// Generators
 		generate.ActionGenerator,

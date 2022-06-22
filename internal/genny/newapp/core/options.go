@@ -26,6 +26,17 @@ type Options struct {
 	ForbiddenNames []string
 }
 
+func NewOptions() *Options {
+	return &Options{
+		Docker:  &docker.Options{},
+		Pop:     &newapp.Options{},
+		CI:      &ci.Options{},
+		VCS:     &vcs.Options{},
+		Refresh: &refresh.Options{},
+	}
+
+}
+
 // Validate that options are usuable
 func (opts *Options) Validate() error {
 	if opts.App.IsZero() {
