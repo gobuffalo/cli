@@ -34,25 +34,33 @@ var Command = &command{
 
 type command struct {
 	flagSet *flag.FlagSet
-
 	options *core.Options
 
-	Module  string
-	Force   bool
-	Verbose bool
-	DryRun  bool
+	force       bool
+	verbose     bool
+	dryRun      bool
+	skipPop     bool
+	skipWebpack bool
+	skipYarn    bool
+	skipDocker  bool
+	api         bool
+
+	module     string
+	vcs        string
+	dbType     string
+	ciProvider string
 }
 
 func (c command) Name() string {
 	return "new"
 }
 
-func (c command) Usage() string {
-	return "new [name]"
-}
-
 func (c command) HelpText() string {
 	return "Creates a new Buffalo application"
+}
+
+func (c command) Usage() string {
+	return "new [flags] [application-name]"
 }
 
 func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
@@ -62,106 +70,53 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 		c.flagSet.SetOutput(ioutil.Discard)
 	}
 
-	// Adding these here since are negation of
-	// the options for application creation.
-	var skipPop, skipWebpack, skipYarn, skipDocker bool
+	c.flagSet.BoolVar(&c.api, "api", false, "skip all front-end code and configure for an API server")
+	c.flagSet.BoolVar(&c.skipPop, "skip-pop", false, "skip all back-end code and configure for a web server")
+	c.flagSet.BoolVar(&c.skipWebpack, "skip-webpack", false, "skip all front-end code and configure for a web server")
+	c.flagSet.BoolVar(&c.skipYarn, "skip-yarn", false, "skip all front-end code and configure for a web server")
+	c.flagSet.BoolVar(&c.skipDocker, "skip-docker", false, "skip all front-end code and configure for a web server")
+	c.flagSet.BoolVar(&c.force, "force", false, "delete and remake if the app already exists")
+	c.flagSet.BoolVar(&c.dryRun, "dry-run", false, "dry run")
+	c.flagSet.BoolVar(&c.verbose, "verbose", false, "verbosely print out the go get commands")
 
-	c.flagSet.BoolVar(&c.options.App.AsAPI, "api", false, "skip all front-end code and configure for an API server")
-	c.flagSet.BoolVar(&skipPop, "skip-pop", false, "skip all back-end code and configure for a web server")
-	c.flagSet.BoolVar(&skipWebpack, "skip-webpack", false, "skip all front-end code and configure for a web server")
-	c.flagSet.BoolVar(&skipYarn, "skip-yarn", false, "skip all front-end code and configure for a web server")
-	c.flagSet.BoolVar(&skipDocker, "skip-docker", false, "skip all front-end code and configure for a web server")
+	c.flagSet.StringVar(&c.module, "module", "", "module to use for the application")
+	c.flagSet.StringVar(&c.vcs, "vcs", "git", "specify the Version control system you would like to use [none, git, bzr]")
+	c.flagSet.StringVar(&c.dbType, "db", "postgres", fmt.Sprintf("specify the type of database you want to use [%s]", strings.Join(plib.AvailableDialects, ", ")))
+	c.flagSet.StringVar(&c.ciProvider, "ci-provider", "travis", "specify the CI provider you want to use [none, travis, gitlab-ci, circleci]")
 
-	c.flagSet.BoolVar(&c.Force, "force", false, "delete and remake if the app already exists")
-	c.flagSet.BoolVar(&c.DryRun, "dry-run", false, "dry run")
-	c.flagSet.BoolVar(&c.Verbose, "verbose", false, "verbosely print out the go get commands")
+	if !strings.HasPrefix(args[0], "-") && len(args) > 1 {
+		fmt.Println("Usage: " + c.Usage())
 
-	c.flagSet.StringVar(&c.Module, "module", "", "module to use for the application")
-	c.flagSet.StringVar(&c.options.App.VCS, "vcs", "git", "specify the Version control system you would like to use [none, git, bzr]")
-	c.flagSet.StringVar(&c.options.CI.DBType, "db", "postgres", fmt.Sprintf("specify the type of database you want to use [%s]", strings.Join(plib.AvailableDialects, ", ")))
-	c.flagSet.StringVar(&c.options.CI.Provider, "ci-provider", "none", "specify the CI provider you want to use [none, travis, gitlab-ci, circleci]")
+		return c.flagSet, fmt.Errorf("error: flags must go before the application name")
+	}
 
 	_ = c.flagSet.Parse(args)
-
-	c.options.App.WithDocker = !skipDocker
-	c.options.App.WithWebpack = !skipWebpack
-	c.options.App.WithYarn = !skipYarn
-	c.options.App.WithPop = !skipPop
-
-	c.options.App.WithGrifts = true
-	c.options.App.WithNodeJs = c.options.App.WithWebpack
-	c.options.App.AsWeb = !c.options.App.AsAPI
-
-	c.options.Refresh = &refresh.Options{}
-
-	if c.options.App.AsAPI {
-		c.options.App.WithWebpack = false
-		c.options.App.WithYarn = false
-		c.options.App.WithNodeJs = false
-	}
-
-	if c.options.App.WithDocker {
-		c.options.Docker = &docker.Options{}
-	}
-
-	if pr := c.options.CI.Provider; pr != "none" {
-		c.options.CI = &ci.Options{
-			Provider: pr,
-			DBType:   c.options.CI.DBType,
-		}
-	}
-
-	if len(c.options.App.VCS) > 0 && c.options.App.VCS != "none" {
-		c.options.VCS = &vcs.Options{
-			Provider: c.options.App.VCS,
-		}
-	}
 
 	return c.flagSet, nil
 }
 
 func (c *command) Main(ctx context.Context, pwd string, args []string) error {
+	args = c.flagSet.Args()
 	if len(args) == 0 {
 		return fmt.Errorf("you must enter a name for your new application")
 	}
 
-	c.options.App = meta.New(pwd)
-	c.options.App.Name = fname.New(args[0])
-	c.options.App.Bin = filepath.Join("bin", c.options.App.Name.String())
-
-	if c.options.App.Name.String() == "." {
-		c.options.App.Name = fname.New(filepath.Base(c.options.App.Root))
-	} else {
-		c.options.App.Root = filepath.Join(c.options.App.Root, c.options.App.Name.File().String())
-	}
-
-	c.options.App.PackageRoot(c.Module)
-	if len(c.Module) == 0 {
-		aa := meta.New(c.options.App.Root)
-		c.options.App.PackageRoot(aa.PackagePkg)
-	}
-
-	if c.options.App.WithPop {
-		if c.options.CI.DBType == "sqlite3" {
-			c.options.App.WithSQLite = true
-		}
-
-		c.options.Pop = &pop.Options{
-			Prefix:  c.options.App.Name.File().String(),
-			Dialect: c.options.CI.DBType,
-		}
-	}
+	c.options.App = c.buildApp(pwd, args[0])
+	c.setOptions()
 
 	run := genny.WetRunner(ctx)
-	lg := logger.New(logger.DebugLevel)
-	run.Logger = lg
-
-	if c.DryRun {
+	if c.dryRun {
 		run = genny.DryRunner(ctx)
 	}
+	// Setting debug logger if verbose is set
+	if c.verbose {
+		run.Logger = logger.New(logger.DebugLevel)
+	}
 
+	// Remove existing folder if Force is passed.
 	run.Root = c.options.App.Root
-	if c.Force {
+	if c.force {
+		// TODO: this needs to considerate the -dry-run flag.
 		os.RemoveAll(c.options.App.Root)
 	}
 
@@ -214,9 +169,76 @@ func (c *command) Main(ctx context.Context, pwd string, args []string) error {
 		return err
 	}
 
-	run.Logger.Infof("Congratulations! Your application, %s, has been successfully generated!", c.options.App.Name)
-	run.Logger.Infof("You can find your new application at: %v", c.options.App.Root)
-	run.Logger.Info("Please read the README.md file in your new application for next steps on running your application.")
+	fmt.Printf("\nCongratulations! Your application, %s, has been successfully generated!\n", c.options.App.Name)
+	fmt.Printf("You can find your new application at: %v\n", c.options.App.Root)
+	fmt.Printf("Please read the README.md file in your new application for next steps on running your application.\n")
 
 	return nil
+}
+
+func (c command) buildApp(wd string, name string) meta.App {
+	app := meta.New(wd)
+
+	app.Name = fname.New(name)
+	app.Bin = filepath.Join("bin", app.Name.String())
+
+	app.WithDocker = !c.skipDocker
+	app.WithWebpack = !c.skipWebpack
+	app.WithYarn = !c.skipYarn
+	app.WithPop = !c.skipPop
+	app.AsAPI = c.api
+
+	app.WithGrifts = true
+	app.WithNodeJs = c.options.App.WithWebpack
+	app.AsWeb = !c.options.App.AsAPI
+
+	if app.AsAPI {
+		app.WithWebpack = false
+		app.WithYarn = false
+		app.WithNodeJs = false
+	}
+
+	if app.Name.String() == "." {
+		app.Name = fname.New(filepath.Base(app.Root))
+	} else {
+		app.Root = filepath.Join(app.Root, app.Name.File().String())
+	}
+
+	app.PackageRoot(c.module)
+	if len(c.module) == 0 {
+		aa := meta.New(app.Root)
+		app.PackageRoot(aa.PackagePkg)
+	}
+
+	if app.WithPop && c.dbType == "sqlite3" {
+		app.WithSQLite = true
+	}
+
+	c.options.VCS = &vcs.Options{
+		Provider: c.vcs,
+	}
+
+	return app
+}
+
+func (c *command) setOptions() {
+	c.options.Refresh = &refresh.Options{}
+
+	if c.options.App.WithDocker {
+		c.options.Docker = &docker.Options{}
+	}
+
+	if c.ciProvider != "none" {
+		c.options.CI = &ci.Options{
+			Provider: c.ciProvider,
+			DBType:   c.dbType,
+		}
+	}
+
+	if c.options.App.WithPop {
+		c.options.Pop = &pop.Options{
+			Prefix:  c.options.App.Name.File().String(),
+			Dialect: c.dbType,
+		}
+	}
 }
