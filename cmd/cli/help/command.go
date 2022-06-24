@@ -106,6 +106,8 @@ func (c Command) Specific(cm plugin.Command) error {
 		fmt.Fprintf(c.Stdout(), ht.LongHelpText())
 	}
 
+	fmt.Fprintf(c.Stdout(), "\n\n")
+
 	if fl, ok := cm.(clio.FlagParser); ok {
 		fl, _ := fl.ParseFlags([]string{})
 
