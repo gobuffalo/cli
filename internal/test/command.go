@@ -7,7 +7,9 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"text/tabwriter"
 
+	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/internal/tools/pop"
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/meta"
@@ -36,8 +38,41 @@ func (c command) Name() string {
 }
 
 func (c command) HelpText() string {
-	// TODO: List before and after plugins
-	return "Runs application tests by invoking before and after test plugins."
+	return "Runs application tests by invoking related plugins."
+}
+
+func (c command) LongHelpText() string {
+	buf := bytes.NewBuffer([]byte{})
+	w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', 0)
+
+	if len(c.before) > 0 {
+		fmt.Fprintln(w, "Registered BeforeTesters:")
+
+		for _, v := range c.before {
+			if ht, ok := v.(help.HelpTexter); ok {
+				fmt.Fprintf(w, "%v\t\t%v\n", v.Name(), ht.HelpText())
+
+				continue
+			}
+
+			fmt.Fprintf(w, "%v\t (runs the %[1]v command)\n", v.Name())
+		}
+	}
+
+	fmt.Fprintln(w, "\nRegistered Testers:")
+	for _, v := range c.testers {
+		if ht, ok := v.(help.HelpTexter); ok {
+			fmt.Fprintf(w, "%v\t\t%v\n", v.Name(), ht.HelpText())
+
+			continue
+		}
+
+		fmt.Fprintf(w, "%v\t (runs the %[1]v command)\n", v.Name())
+	}
+
+	w.Flush()
+
+	return buf.String()
 }
 
 func (c *command) Main(ctx context.Context, pwd string, args []string) error {

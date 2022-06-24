@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"text/tabwriter"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
@@ -57,7 +58,7 @@ func (c *Command) Receive(plugins plugin.Plugins) {
 
 // General method prints help text for all of the commands.
 func (c Command) General() error {
-	fmt.Fprint(c.Stdout(), "Usage: buffalo [command] [options]\n\n")
+	fmt.Fprint(c.Stdout(), "Usage: buffalo [command] [flags] [...]\n\n")
 
 	// If there are no commands it just prints the usage.
 	if len(c.Commands) == 0 {
@@ -65,15 +66,19 @@ func (c Command) General() error {
 	}
 
 	fmt.Fprintln(c.Stdout(), "Available Commands:")
+	w := tabwriter.NewWriter(c.Stdout(), 0, 0, 3, ' ', 0)
+
 	for _, v := range c.Commands {
 		if ht, ok := v.(HelpTexter); ok {
-			fmt.Fprintf(c.Stdout(), "%v\t\t%v\n", v.Name(), ht.HelpText())
+			fmt.Fprintf(w, "%v\t\t%v\n", v.Name(), ht.HelpText())
 
 			continue
 		}
 
-		fmt.Fprintf(c.Stdout(), "%v\t (runs the %[1]v command)\n", v.Name())
+		fmt.Fprintf(w, "%v\t (runs the %[1]v command)\n", v.Name())
 	}
+
+	w.Flush()
 
 	fmt.Fprintln(c.Stdout(), "\nFor command specific information use the help command, p.e.")
 	fmt.Fprintln(c.Stdout(), "$ buffalo help [command]")
