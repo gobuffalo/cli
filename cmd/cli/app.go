@@ -7,6 +7,7 @@ import (
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
+	"github.com/gobuffalo/cli/internal/destroy"
 	"github.com/gobuffalo/cli/internal/fix"
 	"github.com/gobuffalo/cli/internal/generate"
 	"github.com/gobuffalo/cli/internal/info"
@@ -40,12 +41,18 @@ var (
 		generate.Command,
 		fix.Command,
 		new.Command,
+		destroy.Command,
 
 		// Generators
 		generate.ActionGenerator,
 		generate.MailerGenerator,
 		generate.ResourceGenerator,
 		grift.Generator,
+
+		//Destroyers
+		destroy.ActionDestroyer,
+		destroy.MailerDestroyer,
+		destroy.ResourceDestroyer,
 
 		// Setup plugins
 		grift.SetupSeedDatabase,

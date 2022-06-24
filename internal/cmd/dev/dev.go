@@ -14,7 +14,6 @@ import (
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"
 	"github.com/gobuffalo/refresh/refresh"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )
@@ -31,7 +30,7 @@ func runE(c *cobra.Command, args []string) error {
 				cause = err.Error()
 			}
 		}
-		logrus.Errorf(msg, cause)
+		fmt.Printf(msg, cause)
 	}()
 	os.Setenv("GO_ENV", "development")
 
