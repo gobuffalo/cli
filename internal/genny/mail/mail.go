@@ -72,8 +72,8 @@ func initGenerator(opts *Options) (*genny.Generator, error) {
 const mailerTmpl = `package mailers
 
 import (
-	"github.com/gobuffalo/buffalo/render"
 	"github.com/gobuffalo/buffalo/mail"
+	"github.com/gobuffalo/buffalo/render"
 )
 
 func Send{{.opts.Name.Resource}}() error {
@@ -83,7 +83,7 @@ func Send{{.opts.Name.Resource}}() error {
 	m.Subject = "{{.opts.Name.Titleize}}"
 	m.From = ""
 	m.To = []string{}
-	err := m.AddBody(r.HTML("{{.opts.Name.File}}.html"), render.Data{})
+	err := m.AddBody(r.HTML("mail/{{.opts.Name.File}}.html"), render.Data{})
 	if err != nil {
 		return err
 	}
@@ -93,4 +93,4 @@ func Send{{.opts.Name.Resource}}() error {
 
 const mailTmpl = `<h2>{{.opts.Name.Titleize}}</h2>
 
-<h3>../templates/mail/{{.opts.Name.File}}.plush.html</h3>`
+<h3>templates/mail/{{.opts.Name.File}}.plush.html</h3>`
