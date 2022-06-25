@@ -17,6 +17,7 @@ import (
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/logger"
 	"github.com/gobuffalo/meta"
+	"github.com/gobuffalo/pop/v6/internal/defaults"
 	"github.com/markbates/sigtx"
 )
 
@@ -187,12 +188,9 @@ func (c command) buildVersion(version string) string {
 
 	if err := run.Run(); err != nil {
 		run.Logger.Error(err)
+
 		return version
 	}
 
-	if out.String() != "" {
-		return strings.TrimSpace(out.String())
-	}
-
-	return version
+	return defaults.String(strings.TrimSpace(out.String()), version)
 }
