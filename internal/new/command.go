@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -67,7 +67,7 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	if c.flagSet == nil {
 		c.flagSet = flag.NewFlagSet("new", flag.ContinueOnError)
 		c.flagSet.Usage = func() {}
-		c.flagSet.SetOutput(ioutil.Discard)
+		c.flagSet.SetOutput(io.Discard)
 	}
 
 	c.flagSet.BoolVar(&c.api, "api", false, "skip all front-end code and configure for an API server")

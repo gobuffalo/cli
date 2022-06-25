@@ -3,7 +3,7 @@ package generate
 import (
 	"context"
 	"flag"
-	"io/ioutil"
+	"io"
 
 	"github.com/gobuffalo/cli/internal/genny/mail"
 	"github.com/gobuffalo/flect/name"
@@ -40,7 +40,7 @@ func (ag *mailerGenerator) ParseFlags(args []string) (*flag.FlagSet, error) {
 	if ag.flagSet == nil {
 		ag.flagSet = flag.NewFlagSet("mailer", flag.ContinueOnError)
 		ag.flagSet.Usage = func() {}
-		ag.flagSet.SetOutput(ioutil.Discard)
+		ag.flagSet.SetOutput(io.Discard)
 	}
 
 	ag.flagSet.BoolVar(&ag.dryRun, "dry-run", false, "Runs the generator without writing any files.")

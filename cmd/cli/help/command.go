@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
@@ -98,23 +99,30 @@ func (c Command) Specific(cm plugin.Command) error {
 
 	fmt.Fprintf(c.Stdout(), "Usage: %v \n\n", usage)
 
+	if ht, ok := cm.(plugin.Aliaser); ok {
+		fmt.Fprintf(c.Stdout(), "Aliases:\n")
+		fmt.Fprintf(c.Stdout(), "%s\n", strings.Join(ht.Aliases(), ", "))
+		fmt.Fprintf(c.Stdout(), "\n")
+	}
+
 	if ht, ok := cm.(HelpTexter); ok {
 		fmt.Fprintf(c.Stdout(), ht.HelpText()+"\n\n")
 	}
 
 	if ht, ok := cm.(LongHelpTexter); ok {
-		fmt.Fprintf(c.Stdout(), ht.LongHelpText())
+		fmt.Fprintf(c.Stdout(), ht.LongHelpText()+"\n\n")
 	}
-
-	fmt.Fprintf(c.Stdout(), "\n\n")
 
 	if fl, ok := cm.(clio.FlagParser); ok {
 		fl, _ := fl.ParseFlags([]string{})
 
-		fmt.Fprintf(c.Stdout(), "Flags:\n")
+		w := tabwriter.NewWriter(c.Stdout(), 0, 0, 3, ' ', 0)
+		fmt.Fprintf(w, "Flags:\n")
 		fl.VisitAll(func(ff *flag.Flag) {
-			fmt.Fprintf(c.Stdout(), "--%v\t%v\n", ff.Name, ff.Usage)
+			fmt.Fprintf(w, "--%v\t%v\n", ff.Name, ff.Usage)
 		})
+
+		w.Flush()
 	}
 
 	return nil

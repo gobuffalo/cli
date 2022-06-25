@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"github.com/gobuffalo/cli/internal/genny/actions"
 	"github.com/gobuffalo/genny/v2"
@@ -43,7 +43,7 @@ func (ag *actionGenerator) ParseFlags(args []string) (*flag.FlagSet, error) {
 	if ag.flagSet == nil {
 		ag.flagSet = flag.NewFlagSet("action", flag.ContinueOnError)
 		ag.flagSet.Usage = func() {}
-		ag.flagSet.SetOutput(ioutil.Discard)
+		ag.flagSet.SetOutput(io.Discard)
 	}
 
 	ag.flagSet.BoolVar(&ag.dryRun, "dry-run", false, "Runs the generator without writing any files.")

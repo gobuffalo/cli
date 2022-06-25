@@ -22,7 +22,6 @@ require (
 	github.com/markbates/safe v1.0.1
 	github.com/markbates/sigtx v1.0.0
 	github.com/psanford/memfs v0.0.0-20210214183328-a001468d78ef
-	github.com/spf13/cobra v1.4.0
 	github.com/stretchr/testify v1.7.1
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3

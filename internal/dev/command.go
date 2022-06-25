@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"runtime"
 	"strings"
 
@@ -47,7 +47,7 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	if c.flagSet == nil {
 		c.flagSet = flag.NewFlagSet(c.Name(), flag.ContinueOnError)
 		c.flagSet.Usage = func() {}
-		c.flagSet.SetOutput(ioutil.Discard)
+		c.flagSet.SetOutput(io.Discard)
 	}
 
 	c.flagSet.BoolVar(&c.debug, "debug", false, "use delve to debug the app")

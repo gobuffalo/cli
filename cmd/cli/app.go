@@ -8,6 +8,7 @@ import (
 	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
 
+	"github.com/gobuffalo/cli/internal/build"
 	"github.com/gobuffalo/cli/internal/destroy"
 	"github.com/gobuffalo/cli/internal/dev"
 	"github.com/gobuffalo/cli/internal/fix"
@@ -44,6 +45,7 @@ var (
 		fix.Command,
 		new.Command,
 		destroy.Command,
+		build.Command,
 
 		// TODO: DOCS: Document how to add dev plugins
 		dev.Command,

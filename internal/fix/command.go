@@ -3,7 +3,7 @@ package fix
 import (
 	"context"
 	"flag"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/gobuffalo/cli/internal/genny/fix"
@@ -34,7 +34,7 @@ func (c command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	if c.flagSet == nil {
 		c.flagSet = flag.NewFlagSet("fix", flag.ContinueOnError)
 		c.flagSet.Usage = func() {}
-		c.flagSet.SetOutput(ioutil.Discard)
+		c.flagSet.SetOutput(io.Discard)
 	}
 
 	c.flagSet.BoolVar(&c.options.YesToAll, "y", false, "update all without asking for confirmation")
