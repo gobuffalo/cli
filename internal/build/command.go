@@ -12,12 +12,18 @@ import (
 	"time"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
+	"github.com/gobuffalo/cli/cmd/cli/plugin"
 	"github.com/gobuffalo/cli/internal/genny/build"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/logger"
 	"github.com/gobuffalo/meta"
 	"github.com/markbates/sigtx"
 )
+
+// TODO: install command: flag?
+// if cmd.CalledAs() == "install" {
+// 	opts.GoCommand = "install"
+// }
 
 var Command = &command{
 	options: &build.Options{
@@ -39,6 +45,8 @@ type command struct {
 
 	tags       clio.StringSliceVar
 	buildFlags clio.StringSliceVar
+
+	versionCmdRunners []VersionRunner
 }
 
 func (c command) Name() string {
@@ -80,8 +88,16 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	return c.flagSet, nil
 }
 
+func (c *command) Receive(pls plugin.Plugins) {
+	for _, p := range pls {
+		if vr, ok := p.(VersionRunner); ok {
+			c.versionCmdRunners = append(c.versionCmdRunners, vr)
+		}
+	}
+}
+
 func (c *command) Main(ctx context.Context, pwd string, args []string) error {
-	ctx, cancel := sigtx.WithCancel(ctx, os.Interrupt)
+	ctx, cancel := sigtx.WithCancel(context.Background(), os.Interrupt)
 	defer cancel()
 
 	pwd, err := os.Getwd()
@@ -121,10 +137,6 @@ func (c *command) Main(ctx context.Context, pwd string, args []string) error {
 		)
 	}
 
-	// if cmd.CalledAs() == "install" {
-	// 	opts.GoCommand = "install"
-	// }
-
 	clean := build.Cleanup(c.options)
 	defer func() {
 		if err := clean(run); err != nil {
@@ -139,48 +151,39 @@ func (c *command) Main(ctx context.Context, pwd string, args []string) error {
 	return run.Run()
 }
 
-// TODO: This needs to be pluginized
 func (c command) buildVersion(version string) string {
-	vcs := c.options.VCS
-
-	if len(vcs) == 0 {
-		return version
-	}
-
 	ctx := context.Background()
 	run := genny.WetRunner(ctx)
 	if c.dryRun {
 		run = genny.DryRunner(ctx)
 	}
 
+	vcs := c.options.VCS
+	if len(vcs) == 0 {
+		run.Logger.Warnf("now vcs determined; defaulting to version %s", version)
+
+		return version
+	}
+
 	_, err := exec.LookPath(vcs)
 	if err != nil {
 		run.Logger.Warnf("could not find %s; defaulting to version %s", vcs, version)
-		return vcs
-	}
 
-	var cmd *exec.Cmd
-	switch vcs {
-	case "git":
-		// If .git folder does not exist return default version
-		if stat, err := os.Stat(".git"); err != nil || !stat.IsDir() {
-			run.Logger.Warnf("could not find .git folder; defaulting to version %s", version)
-			return version
-		}
-
-		cmd = exec.Command("git", "rev-parse", "--short", "HEAD")
-	case "bzr":
-		cmd = exec.Command("bzr", "revno")
-	default:
-		run.Logger.Warnf("could not find %s; defaulting to version %s", vcs, version)
 		return vcs
 	}
 
 	out := &bytes.Buffer{}
-	cmd.Stdout = out
-	run.WithRun(func(r *genny.Runner) error {
-		return r.Exec(cmd)
-	})
+	for _, cr := range c.versionCmdRunners {
+		if cr.Name() != vcs {
+			continue
+		}
+
+		run.WithRun(func(r *genny.Runner) error {
+			return cr.RunVersionCmd(out)
+		})
+
+		break
+	}
 
 	if err := run.Run(); err != nil {
 		run.Logger.Error(err)

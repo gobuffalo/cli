@@ -18,7 +18,9 @@ import (
 	"github.com/gobuffalo/cli/internal/routes"
 	"github.com/gobuffalo/cli/internal/setup"
 	"github.com/gobuffalo/cli/internal/test"
+	"github.com/gobuffalo/cli/internal/tools/bzr"
 	"github.com/gobuffalo/cli/internal/tools/frontend"
+	"github.com/gobuffalo/cli/internal/tools/git"
 	"github.com/gobuffalo/cli/internal/tools/grift"
 	"github.com/gobuffalo/cli/internal/tools/pop"
 	"github.com/gobuffalo/cli/internal/version"
@@ -71,6 +73,9 @@ var (
 		dev.SetupDevelopment,
 		dev.StartServer,
 		dev.StartFrontend,
+
+		git.VersionRunner,
+		bzr.VersionRunner,
 	)
 )
 
