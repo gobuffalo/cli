@@ -3,10 +3,11 @@ package mailers
 import (
 	"log"
 
+	"{{ .opts.App.PackagePkg }}/templates"
+
 	"github.com/gobuffalo/buffalo/mail"
 	"github.com/gobuffalo/buffalo/render"
 	"github.com/gobuffalo/envy"
-	"github.com/gobuffalo/packr/v2"
 )
 
 var (
@@ -29,8 +30,8 @@ func init() {
 	}
 
 	r = render.New(render.Options{
-		HTMLLayout:   "layout.html",
-		TemplatesBox: packr.New("app:mailers:templates", "../templates/mail"),
-		Helpers:      render.Helpers{},
+		HTMLLayout:  "mail/layout.plush.html",
+		TemplatesFS: templates.FS(),
+		Helpers:     render.Helpers{},
 	})
 }
