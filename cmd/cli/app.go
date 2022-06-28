@@ -48,6 +48,7 @@ var (
 		new.Command,
 		destroy.Command,
 		build.Command,
+		pop.Command,
 
 		// TODO: DOCS: Document how to add dev plugins
 		dev.Command,

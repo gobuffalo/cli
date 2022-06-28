@@ -38,6 +38,7 @@ func (c *setup) ParseFlags(args []string) (*flag.FlagSet, error) {
 	return c.flagSet, nil
 }
 
+// TODO: Move these exec to use the package
 func (c *setup) Setup(app meta.App) error {
 	if !app.WithPop {
 		return nil
