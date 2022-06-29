@@ -52,6 +52,10 @@ var (
 		// TODO: DOCS: Document how to add dev plugins
 		dev.Command,
 
+		// TODO: This needs to live outside of the CLI package
+		// and into the pop/buffalo-pop package.
+		pop.Command,
+
 		// Generators
 		generate.ActionGenerator,
 		generate.MailerGenerator,

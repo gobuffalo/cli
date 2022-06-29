@@ -13,11 +13,11 @@ import (
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
+	"github.com/gobuffalo/cli/internal/defaults"
 	"github.com/gobuffalo/cli/internal/genny/build"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/logger"
 	"github.com/gobuffalo/meta"
-	"github.com/gobuffalo/pop/v6/internal/defaults"
 	"github.com/markbates/sigtx"
 )
 
