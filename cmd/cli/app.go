@@ -55,6 +55,11 @@ var (
 		// TODO: This needs to live outside of the CLI package
 		// and into the pop/buffalo-pop package.
 		pop.Command,
+		pop.Create,
+		pop.Drop,
+		pop.Fix,
+		pop.Migrate,
+		pop.Reset,
 
 		// Generators
 		generate.ActionGenerator,

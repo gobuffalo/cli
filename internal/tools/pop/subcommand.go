@@ -3,6 +3,7 @@ package pop
 import (
 	"context"
 
+	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
 	"github.com/gobuffalo/pop/v6"
 )
@@ -11,6 +12,7 @@ import (
 // the pop command.
 type Subcommand interface {
 	plugin.Plugin
+	help.HelpTexter
 
 	Run(context.Context, []pop.ConnectionDetails, []string) error
 }
