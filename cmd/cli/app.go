@@ -60,13 +60,13 @@ var (
 		pop.Fix,
 		pop.Migrate,
 		pop.Reset,
+		pop.Generate,
 
 		// Generators
 		generate.ActionGenerator,
 		generate.MailerGenerator,
 		generate.ResourceGenerator,
 		grift.Generator,
-		pop.ConfigGenerator,
 
 		//Destroyers
 		destroy.ActionDestroyer,

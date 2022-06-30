@@ -1,4 +1,4 @@
-package pop
+package generators
 
 import (
 	"context"
@@ -21,7 +21,7 @@ type configGenerator struct {
 }
 
 func (c configGenerator) Name() string {
-	return "pop/config"
+	return "config"
 }
 
 func (c configGenerator) HelpText() string {
@@ -44,8 +44,6 @@ func (c *configGenerator) ParseFlags(args []string) (*flag.FlagSet, error) {
 }
 
 func (c *configGenerator) Generate(ctx context.Context, pwd string, args []string) error {
-	//defaults.String(cflagVal, "database.yml")
-
 	cfgFile := defaults.String(c.configFile, "database.yml")
 	run := genny.WetRunner(ctx)
 
@@ -60,7 +58,10 @@ func (c *configGenerator) Generate(ctx context.Context, pwd string, args []strin
 		return err
 	}
 
-	run.With(g)
+	err = run.With(g)
+	if err != nil {
+		return err
+	}
 
 	return run.Run()
 }
