@@ -18,6 +18,6 @@ func (c migrate) HelpText() string {
 	return "Runs migrations against your database."
 }
 
-func (c migrate) Run(context.Context, []pop.ConnectionDetails, []string) error {
+func (c migrate) Run(context.Context, *pop.Connection) error {
 	return nil
 }
