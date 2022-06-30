@@ -60,7 +60,7 @@ func (c command) HelpText() string {
 }
 
 func (c command) Usage() string {
-	return "new [flags] [application-name]"
+	return "buffalo new [flags] [application-name]"
 }
 
 func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {

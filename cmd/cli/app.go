@@ -66,6 +66,7 @@ var (
 		generate.MailerGenerator,
 		generate.ResourceGenerator,
 		grift.Generator,
+		pop.ConfigGenerator,
 
 		//Destroyers
 		destroy.ActionDestroyer,

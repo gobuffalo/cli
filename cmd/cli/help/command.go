@@ -114,12 +114,12 @@ func (c Command) Specific(cm plugin.Command) error {
 	}
 
 	if fl, ok := cm.(clio.FlagParser); ok {
-		fl, _ := fl.ParseFlags([]string{})
-
+		fx, _ := fl.ParseFlags([]string{"xxx"})
 		w := tabwriter.NewWriter(c.Stdout(), 0, 0, 3, ' ', 0)
 		fmt.Fprintf(w, "Flags:\n")
-		fl.VisitAll(func(ff *flag.Flag) {
-			fmt.Fprintf(w, "--%v\t%v\n", ff.Name, ff.Usage)
+
+		fx.VisitAll(func(ff *flag.Flag) {
+			fmt.Fprintf(w, "  --%v\t%v\n", ff.Name, ff.Usage)
 		})
 
 		w.Flush()

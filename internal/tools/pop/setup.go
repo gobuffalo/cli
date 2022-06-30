@@ -3,6 +3,7 @@ package pop
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -30,6 +31,12 @@ func (c setup) HelpText() string {
 }
 
 func (c *setup) ParseFlags(args []string) (*flag.FlagSet, error) {
+	if c.flagSet == nil {
+		c.flagSet = flag.NewFlagSet("setup", flag.ExitOnError)
+		c.flagSet.Usage = func() {}
+		c.flagSet.SetOutput(io.Discard)
+	}
+
 	c.flagSet.BoolVar(&c.verbose, "verbose", false, "run with verbose output")
 	c.flagSet.BoolVar(&c.dropDatabase, "drop", false, "drop existing databases")
 

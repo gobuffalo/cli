@@ -2,6 +2,8 @@ package pop
 
 import (
 	"context"
+	"flag"
+	"io"
 	"path/filepath"
 
 	"github.com/gobuffalo/cli/internal/defaults"
@@ -12,8 +14,10 @@ import (
 var ConfigGenerator = &configGenerator{}
 
 type configGenerator struct {
+	flagSet *flag.FlagSet
+
 	configFile string
-	dialect    string // default: postgres
+	dialect    string
 }
 
 func (c configGenerator) Name() string {
@@ -22,6 +26,21 @@ func (c configGenerator) Name() string {
 
 func (c configGenerator) HelpText() string {
 	return "Generates a database.yml file for your project."
+}
+
+func (c *configGenerator) ParseFlags(args []string) (*flag.FlagSet, error) {
+	if c.flagSet == nil {
+		c.flagSet = flag.NewFlagSet(c.Name(), flag.ContinueOnError)
+		c.flagSet.Usage = func() {}
+		c.flagSet.SetOutput(io.Discard)
+	}
+
+	c.flagSet.StringVar(&c.configFile, "config", "database.yml", "The name of the config file to generate.")
+	c.flagSet.StringVar(&c.dialect, "type", "postgres", "The dialect to use for the config file.")
+
+	_ = c.flagSet.Parse(args)
+
+	return c.flagSet, nil
 }
 
 func (c *configGenerator) Generate(ctx context.Context, pwd string, args []string) error {
@@ -45,38 +64,3 @@ func (c *configGenerator) Generate(ctx context.Context, pwd string, args []strin
 
 	return run.Run()
 }
-
-// import (
-// 	"context"
-// 	"fmt"
-// 	"os"
-// 	"path/filepath"
-// 	"strings"
-
-// 	"github.com/gobuffalo/genny/v2"
-// 	"github.com/gobuffalo/pop/v6"
-// 	"github.com/gobuffalo/pop/v6/genny/config"
-// 	"github.com/gobuffalo/pop/v6/internal/defaults"
-// 	"github.com/spf13/cobra"
-// )
-
-// func init() {
-// 	ConfigCmd.Flags().StringVarP(&dialect, "type", "t", "postgres", fmt.Sprintf("The type of database you want to use (%s)", strings.Join(pop.AvailableDialects, ", ")))
-// }
-
-// var dialect string
-
-// // ConfigCmd is the command to generate pop config files
-// var ConfigCmd = &cobra.Command{
-// 	Use:              "config",
-// 	Short:            "Generates a database.yml file for your project.",
-// 	PersistentPreRun: func(c *cobra.Command, args []string) {},
-// 	RunE: func(cmd *cobra.Command, args []string) error {
-// 		cflag := cmd.Flag("config")
-// 		cflagVal := ""
-// 		if cflag != nil {
-// 			cflagVal = cflag.Value.String()
-// 		}
-
-// 	},
-// }
