@@ -28,7 +28,8 @@ func plugs() plugins.List {
 func decorate(name string, cmd *cobra.Command) {
 	pugs := plugs()
 	for _, c := range pugs[name] {
-		anywhereCommands = append(anywhereCommands, c.Name)
+		// FIXME: why register all plugins as anywhere command?
+		//anywhereCommands = append(anywhereCommands, c.Name)
 		cc := plugins.Decorate(c)
 		cmd.AddCommand(cc)
 	}
