@@ -66,7 +66,7 @@ func preRunCheck(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, freeCmd := range anywhereCommands {
-		if freeCmd != cmd.Name() {
+		if freeCmd == cmd.Name() {
 			return nil
 		}
 	}

@@ -156,11 +156,12 @@ func (m mFlagRunner) Run() error {
 			continue
 		}
 
+		cmd := newTestCmd(m.args)
+
 		p = strings.TrimPrefix(p, app.PackagePkg+string(filepath.Separator))
 		os.Chdir(p)
 
-		cmd := newTestCmd(m.args)
-		if hasTestify(p) {
+		if hasTestify(cmd.Args) {
 			cmd.Args = append(cmd.Args, "-testify.m", m.query)
 		} else {
 			cmd.Args = append(cmd.Args, "-run", m.query)
@@ -178,8 +179,9 @@ func (m mFlagRunner) Run() error {
 	return nil
 }
 
-func hasTestify(p string) bool {
-	cmd := exec.Command("go", "test", "-thisflagdoesntexist")
+func hasTestify(args []string) bool {
+	cmd := exec.Command(args[0], args[1:]...)
+	cmd.Args = append(cmd.Args, "-unknownflag")
 	b, _ := cmd.Output()
 	return bytes.Contains(b, []byte("-testify.m"))
 }

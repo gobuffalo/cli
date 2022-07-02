@@ -10,8 +10,6 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/gobuffalo/cli/internal/genny/assets/webpack"
-	rg "github.com/gobuffalo/cli/internal/genny/refresh"
-	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"
 	"github.com/gobuffalo/refresh/refresh"
 	"github.com/sirupsen/logrus"
@@ -94,20 +92,9 @@ func runDevScript(ctx context.Context, app meta.App) error {
 func startDevServer(ctx context.Context, args []string) error {
 	app := meta.New(".")
 
-	cfgFile := "./.buffalo.dev.yml"
-	if _, err := os.Stat(cfgFile); err != nil {
-		run := genny.WetRunner(ctx)
-		err = run.WithNew(rg.New(&rg.Options{App: app}))
-		if err != nil {
-			return err
-		}
-
-		if err := run.Run(); err != nil {
-			return err
-		}
-	}
+	// NOTE: the file must exist if `rootCmd.PersistentPreRunE` passed.
 	c := &refresh.Configuration{}
-	if err := c.Load(cfgFile); err != nil {
+	if err := c.Load(".buffalo.dev.yml"); err != nil {
 		return err
 	}
 	c.Debug = debug
