@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"text/tabwriter"
 
+	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
 	"github.com/gobuffalo/pop/v6"
 )
@@ -47,6 +48,24 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	}
 
 	_ = c.flagSet.Parse(args)
+
+	// Takes care of calling its subcommands and
+	// passing args.
+	for _, v := range c.subcommands {
+		fp, ok := v.(clio.FlagParser)
+		if !ok {
+			continue
+		}
+
+		if len(args) == 0 {
+			continue
+		}
+
+		// Remove the first argument
+		// as it is the name of the subcommand
+		ax := args[1:]
+		fp.ParseFlags(ax)
+	}
 
 	return c.flagSet, nil
 }

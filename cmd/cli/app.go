@@ -61,6 +61,7 @@ var (
 		pop.Migrate,
 		pop.Reset,
 		pop.Generate,
+		pop.Schema,
 
 		// Generators
 		generate.ActionGenerator,
@@ -118,9 +119,9 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 
 	args = args[1:]
 	if fp, ok := command.(clio.FlagParser); ok {
-		// Pass the args to each of the plugins so that
-		// they can parse the flags from the args and be prepared
-		// to be executed.
+		// Pass the args to the command, it should take care  of passing
+		// the args to subcommands in case it applies so that
+		// these are prepared to be executed.
 		_, err := fp.ParseFlags(args)
 		if err != nil {
 			return err
