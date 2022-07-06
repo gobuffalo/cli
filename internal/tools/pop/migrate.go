@@ -56,6 +56,8 @@ func (c *migrate) ParseFlags(args []string) (*flag.FlagSet, error) {
 
 func (c migrate) PopMain(ctx context.Context, pwd string, args []string) error {
 	action := "up"
+	args = c.flagSet.Args()
+
 	if len(args) > 0 {
 		action = args[0]
 	}
