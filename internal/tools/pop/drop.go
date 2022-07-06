@@ -22,6 +22,10 @@ func (c drop) Name() string {
 	return "drop"
 }
 
+func (c drop) Usage() string {
+	return "buffalo db drop [flags]"
+}
+
 func (c drop) HelpText() string {
 	return "Drops databases for you"
 }

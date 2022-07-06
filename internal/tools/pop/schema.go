@@ -12,6 +12,10 @@ func (c schema) Name() string {
 	return "schema"
 }
 
+func (c schema) Usage() string {
+	return "buffalo db schema [flags]"
+}
+
 func (c schema) HelpText() string {
 	return "Tools for working with your database schema"
 }

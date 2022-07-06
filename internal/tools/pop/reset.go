@@ -20,6 +20,10 @@ type reset struct {
 	env   string
 }
 
+func (c reset) Usage() string {
+	return "buffalo db reset [flags]"
+}
+
 func (c reset) Name() string {
 	return "reset"
 }

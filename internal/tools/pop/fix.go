@@ -23,6 +23,10 @@ func (c fix) Name() string {
 	return "fix"
 }
 
+func (c fix) Usage() string {
+	return "buffalo db fix"
+}
+
 func (c fix) HelpText() string {
 	return "Brings pop, soda, and fizz files in line with the latest APIs"
 }

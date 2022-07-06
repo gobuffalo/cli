@@ -18,6 +18,10 @@ type create struct {
 	env string
 }
 
+func (c create) Usage() string {
+	return "buffalo db create [flags]"
+}
+
 func (c create) Name() string {
 	return "create"
 }
