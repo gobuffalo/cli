@@ -11,7 +11,7 @@ import (
 	"github.com/gobuffalo/pop/v6/genny/config"
 )
 
-var ConfigGenerator = &configGenerator{}
+var Config = &configGenerator{}
 
 type configGenerator struct {
 	flagSet *flag.FlagSet
@@ -43,7 +43,7 @@ func (c *configGenerator) ParseFlags(args []string) (*flag.FlagSet, error) {
 	return c.flagSet, nil
 }
 
-func (c *configGenerator) Generate(ctx context.Context, pwd string, args []string) error {
+func (c *configGenerator) PopGenerate(ctx context.Context, pwd string, args []string) error {
 	cfgFile := defaults.String(c.configFile, "database.yml")
 	run := genny.WetRunner(ctx)
 

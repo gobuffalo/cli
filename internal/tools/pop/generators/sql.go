@@ -1,73 +1,116 @@
 package generators
 
-// import (
-// 	"context"
+import (
+	"context"
+	"errors"
+	"flag"
+	"io"
 
-// 	"github.com/gobuffalo/attrs"
-// 	"github.com/gobuffalo/genny/v2"
-// 	"github.com/gobuffalo/logger"
-// 	"github.com/gobuffalo/pop/v6/genny/fizz/cempty"
-// 	"github.com/gobuffalo/pop/v6/genny/fizz/ctable"
-// 	"github.com/spf13/cobra"
-// )
+	"github.com/gobuffalo/attrs"
+	"github.com/gobuffalo/genny/v2"
+	"github.com/gobuffalo/logger"
+	"github.com/gobuffalo/pop/v6"
+	"github.com/gobuffalo/pop/v6/genny/fizz/cempty"
+	"github.com/gobuffalo/pop/v6/genny/fizz/ctable"
+)
 
-// // FizzCmd generates a new fizz migration
-// var FizzCmd = &cobra.Command{
-// 	Use:     "fizz [name]",
-// 	Aliases: []string{"migration"},
-// 	Short:   "Generates Up/Down migrations for your database using fizz.",
-// 	RunE: func(cmd *cobra.Command, args []string) error {
-// 		name := ""
-// 		if len(args) > 0 {
-// 			name = args[0]
-// 		}
+var SQL = &sqlGenerator{}
 
-// 		var (
-// 			atts attrs.Attrs
-// 			err  error
-// 		)
-// 		if len(args) > 1 {
-// 			atts, err = attrs.ParseArgs(args[1:]...)
-// 			if err != nil {
-// 				return err
-// 			}
-// 		}
+type sqlGenerator struct {
+	flagSet *flag.FlagSet
 
-// 		run := genny.WetRunner(context.Background())
+	path string
+	env  string
+}
 
-// 		// Ensure the generator is as verbose as the old one.
-// 		lg := logger.New(logger.DebugLevel)
-// 		run.Logger = lg
+func (c sqlGenerator) Name() string {
+	return "sql"
+}
 
-// 		p := cmd.Flag("path")
-// 		path := ""
-// 		if p != nil {
-// 			path = p.Value.String()
-// 		}
+func (c sqlGenerator) HelpText() string {
+	return "Generates Up/Down migrations for your database using sql."
+}
 
-// 		if len(atts) == 0 {
-// 			g, err := cempty.New(&cempty.Options{
-// 				Name: name,
-// 				Path: path,
-// 				Type: "fizz",
-// 			})
-// 			if err != nil {
-// 				return err
-// 			}
-// 			run.With(g)
-// 		} else {
-// 			g, err := ctable.New(&ctable.Options{
-// 				TableName: name,
-// 				Path:      path,
-// 				Type:      "fizz",
-// 				Attrs:     atts,
-// 			})
-// 			if err != nil {
-// 				return err
-// 			}
-// 			run.With(g)
-// 		}
+func (c *sqlGenerator) ParseFlags(args []string) (*flag.FlagSet, error) {
+	if c.flagSet == nil {
+		c.flagSet = flag.NewFlagSet(c.Name(), flag.ContinueOnError)
+		c.flagSet.Usage = func() {}
+		c.flagSet.SetOutput(io.Discard)
+	}
 
-// 		return run.Run()
-// 	},
-// }
+	c.flagSet.StringVar(&c.path, "path", "migrations", "Path to generate migrations in.")
+	c.flagSet.StringVar(&c.env, "env", "development", "Environment to use for connection.")
+	_ = c.flagSet.Parse(args)
+
+	return c.flagSet, nil
+}
+
+func (c *sqlGenerator) PopGenerate(ctx context.Context, pwd string, args []string) error {
+	name := ""
+	if len(args) > 0 {
+		name = args[0]
+	}
+
+	var (
+		atts attrs.Attrs
+		err  error
+	)
+	if len(args) > 1 {
+		atts, err = attrs.ParseArgs(args[1:]...)
+		if err != nil {
+			return err
+		}
+	}
+
+	run := genny.WetRunner(context.Background())
+
+	// Ensure the generator is as verbose as the old one.
+	run.Logger = logger.New(logger.DebugLevel)
+
+	type nameable interface {
+		Name() string
+	}
+
+	var translator nameable
+	db, err := pop.Connect(c.env)
+	if err != nil {
+		return err
+	}
+
+	t := db.Dialect.FizzTranslator()
+	if tn, ok := t.(nameable); ok {
+		translator = tn
+	} else {
+		return errors.New("invalid fizz translator")
+	}
+
+	var g *genny.Generator
+	if len(atts) == 0 {
+		g, err = cempty.New(&cempty.Options{
+			Name:       name,
+			Path:       c.path,
+			Type:       "sql",
+			Translator: translator,
+		})
+
+	} else {
+		g, err = ctable.New(&ctable.Options{
+			TableName:  name,
+			Path:       c.path,
+			Type:       "sql",
+			Attrs:      atts,
+			Translator: t,
+		})
+	}
+
+	if err != nil {
+		return err
+	}
+
+	err = run.With(g)
+	if err != nil {
+		return err
+	}
+
+	return run.Run()
+}

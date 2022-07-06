@@ -3,12 +3,22 @@ package pop
 import (
 	"context"
 
+	"github.com/gobuffalo/cli/internal/tools/pop/generators"
 	"github.com/gobuffalo/pop/v6"
 )
 
-var Generate = &generate{}
+var Generate = &generate{
+	generators: Generators{
+		generators.Config,
+		generators.Fizz,
+		generators.SQL,
+		generators.Model,
+	},
+}
 
-type generate struct{}
+type generate struct {
+	generators Generators
+}
 
 func (g generate) Name() string {
 	return "generate"
