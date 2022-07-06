@@ -39,6 +39,10 @@ func (c modelGenerator) Aliases() []string {
 	return []string{"m"}
 }
 
+func (c modelGenerator) Usage() string {
+	return "buffalo db generate model <name> [attributes]"
+}
+
 func (c modelGenerator) HelpText() string {
 	return "Generates a model for your database"
 }

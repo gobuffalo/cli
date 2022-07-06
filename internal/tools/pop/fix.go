@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gobuffalo/pop/v6"
 	popfix "github.com/gobuffalo/pop/v6/fix"
 )
 
@@ -28,7 +27,7 @@ func (c fix) HelpText() string {
 	return "Brings pop, soda, and fizz files in line with the latest APIs"
 }
 
-func (c fix) Run(context.Context, *pop.Connection) error {
+func (c fix) PopMain(ctx context.Context, pwd string, args []string) error {
 	return filepath.Walk(c.migrationsPath, func(path string, info os.FileInfo, _ error) error {
 		if info == nil {
 			return nil

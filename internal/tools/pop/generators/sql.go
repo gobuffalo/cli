@@ -27,6 +27,10 @@ func (c sqlGenerator) Name() string {
 	return "sql"
 }
 
+func (c sqlGenerator) Usage() string {
+	return "buffalo db generate sql <name> [attributes]"
+}
+
 func (c sqlGenerator) HelpText() string {
 	return "Generates Up/Down migrations for your database using sql."
 }

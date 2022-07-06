@@ -3,6 +3,7 @@ package pop
 import (
 	"context"
 	"flag"
+	"fmt"
 	"io"
 	"os"
 
@@ -16,6 +17,7 @@ type reset struct {
 
 	all   bool
 	input string
+	env   string
 }
 
 func (c reset) Name() string {
@@ -29,6 +31,7 @@ func (c *reset) ParseFlags(args []string) (*flag.FlagSet, error) {
 		c.flagSet.SetOutput(io.Discard)
 
 		c.flagSet.BoolVar(&c.all, "all", false, "reset all databases")
+		c.flagSet.StringVar(&c.env, "env", "development", "environment to be reset")
 		c.flagSet.StringVar(&c.input, "input", "schema.sql", "The path to the schema file you want to load")
 	}
 
@@ -41,7 +44,7 @@ func (c reset) HelpText() string {
 	return "Drop, then recreate databases"
 }
 
-func (c *reset) Run(ctx context.Context, conn *pop.Connection) error {
+func (c *reset) PopMain(ctx context.Context, pwd string, args []string) error {
 	// Fallback to migrations
 	// if input cannot be opened.
 	useMigrations := true
@@ -55,6 +58,11 @@ func (c *reset) Run(ctx context.Context, conn *pop.Connection) error {
 
 		useMigrations = false
 		defer schema.Close()
+	}
+
+	conn := pop.Connections[c.env]
+	if conn == nil {
+		return fmt.Errorf("no connection named %s", c.env)
 	}
 
 	conns := []*pop.Connection{conn}

@@ -2,9 +2,7 @@ package help
 
 import (
 	"context"
-	"flag"
 	"fmt"
-	"strings"
 	"text/tabwriter"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
@@ -92,38 +90,5 @@ func (c Command) General() error {
 // print help text for the flags. Also if the command implements
 // LongHelpTexter it prints the long help text.
 func (c Command) Specific(cm plugin.Command) error {
-	usage := fmt.Sprintf("buffalo %v [options]", cm.Name())
-	if fp, ok := cm.(Usager); ok {
-		usage = fp.Usage()
-	}
-
-	fmt.Fprintf(c.Stdout(), "Usage: %v \n\n", usage)
-
-	if ht, ok := cm.(plugin.Aliaser); ok {
-		fmt.Fprintf(c.Stdout(), "Aliases:\n")
-		fmt.Fprintf(c.Stdout(), "%s\n", strings.Join(ht.Aliases(), ", "))
-		fmt.Fprintf(c.Stdout(), "\n")
-	}
-
-	if ht, ok := cm.(HelpTexter); ok {
-		fmt.Fprintf(c.Stdout(), ht.HelpText()+"\n\n")
-	}
-
-	if ht, ok := cm.(LongHelpTexter); ok {
-		fmt.Fprintf(c.Stdout(), ht.LongHelpText()+"\n\n")
-	}
-
-	if fl, ok := cm.(clio.FlagParser); ok {
-		fx, _ := fl.ParseFlags([]string{"xxx"})
-		w := tabwriter.NewWriter(c.Stdout(), 0, 0, 3, ' ', 0)
-		fmt.Fprintf(w, "Flags:\n")
-
-		fx.VisitAll(func(ff *flag.Flag) {
-			fmt.Fprintf(w, "  --%v\t%v\n", ff.Name, ff.Usage)
-		})
-
-		w.Flush()
-	}
-
-	return nil
+	return Specific(c.IO.Stdout(), cm)
 }

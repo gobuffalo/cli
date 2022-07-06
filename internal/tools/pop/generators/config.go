@@ -24,6 +24,10 @@ func (c configGenerator) Name() string {
 	return "config"
 }
 
+func (c configGenerator) Usage() string {
+	return "buffalo db generate config [flags]"
+}
+
 func (c configGenerator) HelpText() string {
 	return "Generates a database.yml file for your project."
 }

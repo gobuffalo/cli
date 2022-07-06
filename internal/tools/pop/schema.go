@@ -2,8 +2,6 @@ package pop
 
 import (
 	"context"
-
-	"github.com/gobuffalo/pop/v6"
 )
 
 var Schema = &schema{}
@@ -18,6 +16,6 @@ func (c schema) HelpText() string {
 	return "Tools for working with your database schema"
 }
 
-func (c schema) Run(ctx context.Context, conn *pop.Connection) error {
+func (c schema) PopMain(ctx context.Context, pwd string, args []string) error {
 	return nil
 }

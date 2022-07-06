@@ -3,11 +3,13 @@ package pop
 import (
 	"context"
 
+	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
 )
 
 type Generator interface {
 	plugin.Plugin
+	help.HelpTexter
 
 	PopGenerate(context.Context, string, []string) error
 }

@@ -13,7 +13,9 @@ var Drop = &drop{}
 
 type drop struct {
 	flagSet *flag.FlagSet
-	all     bool
+
+	all bool
+	env string
 }
 
 func (c drop) Name() string {
@@ -31,6 +33,7 @@ func (c drop) ParseFlags(args []string) (*flag.FlagSet, error) {
 		c.flagSet.SetOutput(io.Discard)
 
 		c.flagSet.BoolVar(&c.all, "all", false, "create all databases")
+		c.flagSet.StringVar(&c.env, "env", "development", "environment or connection name to drop")
 	}
 
 	_ = c.flagSet.Parse(args)
@@ -38,9 +41,14 @@ func (c drop) ParseFlags(args []string) (*flag.FlagSet, error) {
 	return c.flagSet, nil
 }
 
-func (c drop) Run(ctx context.Context, conn *pop.Connection) error {
+func (c drop) PopMain(ctx context.Context, pwd string, args []string) error {
 	if !c.all {
-		return pop.DropDB(conn)
+		conn := pop.Connections[c.env]
+		if conn == nil {
+			return fmt.Errorf("no connection named %s", c.env)
+		}
+
+		return pop.CreateDB(conn)
 	}
 
 	for _, conn := range pop.Connections {

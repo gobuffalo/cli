@@ -6,10 +6,12 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
 	"text/tabwriter"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
+	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
 	"github.com/gobuffalo/pop/v6"
 )
@@ -74,6 +76,23 @@ func (c command) HelpText() string {
 	return "A tasty treat for all your database needs"
 }
 
+func (c *command) Help(ctx context.Context, args []string) error {
+	if len(args) == 0 {
+		return fmt.Errorf("please specify the subcommand to use")
+	}
+
+	cc := c.subcommands.Find(args[0])
+	hh, ok := cc.(help.Helper)
+	if !ok || len(args) == 1 {
+		return help.Specific(os.Stdout, cc)
+	}
+
+	// If the command implements Helper
+	// the command itself will take care
+	// of printing the help with the args.
+	return hh.Help(ctx, args[1:])
+}
+
 func (c *command) LongHelpText() string {
 	buf := bytes.NewBuffer([]byte{})
 	w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', 0)
@@ -116,15 +135,10 @@ func (c *command) Main(ctx context.Context, pwd string, args []string) error {
 
 	pop.LoadConfigFile()
 
-	conn := pop.Connections[c.env]
-	if conn == nil {
-		return fmt.Errorf("There is no connection named '%s' defined!\n", c.env)
-	}
-
 	cx := c.subcommands.Find(args[0])
 	if cx == nil {
 		return fmt.Errorf("no subcommand found for '%v'", args[0])
 	}
 
-	return cx.Run(ctx, conn)
+	return cx.PopMain(ctx, pwd, args[1:])
 }

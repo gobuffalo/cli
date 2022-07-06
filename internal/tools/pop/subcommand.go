@@ -5,7 +5,6 @@ import (
 
 	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
-	"github.com/gobuffalo/pop/v6"
 )
 
 // Subcommand is the interface of the plugins that could be hooked into
@@ -14,7 +13,7 @@ type Subcommand interface {
 	plugin.Plugin
 	help.HelpTexter
 
-	Run(context.Context, *pop.Connection) error
+	PopMain(context.Context, string, []string) error
 }
 
 // Subcommands is a convenient type for a list

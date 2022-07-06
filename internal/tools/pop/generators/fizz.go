@@ -24,6 +24,10 @@ func (c fizzGenerator) Name() string {
 	return "fizz"
 }
 
+func (c fizzGenerator) Usage() string {
+	return "buffalo db generate fizz <name> [attributes]"
+}
+
 func (c fizzGenerator) Aliases() []string {
 	return []string{"migration"}
 }

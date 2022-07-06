@@ -2,8 +2,6 @@ package pop
 
 import (
 	"context"
-
-	"github.com/gobuffalo/pop/v6"
 )
 
 var Migrate = &migrate{}
@@ -18,6 +16,6 @@ func (c migrate) HelpText() string {
 	return "Runs migrations against your database."
 }
 
-func (c migrate) Run(context.Context, *pop.Connection) error {
+func (c migrate) PopMain(ctx context.Context, pwd string, args []string) error {
 	return nil
 }
