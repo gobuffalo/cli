@@ -42,15 +42,14 @@ func (c *migrate) ParseFlags(args []string) (*flag.FlagSet, error) {
 
 	defaultSteps := 0
 	if len(args) > 0 && strings.Contains(strings.Join(args, ","), "down") {
+		// Down should by default use 1 instead of 0
 		defaultSteps = 1
 	}
 
 	c.flagSet.IntVar(&c.steps, "steps", defaultSteps, "number of steps to migrate")
 	c.flagSet.StringVar(&c.env, "env", "development", "environment or connection name to migrate")
 
-	fmt.Println("migrate:", args)
-
-	_ = c.flagSet.Parse(args[1:])
+	_ = c.flagSet.Parse(args)
 
 	return c.flagSet, nil
 }
@@ -60,8 +59,6 @@ func (c migrate) PopMain(ctx context.Context, pwd string, args []string) error {
 	if len(args) > 0 {
 		action = args[0]
 	}
-
-	fmt.Println("steps", c.steps)
 
 	conn := pop.Connections[c.env]
 	if conn == nil {

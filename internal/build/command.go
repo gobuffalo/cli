@@ -12,7 +12,6 @@ import (
 
 	flag "github.com/spf13/pflag"
 
-	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
 	"github.com/gobuffalo/cli/internal/defaults"
 	"github.com/gobuffalo/cli/internal/genny/build"
@@ -45,8 +44,8 @@ type command struct {
 	verbose                bool
 	bin                    string
 
-	tags       clio.StringSliceVar
-	buildFlags clio.StringSliceVar
+	tags       []string
+	buildFlags []string
 
 	versionCmdRunners []VersionRunner
 }
@@ -84,8 +83,8 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	c.flagSet.StringVar(&c.options.Environment, "environment", "development", "set the environment for the binary")
 	c.flagSet.StringVar(&c.options.Mod, "mod", "", "-mod flag for go build")
 
-	c.flagSet.Var(&c.tags, "tags", "compile with specific build tags")
-	c.flagSet.Var(&c.buildFlags, "build-flags", "Additional comma-separated build flags to feed to go build")
+	c.flagSet.StringArrayVar(&c.tags, "tags", []string{}, "compile with specific build tags")
+	c.flagSet.StringArrayVar(&c.buildFlags, "build-flags", []string{}, "Additional comma-separated build flags to feed to go build")
 
 	return c.flagSet, nil
 }
