@@ -51,22 +51,28 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 
 	_ = c.flagSet.Parse(args)
 
+	ax := args
+	if len(args) > 0 {
+		ax = args[1:]
+	}
+
 	// Takes care of calling its subcommands and
 	// passing args.
-	for _, v := range c.subcommands {
-		fp, ok := v.(clio.FlagParser)
+	for i := range c.subcommands {
+		fp, ok := c.subcommands[i].(clio.FlagParser)
 		if !ok {
 			continue
 		}
 
-		if len(args) == 0 {
-			continue
-		}
-
+		fmt.Println("is flag parser", c.subcommands[i].Name())
+		fmt.Println("is flag parser", fp)
+		fmt.Println("", ax)
 		// Remove the first argument
 		// as it is the name of the subcommand
-		ax := args[1:]
-		fp.ParseFlags(ax)
+		// _, ex := fp.ParseFlags(ax)
+		// if ex != nil {
+		// 	fmt.Println(ex)
+		// }
 	}
 
 	return c.flagSet, nil

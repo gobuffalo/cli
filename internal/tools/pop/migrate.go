@@ -24,6 +24,10 @@ func (c migrate) Name() string {
 	return "migrate"
 }
 
+func (c migrate) HelpText() string {
+	return ""
+}
+
 func (c migrate) Usage() string {
 	return "buffalo db migrate [flags] [up|down|status] "
 }
@@ -34,6 +38,8 @@ func (c *migrate) ParseFlags(args []string) (*flag.FlagSet, error) {
 		c.flagSet.Usage = func() {}
 		c.flagSet.SetOutput(io.Discard)
 	}
+
+	fmt.Println("Got here!")
 
 	defaultSteps := 0
 	if len(args) > 0 && strings.Contains(strings.Join(args, ","), "down") {
@@ -48,15 +54,14 @@ func (c *migrate) ParseFlags(args []string) (*flag.FlagSet, error) {
 	return c.flagSet, nil
 }
 
-func (c migrate) HelpText() string {
-	return "Runs migrations against your database."
-}
-
 func (c migrate) PopMain(ctx context.Context, pwd string, args []string) error {
 	action := "up"
 	if len(args) > 0 {
 		action = args[0]
 	}
+
+	fmt.Println("args:", args)
+	fmt.Println("steps:", c.steps)
 
 	conn := pop.Connections[c.env]
 	if conn == nil {
