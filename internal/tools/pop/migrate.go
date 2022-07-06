@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/gobuffalo/pop/v6"
 )
@@ -34,7 +35,12 @@ func (c *migrate) ParseFlags(args []string) (*flag.FlagSet, error) {
 		c.flagSet.SetOutput(io.Discard)
 	}
 
-	c.flagSet.IntVar(&c.steps, "steps", 0, "number of steps to migrate")
+	defaultSteps := 0
+	if len(args) > 0 && strings.Contains(strings.Join(args, ","), "down") {
+		defaultSteps = 1
+	}
+
+	c.flagSet.IntVar(&c.steps, "steps", defaultSteps, "number of steps to migrate")
 	c.flagSet.StringVar(&c.env, "env", "development", "environment or connection name to migrate")
 
 	_ = c.flagSet.Parse(args)
