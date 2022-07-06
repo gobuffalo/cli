@@ -3,13 +3,14 @@ package build
 import (
 	"bytes"
 	"context"
-	"flag"
 	"io"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"

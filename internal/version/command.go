@@ -3,9 +3,10 @@ package version
 import (
 	"context"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/cli/internal/runtime"
 )

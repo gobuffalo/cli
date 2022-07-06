@@ -2,11 +2,12 @@ package dev
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"io"
 	"runtime"
 	"strings"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/fatih/color"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"

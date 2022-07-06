@@ -2,9 +2,10 @@ package generate
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"io"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/attrs"
 	"github.com/gobuffalo/cli/internal/genny/resource"

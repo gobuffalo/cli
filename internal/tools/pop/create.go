@@ -2,9 +2,10 @@ package pop
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"io"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/pop/v6"
 )
@@ -32,13 +33,13 @@ func (c create) HelpText() string {
 
 func (c create) ParseFlags(args []string) (*flag.FlagSet, error) {
 	if c.flagSet == nil {
-		c.flagSet = flag.NewFlagSet(c.Name(), flag.ExitOnError)
+		c.flagSet = flag.NewFlagSet(c.Name(), flag.ContinueOnError)
 		c.flagSet.Usage = func() {}
 		c.flagSet.SetOutput(io.Discard)
-
-		c.flagSet.BoolVar(&c.all, "all", false, "create all databases")
-		c.flagSet.StringVar(&c.env, "env", "development", "environment or connection name to create")
 	}
+
+	c.flagSet.BoolVar(&c.all, "all", false, "create all databases")
+	c.flagSet.StringVar(&c.env, "env", "development", "environment or connection name to create")
 
 	_ = c.flagSet.Parse(args)
 

@@ -2,8 +2,9 @@ package generate_test
 
 import (
 	"context"
-	"flag"
 	"fmt"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/internal/generate"

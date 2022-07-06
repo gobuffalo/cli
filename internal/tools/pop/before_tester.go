@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/pop/v6"
 )

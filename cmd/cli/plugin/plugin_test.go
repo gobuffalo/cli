@@ -3,8 +3,9 @@ package plugin_test
 import (
 	"bytes"
 	"context"
-	"flag"
 	"fmt"
+
+	flag "github.com/spf13/pflag"
 )
 
 type testCommand string

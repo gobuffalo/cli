@@ -3,9 +3,10 @@ package help_test
 import (
 	"bytes"
 	"context"
-	"flag"
 	"fmt"
 	"testing"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"

@@ -3,12 +3,13 @@ package pop
 import (
 	"bytes"
 	"context"
-	"flag"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"text/tabwriter"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/help"
@@ -41,13 +42,13 @@ func (c command) Usage() string {
 
 func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	if c.flagSet == nil {
-		c.flagSet = flag.NewFlagSet(c.Name(), flag.ExitOnError)
+		c.flagSet = flag.NewFlagSet(c.Name(), flag.ContinueOnError)
 		c.flagSet.Usage = func() {}
 		c.flagSet.SetOutput(io.Discard)
-
-		c.flagSet.StringVar(&c.env, "env", "development", "the environment to use")
-		c.flagSet.StringVar(&c.config, "config", "database.yml", "the path to the config file")
 	}
+
+	c.flagSet.StringVar(&c.env, "env", "development", "the environment to use")
+	c.flagSet.StringVar(&c.config, "config", "database.yml", "the path to the config file")
 
 	_ = c.flagSet.Parse(args)
 
@@ -64,15 +65,7 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 			continue
 		}
 
-		fmt.Println("is flag parser", c.subcommands[i].Name())
-		fmt.Println("is flag parser", fp)
-		fmt.Println("", ax)
-		// Remove the first argument
-		// as it is the name of the subcommand
-		// _, ex := fp.ParseFlags(ax)
-		// if ex != nil {
-		// 	fmt.Println(ex)
-		// }
+		fp.ParseFlags(ax)
 	}
 
 	return c.flagSet, nil
@@ -135,11 +128,18 @@ func (c *command) Main(ctx context.Context, pwd string, args []string) error {
 
 		dir, file := filepath.Split(abs)
 
-		pop.AddLookupPaths(dir)
+		err = pop.AddLookupPaths(dir)
+		if err != nil {
+			return fmt.Errorf("error adding lookup path: %w", err)
+		}
+
 		pop.ConfigName = file
 	}
 
-	pop.LoadConfigFile()
+	err := pop.LoadConfigFile()
+	if err != nil {
+		fmt.Printf("[Warning] error loading pop config file: %s\n", err)
+	}
 
 	cx := c.subcommands.Find(args[0])
 	if cx == nil {

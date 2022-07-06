@@ -2,11 +2,12 @@ package pop
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"io"
 	"os"
 	"strings"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/pop/v6"
 )
@@ -25,7 +26,7 @@ func (c migrate) Name() string {
 }
 
 func (c migrate) HelpText() string {
-	return ""
+	return "Runs migrations up or down. Also, provides the status of the migrations."
 }
 
 func (c migrate) Usage() string {
@@ -39,8 +40,6 @@ func (c *migrate) ParseFlags(args []string) (*flag.FlagSet, error) {
 		c.flagSet.SetOutput(io.Discard)
 	}
 
-	fmt.Println("Got here!")
-
 	defaultSteps := 0
 	if len(args) > 0 && strings.Contains(strings.Join(args, ","), "down") {
 		defaultSteps = 1
@@ -49,7 +48,9 @@ func (c *migrate) ParseFlags(args []string) (*flag.FlagSet, error) {
 	c.flagSet.IntVar(&c.steps, "steps", defaultSteps, "number of steps to migrate")
 	c.flagSet.StringVar(&c.env, "env", "development", "environment or connection name to migrate")
 
-	_ = c.flagSet.Parse(args)
+	fmt.Println("migrate:", args)
+
+	_ = c.flagSet.Parse(args[1:])
 
 	return c.flagSet, nil
 }
@@ -60,8 +61,7 @@ func (c migrate) PopMain(ctx context.Context, pwd string, args []string) error {
 		action = args[0]
 	}
 
-	fmt.Println("args:", args)
-	fmt.Println("steps:", c.steps)
+	fmt.Println("steps", c.steps)
 
 	conn := pop.Connections[c.env]
 	if conn == nil {

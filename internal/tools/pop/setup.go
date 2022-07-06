@@ -1,17 +1,16 @@
 package pop
 
 import (
-	"flag"
 	"fmt"
 	"io"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/meta"
 	"github.com/gobuffalo/pop/v6"
 )
 
-var Setup = &setup{
-	flagSet: flag.NewFlagSet("setup", flag.ExitOnError),
-}
+var Setup = &setup{}
 
 type setup struct {
 	flagSet *flag.FlagSet
@@ -30,7 +29,7 @@ func (c setup) HelpText() string {
 
 func (c *setup) ParseFlags(args []string) (*flag.FlagSet, error) {
 	if c.flagSet == nil {
-		c.flagSet = flag.NewFlagSet("setup", flag.ExitOnError)
+		c.flagSet = flag.NewFlagSet("setup", flag.ContinueOnError)
 		c.flagSet.Usage = func() {}
 		c.flagSet.SetOutput(io.Discard)
 	}
@@ -39,6 +38,8 @@ func (c *setup) ParseFlags(args []string) (*flag.FlagSet, error) {
 	c.flagSet.BoolVar(&c.dropDatabase, "drop", false, "drop existing databases")
 
 	_ = c.flagSet.Parse(args)
+
+	fmt.Println("Parsing:", c.Name())
 
 	return c.flagSet, nil
 }

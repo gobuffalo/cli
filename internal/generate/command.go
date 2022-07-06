@@ -3,10 +3,11 @@ package generate
 import (
 	"bytes"
 	"context"
-	"flag"
 	"fmt"
 	"strings"
 	"text/tabwriter"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/help"

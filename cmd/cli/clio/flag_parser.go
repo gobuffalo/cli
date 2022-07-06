@@ -1,6 +1,6 @@
 package clio
 
-import "flag"
+import flag "github.com/spf13/pflag"
 
 // FlagParser interface allows commands to parse flags according to their needs.
 type FlagParser interface {

@@ -2,8 +2,9 @@ package generators
 
 import (
 	"context"
-	"flag"
 	"io"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/attrs"
 	"github.com/gobuffalo/genny/v2"

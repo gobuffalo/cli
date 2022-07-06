@@ -2,9 +2,10 @@ package fix
 
 import (
 	"context"
-	"flag"
 	"io"
 	"os"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/cli/internal/genny/fix"
 	"github.com/gobuffalo/cli/internal/runtime"

@@ -1,11 +1,12 @@
 package help
 
 import (
-	"flag"
 	"fmt"
 	"io"
 	"strings"
 	"text/tabwriter"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"

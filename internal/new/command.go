@@ -2,13 +2,14 @@ package new
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	flag "github.com/spf13/pflag"
 
 	pop "github.com/gobuffalo/buffalo-pop/v3/genny/newapp"
 	"github.com/gobuffalo/cli/internal/genny/assets/standard"

@@ -2,9 +2,10 @@ package pop
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"io"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/pop/v6"
 )
@@ -32,7 +33,7 @@ func (c drop) HelpText() string {
 
 func (c drop) ParseFlags(args []string) (*flag.FlagSet, error) {
 	if c.flagSet == nil {
-		c.flagSet = flag.NewFlagSet(c.Name(), flag.ExitOnError)
+		c.flagSet = flag.NewFlagSet(c.Name(), flag.ContinueOnError)
 		c.flagSet.Usage = func() {}
 		c.flagSet.SetOutput(io.Discard)
 

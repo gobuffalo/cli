@@ -2,8 +2,9 @@ package generate
 
 import (
 	"context"
-	"flag"
 	"io"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/cli/internal/genny/mail"
 	"github.com/gobuffalo/flect/name"

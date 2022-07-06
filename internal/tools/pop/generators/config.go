@@ -2,9 +2,10 @@ package generators
 
 import (
 	"context"
-	"flag"
 	"io"
 	"path/filepath"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/cli/internal/defaults"
 	"github.com/gobuffalo/genny/v2"

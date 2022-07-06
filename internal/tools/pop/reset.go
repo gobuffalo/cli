@@ -2,10 +2,11 @@ package pop
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"io"
 	"os"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/pop/v6"
 )
@@ -30,14 +31,14 @@ func (c reset) Name() string {
 
 func (c *reset) ParseFlags(args []string) (*flag.FlagSet, error) {
 	if c.flagSet == nil {
-		c.flagSet = flag.NewFlagSet(c.Name(), flag.ExitOnError)
+		c.flagSet = flag.NewFlagSet(c.Name(), flag.ContinueOnError)
 		c.flagSet.Usage = func() {}
 		c.flagSet.SetOutput(io.Discard)
-
-		c.flagSet.BoolVar(&c.all, "all", false, "reset all databases")
-		c.flagSet.StringVar(&c.env, "env", "development", "environment to be reset")
-		c.flagSet.StringVar(&c.input, "input", "schema.sql", "The path to the schema file you want to load")
 	}
+
+	c.flagSet.BoolVar(&c.all, "all", false, "reset all databases")
+	c.flagSet.StringVar(&c.env, "env", "development", "environment to be reset")
+	c.flagSet.StringVar(&c.input, "input", "schema.sql", "The path to the schema file you want to load")
 
 	_ = c.flagSet.Parse(args)
 
