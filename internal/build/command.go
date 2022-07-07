@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gobuffalo/cli/internal/sigtx"
 	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
@@ -18,7 +19,6 @@ import (
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/logger"
 	"github.com/gobuffalo/meta"
-	"github.com/markbates/sigtx"
 )
 
 // TODO: install command: flag?

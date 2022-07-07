@@ -10,8 +10,8 @@ import (
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
 	"github.com/gobuffalo/cli/internal/genny/fix"
 	"github.com/gobuffalo/cli/internal/runtime"
+	"github.com/gobuffalo/cli/internal/sigtx"
 	"github.com/gobuffalo/genny/v2"
-	"github.com/markbates/sigtx"
 )
 
 // Command instance of the fix command to be used by the CLI

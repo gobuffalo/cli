@@ -21,7 +21,6 @@ require (
 	github.com/google/go-cmp v0.5.8
 	github.com/markbates/grift v1.5.0
 	github.com/markbates/safe v1.0.1
-	github.com/markbates/sigtx v1.0.0
 	github.com/psanford/memfs v0.0.0-20210214183328-a001468d78ef
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.1
