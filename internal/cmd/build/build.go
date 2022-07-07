@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
 	"strings"
 	"time"
 
@@ -13,7 +14,6 @@ import (
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/logger"
 	"github.com/gobuffalo/meta"
-	"github.com/markbates/sigtx"
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +34,7 @@ var buildOptions = struct {
 }
 
 func runE(cmd *cobra.Command, args []string) error {
-	ctx, cancel := sigtx.WithCancel(context.Background(), os.Interrupt)
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
 	pwd, err := os.Getwd()
