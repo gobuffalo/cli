@@ -40,6 +40,10 @@ func (c command) HelpText() string {
 	return "Setups a newly created, or recently checked out application."
 }
 
+func (c *command) ValidateWorkDir(wd string) (bool, error) {
+	return plugin.ValidateBuffaloRoot(wd)
+}
+
 func (c *command) LongHelpText() string {
 	s := "Registered Setupers\n"
 	for _, v := range c.setupers {

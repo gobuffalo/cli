@@ -7,6 +7,7 @@ import (
 
 	flag "github.com/spf13/pflag"
 
+	"github.com/gobuffalo/cli/cmd/cli/plugin"
 	"github.com/gobuffalo/cli/internal/genny/fix"
 	"github.com/gobuffalo/cli/internal/runtime"
 	"github.com/gobuffalo/genny/v2"
@@ -41,6 +42,10 @@ func (c command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	c.flagSet.BoolVar(&c.options.YesToAll, "y", false, "update all without asking for confirmation")
 
 	return c.flagSet, nil
+}
+
+func (c *command) ValidateWorkDir(wd string) (bool, error) {
+	return plugin.ValidateBuffaloRoot(wd)
 }
 
 func (c command) Main(ctx context.Context, root string, args []string) error {

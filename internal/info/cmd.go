@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gobuffalo/clara/v2/genny/rx"
+	"github.com/gobuffalo/cli/cmd/cli/plugin"
 	"github.com/gobuffalo/cli/internal/genny/info"
 	"github.com/gobuffalo/genny/v2"
 	"github.com/gobuffalo/meta"
@@ -26,6 +27,10 @@ func (c command) Name() string {
 
 func (c command) HelpText() string {
 	return "Prints diagnostic information (useful for debugging)"
+}
+
+func (c *command) ValidateWorkDir(wd string) (bool, error) {
+	return plugin.ValidateBuffaloRoot(wd)
 }
 
 func (c command) Main(ctx context.Context, pwd string, args []string) error {

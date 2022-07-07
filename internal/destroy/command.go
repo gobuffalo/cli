@@ -68,6 +68,10 @@ func (c *command) LongHelpText() string {
 	return buf.String()
 }
 
+func (c *command) ValidateWorkDir(wd string) (bool, error) {
+	return plugin.ValidateBuffaloRoot(wd)
+}
+
 func (g *command) Help(ctx context.Context, args []string) error {
 	if len(args) < 1 {
 		fmt.Printf(g.LongHelpText())

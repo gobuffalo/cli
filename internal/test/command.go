@@ -10,6 +10,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/gobuffalo/cli/cmd/cli/help"
+	"github.com/gobuffalo/cli/cmd/cli/plugin"
 	"github.com/gobuffalo/cli/internal/tools/pop"
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/meta"
@@ -39,6 +40,10 @@ func (c command) Name() string {
 
 func (c command) HelpText() string {
 	return "Runs application tests by invoking related plugins."
+}
+
+func (c *command) ValidateWorkDir(wd string) (bool, error) {
+	return plugin.ValidateBuffaloRoot(wd)
 }
 
 func (c command) LongHelpText() string {

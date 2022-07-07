@@ -132,6 +132,17 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 		ist.SetIO(app.Stdout(), app.Stderr(), app.Stdin())
 	}
 
+	if wdv, ok := command.(plugin.WorkDirValidator); ok {
+		valid, err := wdv.ValidateWorkDir(pwd)
+		if err != nil {
+			return err
+		}
+
+		if !valid {
+			return fmt.Errorf("'%v' command cannot run in '%v'", command.Name(), pwd)
+		}
+	}
+
 	return command.Main(ctx, pwd, args)
 }
 

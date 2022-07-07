@@ -44,6 +44,10 @@ func (c *command) LongHelpText() string {
 This behavior can be changed in .buffalo.dev.yml file.`
 }
 
+func (c *command) ValidateWorkDir(wd string) (bool, error) {
+	return plugin.ValidateBuffaloRoot(wd)
+}
+
 func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	if c.flagSet == nil {
 		c.flagSet = flag.NewFlagSet(c.Name(), flag.ContinueOnError)

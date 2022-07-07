@@ -3,6 +3,7 @@ package routes
 import (
 	"context"
 
+	"github.com/gobuffalo/cli/cmd/cli/plugin"
 	grifts "github.com/markbates/grift/cmd"
 )
 
@@ -16,6 +17,10 @@ func (c command) Name() string {
 
 func (c command) HelpText() string {
 	return "Prints a list of all defined routes"
+}
+
+func (c command) ValidateWorkDir(wd string) (bool, error) {
+	return plugin.ValidateBuffaloRoot(wd)
 }
 
 func (c command) Main(ctx context.Context, pwd string, args []string) error {

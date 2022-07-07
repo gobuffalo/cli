@@ -45,6 +45,10 @@ func (g generate) Usage() string {
 	return "buffalo generate [generator] [options]"
 }
 
+func (c generate) ValidateWorkDir(wd string) (bool, error) {
+	return plugin.ValidateBuffaloRoot(wd)
+}
+
 func (g *generate) LongHelpText() string {
 	if len(g.generators) == 0 {
 		return "No generators registered.\n"
