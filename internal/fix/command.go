@@ -4,13 +4,13 @@ import (
 	"context"
 	"io"
 	"os"
+	"os/signal"
 
 	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
 	"github.com/gobuffalo/cli/internal/genny/fix"
 	"github.com/gobuffalo/cli/internal/runtime"
-	"github.com/gobuffalo/cli/internal/sigtx"
 	"github.com/gobuffalo/genny/v2"
 )
 
@@ -49,7 +49,7 @@ func (c *command) ValidateWorkDir(wd string) (bool, error) {
 }
 
 func (c command) Main(ctx context.Context, root string, args []string) error {
-	ctx, cancel := sigtx.WithCancel(ctx, os.Interrupt)
+	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 	defer cancel()
 
 	run := genny.WetRunner(ctx)

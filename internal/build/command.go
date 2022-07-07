@@ -7,10 +7,10 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
 	"strings"
 	"time"
 
-	"github.com/gobuffalo/cli/internal/sigtx"
 	flag "github.com/spf13/pflag"
 
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
@@ -98,7 +98,7 @@ func (c *command) Receive(pls plugin.Plugins) {
 }
 
 func (c *command) Main(ctx context.Context, pwd string, args []string) error {
-	ctx, cancel := sigtx.WithCancel(context.Background(), os.Interrupt)
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
 	pwd, err := os.Getwd()
