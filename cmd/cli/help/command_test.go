@@ -8,6 +8,7 @@ import (
 
 	flag "github.com/spf13/pflag"
 
+	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
 )
@@ -57,6 +58,7 @@ func (t testCommand) Main(ctx context.Context, pwd string, args []string) error 
 
 func TestHelpCommand(t *testing.T) {
 	hc := help.Command{
+		IO: &clio.IO{},
 		Commands: plugin.Commands{
 			testCommand("test"),
 			testCommand("other"),
@@ -72,8 +74,8 @@ func TestHelpCommand(t *testing.T) {
 			t.Fatalf("error running help: %v", err)
 		}
 
-		if !bytes.Contains(out.Bytes(), []byte("Usage: buffalo [command] [options]")) {
-			t.Fatalf("expected output to contain 'Usage: buffalo [command] [options]'")
+		if !bytes.Contains(out.Bytes(), []byte("Usage: buffalo [command] [flags] [...]")) {
+			t.Fatalf("expected output to contain 'Usage: buffalo [command] [flags] [...]'")
 		}
 
 		for _, v := range hc.Commands {
@@ -96,8 +98,8 @@ func TestHelpCommand(t *testing.T) {
 			t.Fatalf("Expected to print \"Error: did not find `unexisting` command\"")
 		}
 
-		if !bytes.Contains(out.Bytes(), []byte("Usage: buffalo [command] [options]")) {
-			t.Fatalf("expected output to contain 'Usage: buffalo [command] [options]'")
+		if !bytes.Contains(out.Bytes(), []byte("Usage: buffalo [command] [flags] [...]")) {
+			t.Fatalf("expected output to contain 'Usage: buffalo [command] [flags] [...]'")
 		}
 	})
 
