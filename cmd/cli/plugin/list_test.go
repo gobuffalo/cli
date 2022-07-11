@@ -28,7 +28,7 @@ func TestList(t *testing.T) {
 		"tt",
 		"runs the tt thing basically",
 		"Loaded default CLI plugins",
-		"Plugins loaded",
+		"Plugins loaded (1)",
 	} {
 		if !strings.Contains(out.String(), v) {
 			t.Fatalf("expected to not contain '%s'", v)
