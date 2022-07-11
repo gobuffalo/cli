@@ -3,13 +3,19 @@ package plugin
 import (
 	"context"
 	"fmt"
+	"io"
 	"text/tabwriter"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 )
 
+// List command instance to be used on the app.
 var List = &listCommand{}
 
+// listCommand lists the plugins received by the CLI
+// The CLI will pass those plugins to this command via
+// the PluginReceiver interface which is implemented
+// on this command.
 type listCommand struct {
 	clio.IO
 
@@ -26,6 +32,12 @@ func (lc listCommand) HelpText() string {
 
 func (lc *listCommand) Receive(pls Plugins) {
 	lc.plugins = pls
+}
+
+func (lc *listCommand) SetIO(stdout io.Writer, stderr io.Writer, stdin io.Reader) {
+	lc.IO.Out = stdout
+	lc.IO.Err = stderr
+	lc.IO.In = stdin
 }
 
 func (lc listCommand) Main(ctx context.Context, pwd string, args []string) error {

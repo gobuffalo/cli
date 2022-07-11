@@ -27,6 +27,11 @@ import (
 )
 
 var (
+	basePlugins = plugin.Plugins{
+		help.Command,
+		plugin.List,
+	}
+
 	// DefaultApp is an instance of the CLI application
 	// loaded with `default` plugins. The `NewApp` function
 	// could be used to create a custom instance of the CLI
@@ -37,25 +42,16 @@ var (
 		version.Command,
 		grift.Command,
 		routes.Command,
-
-		// TODO: DOCS: Document how to wire setuppers here.
-		setup.Command,
+		setup.Command, // TODO: DOCS: Document how to wire setuppers here.
 		info.Command,
-
-		// TODO: DOCS: Document how to add generators
-		generate.Command,
+		generate.Command, // TODO: DOCS: Document how to add generators
 		fix.Command,
 		new.Command,
 		destroy.Command,
 		build.Command,
+		dev.Command, // TODO: DOCS: Document how to add dev plugins
+		pop.Command, // TODO: This needs to live outside of the CLI package and into the pop/buffalo-pop package.
 
-		// TODO: DOCS: Document how to add dev plugins
-		dev.Command,
-		plugin.List,
-
-		// TODO: This needs to live outside of the CLI package
-		// and into the pop/buffalo-pop package.
-		pop.Command,
 		pop.Create,
 		pop.Drop,
 		pop.Fix,
@@ -94,7 +90,7 @@ var (
 type App struct {
 	clio.IO
 
-	help    *help.Command
+	help    help.GeneralHelper
 	plugins plugin.Plugins
 }
 
@@ -104,6 +100,17 @@ type App struct {
 func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 	if app == nil {
 		return fmt.Errorf("app is nil")
+	}
+
+	// Pass all of the plugins to the PluginsReceivers in the
+	// list of plugins so that they can keep copy of these.
+	for _, v := range app.plugins {
+		pr, ok := v.(plugin.Receiver)
+		if !ok {
+			continue
+		}
+
+		pr.Receive(app.plugins)
 	}
 
 	if len(args) == 0 {
@@ -148,29 +155,11 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 }
 
 // NewApp creates a CLI app with the given plugins.
-// It prepends the `help` command to the list of plugins.
+// It prepends the `help` and `plugins` commands
+// to the list of plugins.
 func NewApp(plugins ...plugin.Plugin) *App {
-	// Initializing the Help command and prepending it to
-	// the list of plugins passed.
-	help := &help.Command{
-		IO: &clio.IO{},
-	}
-
-	plugins = append(plugin.Plugins{help}, plugins...)
-
-	// Pass all of the plugins to the PluginsReceivers in the
-	// list of plugins so that they can keep copy of these.
-	for _, v := range plugins {
-		pr, ok := v.(plugin.Receiver)
-		if !ok {
-			continue
-		}
-
-		pr.Receive(plugins)
-	}
-
 	return &App{
-		plugins: plugins,
-		help:    help,
+		plugins: append(basePlugins, plugins...),
+		help:    help.Command,
 	}
 }

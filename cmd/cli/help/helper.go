@@ -13,3 +13,9 @@ type Helper interface {
 	// here.
 	Help(context.Context, []string) error
 }
+
+type GeneralHelper interface {
+	// Prints the general help and returns and error
+	// if something happens.
+	General() error
+}

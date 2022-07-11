@@ -5,11 +5,11 @@ package plugin
 // adding custom plugins will imply satisfying an interface that
 // a PluginsReceiver is expecting so that the CLI can be extended.
 type Receiver interface {
-	// Name of the receiver.
-	Name() string
+	Plugin
 
 	// Receive the plugins passed by the CLI, in here
 	// a plugin can classify depending on then interfaces it
-	// needs to satisfy.
+	// needs to satisfy. This function may be called multiple times
+	// And is up to the receiver to handle the multiple set of plugins.
 	Receive(Plugins)
 }
