@@ -38,7 +38,7 @@ var (
 		grift.Command,
 		routes.Command,
 
-		// TODO: Document how to wire setuppers here.
+		// TODO: DOCS: Document how to wire setuppers here.
 		setup.Command,
 		info.Command,
 

@@ -10,7 +10,11 @@ var VersionRunner = bzrVersionRunner("bzr")
 type bzrVersionRunner string
 
 func (gv bzrVersionRunner) Name() string {
-	return string(gv)
+	return string(gv) + "/version"
+}
+
+func (gv bzrVersionRunner) HelpText() string {
+	return "Gets the short bzr revision hash for versioning"
 }
 
 func (gv bzrVersionRunner) RunVersionCmd(out io.Writer) error {

@@ -12,7 +12,11 @@ var VersionRunner = gitVersionRunner("git")
 type gitVersionRunner string
 
 func (gv gitVersionRunner) Name() string {
-	return string(gv)
+	return string(gv) + "/version"
+}
+
+func (gv gitVersionRunner) HelpText() string {
+	return "Gets the short git commit hash for versioning"
 }
 
 func (gv gitVersionRunner) RunVersionCmd(out io.Writer) error {
