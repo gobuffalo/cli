@@ -14,8 +14,8 @@ func (app *App) Remove(names ...string) {
 	//TODO: implement
 }
 
-// Clears the list of plugins, keeps help and
-// plugins commands.
+// Clears the list of plugins, keeps `help`` and
+// `plugins` commands.
 func (app *App) Clear() {
 	app.plugins = basePlugins
 }
