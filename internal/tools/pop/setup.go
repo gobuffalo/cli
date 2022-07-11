@@ -39,8 +39,6 @@ func (c *setup) ParseFlags(args []string) (*flag.FlagSet, error) {
 
 	_ = c.flagSet.Parse(args)
 
-	fmt.Println("Parsing:", c.Name())
-
 	return c.flagSet, nil
 }
 
