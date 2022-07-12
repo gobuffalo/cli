@@ -32,11 +32,7 @@ var (
 		plugin.List,
 	}
 
-	// DefaultApp is an instance of the CLI application
-	// loaded with `default` plugins. The `NewApp` function
-	// could be used to create a custom instance of the CLI
-	// with custom plugins.
-	DefaultApp = NewApp(
+	defaultPlugins = plugin.Plugins{
 		// Top level commands
 		test.Command,
 		version.Command,
@@ -84,7 +80,7 @@ var (
 
 		git.VersionRunner,
 		bzr.VersionRunner,
-	)
+	}
 )
 
 type App struct {
