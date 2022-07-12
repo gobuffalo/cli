@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
-	grifts "github.com/markbates/grift/cmd"
+	grifts "github.com/gobuffalo/grift/cmd"
 )
 
 const Command = command("routes")

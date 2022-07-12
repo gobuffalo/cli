@@ -3,7 +3,7 @@ package grift
 const tmplHeader = `package grifts
 
 import (
-	. "github.com/markbates/grift/grift"
+	. "github.com/gobuffalo/grift/grift"
 )
 `
 

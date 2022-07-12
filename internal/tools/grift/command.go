@@ -3,7 +3,7 @@ package grift
 import (
 	"context"
 
-	grifts "github.com/markbates/grift/cmd"
+	grifts "github.com/gobuffalo/grift/cmd"
 )
 
 // Command is the shared instance of the
