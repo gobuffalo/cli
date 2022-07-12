@@ -3,6 +3,9 @@ package cli
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/help"
@@ -96,6 +99,23 @@ type App struct {
 func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 	if app == nil {
 		return fmt.Errorf("app is nil")
+	}
+
+	// Here we take care of looking for CLI overriders
+	// Overriders are go files to run instead of the CLI,
+	// The two main use cases are:
+	//  1. Running codebase specific CLI (PWD/cmd/buffalo/main.go)
+	//  2. Running user specific CLI ($HOME/buffalo/cmd/main.go)
+
+	if _, err := os.Stat(filepath.Join(pwd, "cmd", "buffalo", "main.go")); err == nil {
+		fmt.Fprintf(app.Stdout(), "[Info] Running CLI in `cmd/buffalo`")
+
+		cmd := exec.CommandContext(ctx, "go", "run", filepath.Join(pwd, "cmd", "buffalo", "main.go"))
+		cmd.Stdout = app.Stdout()
+		cmd.Stderr = app.Stderr()
+		cmd.Stdin = app.Stdin()
+
+		return cmd.Run()
 	}
 
 	// Pass all of the plugins to the PluginsReceivers in the

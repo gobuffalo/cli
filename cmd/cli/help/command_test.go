@@ -8,7 +8,6 @@ import (
 
 	flag "github.com/spf13/pflag"
 
-	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/help"
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
 )
@@ -57,13 +56,13 @@ func (t testCommand) Main(ctx context.Context, pwd string, args []string) error 
 }
 
 func TestHelpCommand(t *testing.T) {
-	hc := help.Command{
-		IO: &clio.IO{},
-		Commands: plugin.Commands{
-			testCommand("test"),
-			testCommand("other"),
-		},
+	commands := plugin.Plugins{
+		testCommand("test"),
+		testCommand("other"),
 	}
+
+	hc := help.Command
+	hc.Receive(commands)
 
 	t.Run("plain help invoked", func(t *testing.T) {
 		out := bytes.NewBuffer([]byte{})
@@ -78,14 +77,14 @@ func TestHelpCommand(t *testing.T) {
 			t.Fatalf("expected output to contain 'Usage: buffalo [command] [flags] [...]'")
 		}
 
-		for _, v := range hc.Commands {
+		for _, v := range commands {
 			if !bytes.Contains(out.Bytes(), []byte(fmt.Sprintf("%v", v.Name()))) {
 				t.Fatalf("expected output to contain '%v'", v.Name())
 			}
 		}
 	})
 
-	t.Run("unexisting command invoked on help", func(t *testing.T) {
+	t.Run("non existing command invoked on help", func(t *testing.T) {
 		out := bytes.NewBuffer([]byte{})
 		hc.IO.Out = out
 
@@ -160,10 +159,6 @@ func TestReceivePlugins(t *testing.T) {
 		simplePlugin("simple"),
 	}
 
-	hc := &help.Command{}
+	hc := help.Command
 	hc.Receive(plugins)
-
-	if len(hc.Commands) != 1 {
-		t.Fatalf("expected 1 command, got %v", len(hc.Commands))
-	}
 }

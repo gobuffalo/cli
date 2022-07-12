@@ -16,7 +16,11 @@ func (p plx) Name() string {
 }
 
 func TestClear(t *testing.T) {
-	app := cli.DefaultApp
+	app := cli.NewApp(
+		plx("fake/plugin"),
+		plx("fake/plugin-2"),
+	)
+
 	bb := &bytes.Buffer{}
 	app.IO.Out = bb
 
@@ -41,7 +45,8 @@ func TestClear(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	app := cli.DefaultApp
+	app := cli.NewApp()
+
 	bb := &bytes.Buffer{}
 	app.IO.Out = bb
 
@@ -54,8 +59,6 @@ func TestAdd(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	t.Log(bb.String())
 
 	for _, v := range []string{
 		"Loaded default CLI plugins",
@@ -89,8 +92,6 @@ func TestRemove(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	t.Log(bb.String())
 
 	for _, v := range []string{
 		"fake/plugin-3",
