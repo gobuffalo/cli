@@ -2,6 +2,8 @@ package version_test
 
 import (
 	"bytes"
+	"context"
+	"os"
 	"strings"
 	"testing"
 
@@ -13,7 +15,7 @@ func TestCommand(t *testing.T) {
 	out := bytes.NewBuffer([]byte{})
 
 	// Using the SetIO method to set the stdout and stderr
-	version.Command.SetIO(nil, out, out)
+	version.Command.SetIO(out, out, os.Stdin)
 
 	err := version.Command.Main(nil, "", []string{"version"})
 	if err != nil {
@@ -33,10 +35,10 @@ func TestCommandJSON(t *testing.T) {
 	out := bytes.NewBuffer([]byte{})
 
 	// Using the SetIO method to set the stdout and stderr
-	version.Command.SetIO(nil, out, out)
+	version.Command.SetIO(out, out, os.Stdin)
 	flgs, _ := version.Command.ParseFlags([]string{"--json"})
 
-	err := version.Command.Main(nil, "", flgs.Args())
+	err := version.Command.Main(context.TODO(), "", flgs.Args())
 	if err != nil {
 		t.Fatal(err)
 	}
