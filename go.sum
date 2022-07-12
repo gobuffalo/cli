@@ -155,8 +155,9 @@ github.com/go-sql-driver/mysql v1.5.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LB
 github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfCHuOE=
 github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
-github.com/gobuffalo/attrs v1.0.1 h1:Z84c0uuGKg58mhcLQODAqE/Sbxg8GgwjvV9nekZPs5c=
 github.com/gobuffalo/attrs v1.0.1/go.mod h1:qGdnq2RukKtBl4ASJit0OFckc5XGSyTFk98SvRpMFrQ=
+github.com/gobuffalo/attrs v1.0.2 h1:BlwLxVVXht5j/QmajCxFcL5eHG3S9W9cyFJgAlnfF3s=
+github.com/gobuffalo/attrs v1.0.2/go.mod h1:tJ7wJj6XbMNhYwJ8fl2PFDpDcUfsG1spWdUJISvPAZQ=
 github.com/gobuffalo/buffalo v0.18.7/go.mod h1:ik4LJwMXlEmxE3yKeuF1wszLXPl01xCST5cWrRGNtTs=
 github.com/gobuffalo/buffalo-pop/v3 v3.0.4 h1:/1kzgIz2PtFxLp/IQLHVDgF8VbM2pYoMTaWNU7J7Zbk=
 github.com/gobuffalo/buffalo-pop/v3 v3.0.4/go.mod h1:5vtVRccTdyDkbg9KaXK5fT1KSyr79+BzntX4U5PkYTI=
@@ -461,8 +462,6 @@ github.com/markbates/oncer v1.0.0/go.mod h1:Z59JA581E9GP6w96jai+TGqafHPW+cPfRxz2
 github.com/markbates/refresh v1.12.0/go.mod h1:Vpwi1+q+2U1VxE7C0Ilj6r2/+TigRzQcLez6XM3bPLc=
 github.com/markbates/safe v1.0.1 h1:yjZkbvRM6IzKj9tlu/zMJLS0n/V351OZWRnF3QfaUxI=
 github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kNSCBdG0=
-github.com/markbates/sigtx v1.0.0 h1:y/xtkBvNPRjD4KeEplf4w9rJVSc23/xl+jXYGowTwy0=
-github.com/markbates/sigtx v1.0.0/go.mod h1:QF1Hv6Ic6Ca6W+T+DL0Y/ypborFKyvUY9HmuCD4VeTc=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.1/go.mod h1:FuOcm+DKB9mbwrcAfNl7/TZVBZ6rcnceauSikq3lYCQ=
 github.com/mattn/go-colorable v0.1.4/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
