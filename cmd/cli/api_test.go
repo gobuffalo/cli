@@ -69,3 +69,36 @@ func TestAdd(t *testing.T) {
 	}
 
 }
+
+func TestRemove(t *testing.T) {
+	app := cli.NewApp(
+		plx("fake/plugin"),
+		plx("fake/plugin-2"),
+		plx("fake/plugin-3"),
+	)
+
+	bb := &bytes.Buffer{}
+	app.IO.Out = bb
+
+	app.Remove(
+		"fake/plugin-3",
+		"fake/plugin-2",
+	)
+
+	err := app.Main(context.TODO(), "", []string{"plugins"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(bb.String())
+
+	for _, v := range []string{
+		"fake/plugin-3",
+		"fake/plugin-2",
+	} {
+		if strings.Contains(bb.String(), v) {
+			t.Fatalf("expected not to contain '%v'", v)
+		}
+	}
+
+}

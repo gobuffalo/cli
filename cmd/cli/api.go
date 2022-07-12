@@ -11,7 +11,20 @@ func (app *App) Add(pls ...plugin.Plugin) {
 // Removes plugins from the list of plugins that
 // match the given names.
 func (app *App) Remove(names ...string) {
-	//TODO: implement
+	result := plugin.Plugins{}
+
+	for _, v := range app.plugins {
+		var found bool
+		for _, x := range names {
+			found = found || x == v.Name()
+		}
+
+		if !found {
+			result = append(result, v)
+		}
+	}
+
+	app.plugins = result
 }
 
 // Clears the list of plugins, keeps `help`` and
