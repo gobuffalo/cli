@@ -3,6 +3,8 @@ package info
 import (
 	"context"
 	"os/exec"
+	"runtime"
+	"strings"
 	"time"
 
 	"github.com/gobuffalo/clara/v2/genny/rx"
@@ -26,6 +28,7 @@ func runE(cmd *cobra.Command, args []string) error {
 	} else {
 		// no clara binary, so use the one bundled with buffalo
 		copts := infoOptions.Clara
+		rx.GoMinimums = []string{">=" + minGoVersion(false)}
 		if err := run.WithNew(rx.New(copts)); err != nil {
 			return err
 		}
@@ -37,4 +40,13 @@ func runE(cmd *cobra.Command, args []string) error {
 	}
 
 	return run.Run()
+}
+
+func minGoVersion(useBuilderVersion bool) string {
+	// TODO: can we make this rule?
+	if useBuilderVersion {
+		version := strings.TrimPrefix(runtime.Version(), "go")
+		return strings.Join(strings.Split(version, ".")[0:2], ".")
+	}
+	return "1.17"
 }
