@@ -1,7 +1,7 @@
 package routes
 
 import (
-	grifts "github.com/markbates/grift/cmd"
+	grifts "github.com/gobuffalo/grift/cmd"
 	"github.com/spf13/cobra"
 )
 

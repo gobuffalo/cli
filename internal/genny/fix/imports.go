@@ -32,6 +32,8 @@ var replace = map[string]string{
 	"github.com/gobuffalo/validate":                 "github.com/gobuffalo/validate/v3",
 	"github.com/gobuffalo/validate/validators":      "github.com/gobuffalo/validate/v3/validators",
 	"github.com/gobuffalo/suite":                    "github.com/gobuffalo/suite/v4",
+	"github.com/markbates/grift":                    "github.com/gobuffalo/grift",
+	"github.com/markbates/grift/grift":              "github.com/gobuffalo/grift/grift",
 	"github.com/markbates/pop":                      "github.com/gobuffalo/pop/v6",
 	"github.com/markbates/validate":                 "github.com/gobuffalo/validate/v3",
 	"github.com/markbates/willie":                   "github.com/gobuffalo/httptest",
