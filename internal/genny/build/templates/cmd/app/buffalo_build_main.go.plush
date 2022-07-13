@@ -18,7 +18,7 @@ import (
 <% } %>
 
 	"github.com/gobuffalo/buffalo/runtime"
-	"github.com/markbates/grift/grift"
+	"github.com/gobuffalo/grift/grift"
 <%= if (opts.WithPop) { %>
 	"github.com/gobuffalo/pop/v6"
 <% } %>

@@ -30,7 +30,7 @@ const (
 )
 
 var (
-	anywhereCommands = []string{"new", "version", "info", "help"}
+	anywhereCommands = []string{"completion", "help", "info", "new", "version"}
 
 	//go:embed popinstructions.txt
 	popInstallInstructions string
@@ -65,8 +65,14 @@ func preRunCheck(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	cmdName := cmd.Name()
+	if cmd.Parent() != cmd.Root() {
+		// e.g. `completion` for `buffalo completion bash` instead of `bash`
+		cmdName = cmd.Parent().Name()
+	}
+
 	for _, freeCmd := range anywhereCommands {
-		if freeCmd != cmd.Name() {
+		if freeCmd == cmdName {
 			return nil
 		}
 	}
@@ -82,10 +88,11 @@ func preRunCheck(cmd *cobra.Command, args []string) error {
 
 func cmd() *cobra.Command {
 	rootCmd := &cobra.Command{
-		SilenceErrors:     true,
 		Use:               "buffalo",
 		Short:             "Build Buffalo applications with ease",
 		PersistentPreRunE: preRunCheck,
+		TraverseChildren:  true,
+		SilenceErrors:     true,
 	}
 
 	newCmd := new.Cmd()

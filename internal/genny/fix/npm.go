@@ -115,7 +115,7 @@ func PackageJSONCheck(opts *Options) genny.RunFn {
 		}
 
 		if opts.App.WithYarn {
-			return r.Exec(exec.Command("yarnpkg", "install", "--no-progress", "--save"))
+			return r.Exec(exec.Command("yarn", "install"))
 		}
 
 		return r.Exec(exec.Command("npm", "install"))

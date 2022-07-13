@@ -11,8 +11,10 @@ WORKDIR /src/{{.opts.App.PackagePkg}}
 # this will cache the npm install step, unless package.json changes
 ADD package.json .
 {{if .opts.App.WithYarn -}}
-ADD yarn.lock .
-RUN yarn install --no-progress
+ADD yarn.lock .yarnrc.yml ./
+RUN mkdir .yarn
+COPY .yarn .yarn
+RUN yarn install
 {{else -}}
 RUN npm install --no-progress
 {{end -}}
