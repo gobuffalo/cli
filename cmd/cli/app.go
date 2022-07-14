@@ -101,19 +101,10 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 		return fmt.Errorf("app is nil")
 	}
 
-	// Here we take care of looking for CLI overriders
-	// Overriders are go files to run instead of the CLI,
-	// The two main use cases are:
-	//  1. Running codebase specific CLI (PWD/cmd/buffalo/main.go)
-	//  2. Running user specific CLI ($HOME/buffalo/cmd/main.go)
-
-	if _, err := os.Stat(filepath.Join(pwd, "cmd", "buffalo", "main.go")); err == nil {
-		fmt.Fprintf(app.Stdout(), "[Info] Running CLI in `cmd/buffalo`")
-
-		cmd := exec.CommandContext(ctx, "go", "run", filepath.Join(pwd, "cmd", "buffalo", "main.go"))
-		cmd.Stdout = app.Stdout()
-		cmd.Stderr = app.Stderr()
-		cmd.Stdin = app.Stdin()
+	// Seek for custom command, which means the user is running
+	// a codebase or user specific CLI.
+	if cmd, p := app.CustomCommand(ctx, pwd, args); cmd != nil {
+		fmt.Fprintf(app.Stdout(), "[Info] Running CLI in `%v`", p)
 
 		return cmd.Run()
 	}
@@ -168,6 +159,30 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 	}
 
 	return command.Main(ctx, pwd, args)
+}
+
+// CustomCommand returns an exec.Cmd if the user is overriding the CLI. This
+// is used to allow users to add their own CLI plugins to the Buffalo CLI, when
+// the CLI determines this is the case it runs the users CLI instead of the default
+// CLI binary.
+func (app *App) CustomCommand(ctx context.Context, pwd string, args []string) (*exec.Cmd, string) {
+	// Here we take care of looking for CLI overriders
+	// Overriders are go files to run instead of the CLI,
+	// The two main use cases are:
+	//  1. Running codebase specific CLI (PWD/cmd/buffalo/main.go) ✅
+	//  2. Running user specific CLI ($HOME/buffalo/cmd/main.go)
+	if _, err := os.Stat(filepath.Join(pwd, "cmd", "buffalo", "main.go")); err != nil {
+		return nil, ""
+	}
+
+	cmd := exec.CommandContext(ctx, "go")
+	cmd.Args = append(cmd.Args, "run", filepath.Join(pwd, "cmd", "buffalo", "main.go"))
+	cmd.Args = append(cmd.Args, args[1:]...)
+	cmd.Stdout = app.Stdout()
+	cmd.Stderr = app.Stderr()
+	cmd.Stdin = app.Stdin()
+
+	return cmd, "cmd/buffalo"
 }
 
 // NewApp creates a CLI app with the given plugins.
