@@ -86,6 +86,8 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	c.flagSet.StringArrayVar(&c.tags, "tags", []string{}, "compile with specific build tags")
 	c.flagSet.StringArrayVar(&c.buildFlags, "build-flags", []string{}, "Additional comma-separated build flags to feed to go build")
 
+	_ = c.flagSet.Parse(args)
+
 	return c.flagSet, nil
 }
 
