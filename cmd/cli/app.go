@@ -33,6 +33,8 @@ var (
 		plugin.List,
 	}
 
+	// defaultPlugins used by the CLI. This could be used as base set
+	// when customizing the CLI.
 	defaultPlugins = plugin.Plugins{
 		// Top level commands
 		test.Command,
@@ -176,6 +178,16 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 func NewApp(plugins ...plugin.Plugin) *App {
 	return &App{
 		plugins: append(basePlugins, plugins...),
+		help:    help.Command,
+	}
+}
+
+// NewWithDefaults creates a new CLI app with the
+// default plugins and adds the extra plugins.
+func NewWithDefaults(extra ...plugin.Plugin) *App {
+	initial := append(basePlugins, defaultPlugins...)
+	return &App{
+		plugins: append(initial, extra...),
 		help:    help.Command,
 	}
 }
