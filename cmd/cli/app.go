@@ -104,7 +104,7 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 	// Seek for custom command, which means the user is running
 	// a codebase or user specific CLI.
 	if cmd, p := app.CustomCommand(ctx, pwd, args); cmd != nil {
-		fmt.Fprintf(app.Stdout(), "[Info] Running CLI in `%v`", p)
+		fmt.Fprintf(app.Stdout(), "[Info] Running CLI in `%v`\n", p)
 
 		return cmd.Run()
 	}
@@ -175,7 +175,7 @@ func (app *App) CustomCommand(ctx context.Context, pwd string, args []string) (*
 		return nil, ""
 	}
 
-	cmd := exec.CommandContext(ctx, "go")
+	cmd := exec.Command("go")
 	cmd.Args = append(cmd.Args, "run", filepath.Join(pwd, "cmd", "buffalo", "main.go"))
 	cmd.Args = append(cmd.Args, args[1:]...)
 	cmd.Stdout = app.Stdout()

@@ -44,7 +44,7 @@ type command struct {
 	verbose                bool
 	bin                    string
 
-	tags       []string
+	tags       string
 	buildFlags []string
 
 	versionCmdRunners []VersionRunner
@@ -83,7 +83,7 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	c.flagSet.StringVar(&c.options.Environment, "environment", "development", "set the environment for the binary")
 	c.flagSet.StringVar(&c.options.Mod, "mod", "", "-mod flag for go build")
 
-	c.flagSet.StringArrayVar(&c.tags, "tags", []string{}, "compile with specific build tags")
+	c.flagSet.StringVar(&c.tags, "tags", "", "compile with specific build tags")
 	c.flagSet.StringArrayVar(&c.buildFlags, "build-flags", []string{}, "Additional comma-separated build flags to feed to go build")
 
 	_ = c.flagSet.Parse(args)
@@ -129,7 +129,7 @@ func (c *command) Main(ctx context.Context, pwd string, args []string) error {
 	c.options.BuildVersion = c.buildVersion(c.options.BuildTime.Format(time.RFC3339))
 
 	if len(c.tags) > 0 {
-		c.options.Tags = meta.BuildTags(c.tags)
+		c.options.Tags = meta.BuildTags(strings.Split(c.tags, ","))
 	}
 
 	if !c.skipTemplateValidation {
