@@ -113,7 +113,7 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 			continue
 		}
 
-		fmt.Fprintf(app.Stdout(), "[Info] Running CLI in `%v`\n", p)
+		fmt.Fprintf(app.Stdout(), "[Info] Running CLI in `%v`\n\n", p)
 		return cmd.Run()
 	}
 
