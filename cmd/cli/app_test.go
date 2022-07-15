@@ -47,11 +47,7 @@ func TestCustomCLI(t *testing.T) {
 		}
 
 		bb := bytes.NewBuffer([]byte{})
-		app := cli.NewApp(
-			plx("fake/plugin-A"),
-			plx("fake/plugin-B"),
-			plx("fake/plugin-C"),
-		)
+		app := cli.DefaultApp
 
 		app.IO.Out = bb
 		err = app.Main(context.TODO(), pwd, []string{"plugins"})

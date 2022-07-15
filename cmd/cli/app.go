@@ -3,9 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/exec"
-	"path/filepath"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/help"
@@ -91,7 +89,13 @@ type App struct {
 
 	help    help.GeneralHelper
 	plugins plugin.Plugins
+
+	overriders []overrider
 }
+
+// overrider allows to override the default plugins by running
+// custom main.go.
+type overrider func(pwd string, args []string) (*exec.Cmd, string)
 
 // Main entry point for the application. This method finds the passed command
 // and executes it with the passed arguments. If there is no command passed
@@ -101,11 +105,15 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 		return fmt.Errorf("app is nil")
 	}
 
-	// Seek for custom command, which means the user is running
-	// a codebase or user specific CLI.
-	if cmd, p := app.CustomCommand(ctx, pwd, args); cmd != nil {
-		fmt.Fprintf(app.Stdout(), "[Info] Running CLI in `%v`\n", p)
+	// Seek for an overrider that provides a command to execute instead
+	// of the default flow.
+	for _, v := range app.overriders {
+		cmd, p := v(pwd, args)
+		if cmd == nil {
+			continue
+		}
 
+		fmt.Fprintf(app.Stdout(), "[Info] Running CLI in `%v`\n", p)
 		return cmd.Run()
 	}
 
@@ -161,33 +169,10 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 	return command.Main(ctx, pwd, args)
 }
 
-// CustomCommand returns an exec.Cmd if the user is overriding the CLI. This
-// is used to allow users to add their own CLI plugins to the Buffalo CLI, when
-// the CLI determines this is the case it runs the users CLI instead of the default
-// CLI binary.
-func (app *App) CustomCommand(ctx context.Context, pwd string, args []string) (*exec.Cmd, string) {
-	// Here we take care of looking for CLI overriders
-	// Overriders are go files to run instead of the CLI,
-	// The two main use cases are:
-	//  1. Running codebase specific CLI (PWD/cmd/buffalo/main.go) ✅
-	//  2. Running user specific CLI ($HOME/buffalo/cmd/main.go)
-	if _, err := os.Stat(filepath.Join(pwd, "cmd", "buffalo", "main.go")); err != nil {
-		return nil, ""
-	}
-
-	cmd := exec.Command("go")
-	cmd.Args = append(cmd.Args, "run", filepath.Join(pwd, "cmd", "buffalo", "main.go"))
-	cmd.Args = append(cmd.Args, args[1:]...)
-	cmd.Stdout = app.Stdout()
-	cmd.Stderr = app.Stderr()
-	cmd.Stdin = app.Stdin()
-
-	return cmd, "cmd/buffalo"
-}
-
 // NewApp creates a CLI app with the given plugins.
 // It prepends the `help` and `plugins` commands
-// to the list of plugins.
+// to the list of plugins. The new app will not
+// have the
 func NewApp(plugins ...plugin.Plugin) *App {
 	return &App{
 		plugins: append(basePlugins, plugins...),
