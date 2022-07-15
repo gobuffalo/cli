@@ -34,7 +34,6 @@ func TestClear(t *testing.T) {
 	t.Log(bb.String())
 
 	for _, v := range []string{
-		"Loaded default CLI plugins",
 		"Plugins loaded (2)",
 	} {
 		if !strings.Contains(bb.String(), v) {
@@ -61,7 +60,6 @@ func TestAdd(t *testing.T) {
 	}
 
 	for _, v := range []string{
-		"Loaded default CLI plugins",
 		"Plugins loaded (4)",
 		"fake/plugin",
 		"fake/plugin-2",

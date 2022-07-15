@@ -27,7 +27,6 @@ func TestList(t *testing.T) {
 	for _, v := range []string{
 		"tt",
 		"runs the tt thing basically",
-		"Loaded default CLI plugins",
 		"Plugins loaded (1)",
 	} {
 		if !strings.Contains(out.String(), v) {

@@ -24,14 +24,19 @@ var DefaultApp = &App{
 // projectOverrider returns an exec.Cmd if the user is overriding the CLI within the
 // same module. It looks within the current directory for the cmd/buffalo/main.go
 // and attempts to run that file.
-func projectOverrider(pwd string, args []string) (*exec.Cmd, string) {
+func projectOverrider(pwd string) (*exec.Cmd, string) {
 	if _, err := os.Stat(filepath.Join(pwd, "cmd", "buffalo", "main.go")); err != nil {
 		return nil, ""
 	}
 
+	args := os.Args
+	if len(args) > 0 {
+		args = os.Args[1:]
+	}
+
 	cmd := exec.Command("go")
 	cmd.Args = append(cmd.Args, "run", filepath.Join(pwd, "cmd", "buffalo", "main.go"))
-	cmd.Args = append(cmd.Args, args[1:]...)
+	cmd.Args = append(cmd.Args, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
 	cmd.Stdin = os.Stdout

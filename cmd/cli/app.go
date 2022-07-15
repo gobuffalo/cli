@@ -95,7 +95,7 @@ type App struct {
 
 // overrider allows to override the default plugins by running
 // custom main.go.
-type overrider func(pwd string, args []string) (*exec.Cmd, string)
+type overrider func(pwd string) (*exec.Cmd, string)
 
 // Main entry point for the application. This method finds the passed command
 // and executes it with the passed arguments. If there is no command passed
@@ -108,7 +108,7 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 	// Seek for an overrider that provides a command to execute instead
 	// of the default flow.
 	for _, v := range app.overriders {
-		cmd, p := v(pwd, args)
+		cmd, p := v(pwd)
 		if cmd == nil {
 			continue
 		}

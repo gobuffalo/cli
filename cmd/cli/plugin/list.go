@@ -52,8 +52,7 @@ func (lc listCommand) Main(ctx context.Context, pwd string, args []string) error
 		return fmt.Sprintf("  %s\t%s\t%s\n", v.Name(), t, helpText)
 	}
 
-	fmt.Fprintln(lc.Stdout(), "Loaded default CLI plugins (buffalo binary).")
-	fmt.Fprintf(lc.Stdout(), "\nPlugins loaded (%v):\n", len(lc.plugins))
+	fmt.Fprintf(lc.Stdout(), "Plugins loaded (%v):\n", len(lc.plugins))
 
 	w := tabwriter.NewWriter(lc.Stdout(), 0, 0, 3, ' ', 0)
 	for _, v := range CommandsFrom(lc.plugins) {
