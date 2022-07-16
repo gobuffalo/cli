@@ -3,7 +3,10 @@ package cli
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
+	"os/signal"
+	"time"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
 	"github.com/gobuffalo/cli/cmd/cli/help"
@@ -169,6 +172,36 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 	}
 
 	return command.Main(ctx, pwd, args)
+}
+
+// Run starts the CLI by tracking the PWD, creating a context
+// and running the Main method.
+func (app *App) Run() {
+	ctx := context.Background()
+	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
+	defer cancel()
+
+	go func() {
+		time.Sleep(50 * time.Millisecond)
+		cancel()
+	}()
+
+	// get the present working directory. (PWD)
+	pwd, err := os.Getwd()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+
+		os.Exit(1)
+	}
+
+	err = app.Main(ctx, pwd, os.Args[1:])
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+
+		os.Exit(1)
+	}
+
+	<-ctx.Done()
 }
 
 // NewApp creates a CLI app with the given plugins.
