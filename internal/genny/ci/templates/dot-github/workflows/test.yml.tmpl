@@ -31,8 +31,7 @@ jobs:
           cache: true
       - name: setup
         run: |
-          go get github.com/gobuffalo/buffalo/buffalo
-          go mod download
+          go install github.com/gobuffalo/cli/cmd/buffalo@latest
       - name: test
         {{ if eq .opts.DBType "postgres" -}}
         env:
