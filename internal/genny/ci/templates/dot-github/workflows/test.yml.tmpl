@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   test:
+    runs-on: ubuntu-latest
     {{ if eq .opts.DBType "postgres" -}}
     services:
       postgres:
@@ -21,8 +22,9 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
     {{- end }}
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
@@ -35,10 +37,7 @@ jobs:
       - name: test
         {{ if eq .opts.DBType "postgres" -}}
         env:
-          POSTGRES_DB: {{.opts.App.Name.File}}_test
-          POSTGRES_HOST: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_PORT: 5432
+          TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/{{.opts.App.Name.File}}_test?sslmode=disable
         {{- end }}
         run: |
           buffalo test
