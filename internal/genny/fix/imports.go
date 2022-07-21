@@ -103,7 +103,7 @@ func rewriteFile(file genny.File) error {
 
 		astutil.DeleteNamedImport(fset, f, name, key)
 		if value != "" {
-			astutil.AddImport(fset, f, value)
+			astutil.AddNamedImport(fset, f, names[key], value)
 		}
 
 		changed = true
