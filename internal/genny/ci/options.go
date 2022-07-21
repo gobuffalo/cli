@@ -10,7 +10,7 @@ import (
 )
 
 // Available CI implementations
-var Available = []string{"travis", "gitlab", "circleci"}
+var Available = []string{"circleci", "github", "gitlab", "travis"}
 
 // Options for CI
 type Options struct {
