@@ -4,10 +4,12 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/gobuffalo/genny/v2/gentest"
 	"github.com/gobuffalo/meta"
+	"github.com/gobuffalo/packd"
 	"github.com/stretchr/testify/require"
 )
 
@@ -60,4 +62,64 @@ func Test_Imports(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestRewriteFile_Simple(t *testing.T) {
+	r := require.New(t)
+	r.Nil(nil)
+
+	data := `package main
+
+import "github.com/markbates/grift"
+`
+	file, err := packd.NewFile("test.go", strings.NewReader(data))
+	r.NoError(err)
+	r.NotNil(file)
+
+	err = rewriteFile(file)
+	r.NoError(err)
+	r.Equal(`package main
+
+import "github.com/gobuffalo/grift"
+`, file.String())
+}
+
+func TestRewriteFile_Named(t *testing.T) {
+	r := require.New(t)
+	r.Nil(nil)
+
+	data := `package main
+
+import gr "github.com/markbates/grift"
+`
+	file, err := packd.NewFile("test.go", strings.NewReader(data))
+	r.NoError(err)
+	r.NotNil(file)
+
+	err = rewriteFile(file)
+	r.NoError(err)
+	r.Equal(`package main
+
+import gr "github.com/gobuffalo/grift"
+`, file.String())
+}
+
+func TestRewriteFile_DotAlso(t *testing.T) {
+	r := require.New(t)
+	r.Nil(nil)
+
+	data := `package main
+
+import . "github.com/markbates/grift"
+`
+	file, err := packd.NewFile("test.go", strings.NewReader(data))
+	r.NoError(err)
+	r.NotNil(file)
+
+	err = rewriteFile(file)
+	r.NoError(err)
+	r.Equal(`package main
+
+import . "github.com/gobuffalo/grift"
+`, file.String())
 }
