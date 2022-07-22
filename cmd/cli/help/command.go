@@ -3,6 +3,7 @@ package help
 import (
 	"context"
 	"fmt"
+	"io"
 	"text/tabwriter"
 
 	"github.com/gobuffalo/cli/cmd/cli/clio"
@@ -52,6 +53,12 @@ func (c command) Main(ctx context.Context, pwd string, args []string) error {
 	// the command itself will take care
 	// of printing the help with the args.
 	return hh.Help(ctx, args[1:])
+}
+
+func (c *command) SetIO(stdout io.Writer, stderr io.Writer, stdin io.Reader) {
+	c.IO.Out = stdout
+	c.IO.Err = stderr
+	c.IO.In = stdin
 }
 
 // ReceivePlugins and keep the commands for the help

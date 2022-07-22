@@ -15,6 +15,49 @@ import (
 //go:embed testdata/main.go.tmpl
 var customMain []byte
 
+func TestMain(t *testing.T) {
+
+	t.Run("returns error if invoked app is nil", func(t *testing.T) {
+		var a *cli.App
+
+		err := a.Main(context.TODO(), "", []string{"plugins"})
+		if err == nil {
+			t.Fatalf("expected to return an error if app is nil")
+		}
+	})
+
+	t.Run("should render the general help if no command specified", func(t *testing.T) {
+		a := cli.NewApp()
+		bb := bytes.NewBuffer([]byte{})
+
+		a.IO.Out = bb
+		err := a.Main(context.TODO(), "", []string{})
+		if err != nil {
+			t.Fatalf("got error: %s", err)
+		}
+
+		if !strings.Contains(bb.String(), "Usage:") {
+			t.Errorf("expected to contain 'Usage:'")
+		}
+	})
+
+	t.Run("should render the general help if no command found", func(t *testing.T) {
+		a := cli.NewApp()
+		bb := bytes.NewBuffer([]byte{})
+
+		a.IO.Out = bb
+		err := a.Main(context.TODO(), "", []string{"no-command-with-this-name"})
+		if err != nil {
+			t.Fatalf("got error: %s", err)
+		}
+
+		if !strings.Contains(bb.String(), "Usage:") {
+			t.Errorf("expected to contain 'Usage:'")
+		}
+	})
+
+}
+
 func TestCustomCLI(t *testing.T) {
 	setupGlobalOverride := func() func() {
 		home, err := os.UserHomeDir()
