@@ -17,15 +17,6 @@ var customMain []byte
 
 func TestMain(t *testing.T) {
 
-	t.Run("returns error if invoked app is nil", func(t *testing.T) {
-		var a *cli.App
-
-		err := a.Main(context.TODO(), "", []string{"plugins"})
-		if err == nil {
-			t.Fatalf("expected to return an error if app is nil")
-		}
-	})
-
 	t.Run("should render the general help if no command specified", func(t *testing.T) {
 		a := cli.NewApp()
 		bb := bytes.NewBuffer([]byte{})

@@ -4,16 +4,16 @@ import "github.com/gobuffalo/cli/cmd/cli/plugin"
 
 // Adds received plugins to the list of plugins
 // that the app has.
-func (app *App) Add(pls ...plugin.Plugin) {
-	app.plugins = append(app.plugins, pls...)
+func (a *app) Add(pls ...plugin.Plugin) {
+	a.plugins = append(a.plugins, pls...)
 }
 
 // Removes plugins from the list of plugins that
 // match the given names.
-func (app *App) Remove(names ...string) {
+func (a *app) Remove(names ...string) {
 	result := plugin.Plugins{}
 
-	for _, v := range app.plugins {
+	for _, v := range a.plugins {
 		var found bool
 		for _, x := range names {
 			found = found || x == v.Name()
@@ -24,11 +24,11 @@ func (app *App) Remove(names ...string) {
 		}
 	}
 
-	app.plugins = result
+	a.plugins = result
 }
 
 // Clears the list of plugins, keeps `help`` and
 // `plugins` commands.
-func (app *App) Clear() {
-	app.plugins = basePlugins
+func (a *app) Clear() {
+	a.plugins = basePlugins
 }

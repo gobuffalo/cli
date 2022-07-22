@@ -13,7 +13,11 @@ import (
 	"github.com/gobuffalo/cli/cmd/cli/plugin"
 )
 
-type App struct {
+// overrider allows to override the default plugins by running
+// custom main.go.
+type overrider func(pwd string) (*exec.Cmd, string)
+
+type app struct {
 	clio.IO
 
 	help    help.GeneralHelper
@@ -22,59 +26,52 @@ type App struct {
 	overriders []overrider
 }
 
-// overrider allows to override the default plugins by running
-// custom main.go.
-type overrider func(pwd string) (*exec.Cmd, string)
-
 // Main entry point for the application. This method finds the passed command
 // and executes it with the passed arguments. If there is no command passed
 // it will print the usage.
-func (app *App) Main(ctx context.Context, pwd string, args []string) error {
-	if app == nil {
-		return fmt.Errorf("app is nil")
-	}
-
-	if ist, ok := app.help.(clio.Setter); ok {
-		ist.SetIO(app.Stdout(), app.Stderr(), app.Stdin())
+func (a *app) Main(ctx context.Context, pwd string, args []string) error {
+	// Setting the IO for the help command in case its clio.Setter.
+	if ist, ok := a.help.(clio.Setter); ok {
+		ist.SetIO(a.Stdout(), a.Stderr(), a.Stdin())
 	}
 
 	// Seek for an overrider that provides a command to execute instead
 	// of the default flow.
-	for _, v := range app.overriders {
+	for _, v := range a.overriders {
 		cmd, p := v(pwd)
 		if cmd == nil {
 			continue
 		}
 
-		fmt.Fprintf(app.Stdout(), "[Info] Running CLI in `%v`\n\n", p)
-		cmd.Stdout = app.Stdout()
-		cmd.Stderr = app.Stderr()
-		cmd.Stdin = app.Stdin()
+		fmt.Fprintf(a.Stdout(), "[Info] Running CLI in `%v`\n\n", p)
+		cmd.Stdout = a.Stdout()
+		cmd.Stderr = a.Stderr()
+		cmd.Stdin = a.Stdin()
 
 		return cmd.Run()
 	}
 
 	// Pass all of the plugins to the PluginsReceivers in the
 	// list of plugins so that they can keep copy of these.
-	for _, v := range app.plugins {
+	for _, v := range a.plugins {
 		pr, ok := v.(plugin.Receiver)
 		if !ok {
 			continue
 		}
 
-		pr.Receive(app.plugins)
+		pr.Receive(a.plugins)
 	}
 
 	if len(args) == 0 {
-		return app.help.General()
+		return a.help.General()
 	}
 
 	// Find the command from the list of commands
 	// to determine what to show to the user.
-	command := plugin.CommandsFrom(app.plugins).Find(args[0])
+	command := plugin.CommandsFrom(a.plugins).Find(args[0])
 	if command == nil {
 		// Print out general help if no command is passed.
-		return app.help.General()
+		return a.help.General()
 	}
 
 	args = args[1:]
@@ -89,7 +86,7 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 	}
 
 	if ist, ok := command.(clio.Setter); ok {
-		ist.SetIO(app.Stdout(), app.Stderr(), app.Stdin())
+		ist.SetIO(a.Stdout(), a.Stderr(), a.Stdin())
 	}
 
 	if wdv, ok := command.(plugin.WorkDirValidator); ok {
@@ -108,7 +105,7 @@ func (app *App) Main(ctx context.Context, pwd string, args []string) error {
 
 // Run starts the CLI by tracking the PWD, creating a context
 // and running the Main method.
-func (app *App) Run() {
+func (a *app) Run() {
 	ctx := context.Background()
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 	defer cancel()
@@ -126,7 +123,7 @@ func (app *App) Run() {
 		os.Exit(1)
 	}
 
-	err = app.Main(ctx, pwd, os.Args[1:])
+	err = a.Main(ctx, pwd, os.Args[1:])
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 
@@ -140,8 +137,8 @@ func (app *App) Run() {
 // It prepends the `help` and `plugins` commands
 // to the list of plugins. The new app will not
 // have the
-func NewApp(plugins ...plugin.Plugin) *App {
-	return &App{
+func NewApp(plugins ...plugin.Plugin) *app {
+	return &app{
 		plugins: append(basePlugins, plugins...),
 		help:    help.Command,
 	}
@@ -149,9 +146,9 @@ func NewApp(plugins ...plugin.Plugin) *App {
 
 // NewWithDefaults creates a new CLI app with the
 // default plugins and adds the extra plugins.
-func NewWithDefaults(extra ...plugin.Plugin) *App {
+func NewWithDefaults(extra ...plugin.Plugin) *app {
 	initial := append(basePlugins, defaultPlugins...)
-	return &App{
+	return &app{
 		plugins: append(initial, extra...),
 		help:    help.Command,
 	}

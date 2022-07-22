@@ -89,7 +89,7 @@ var (
 // loaded with `default` plugins. The `NewApp` function
 // could be used to create a custom instance of the CLI
 // with custom plugins.
-var DefaultApp = &App{
+var DefaultApp = &app{
 	help:    help.Command,
 	plugins: append(basePlugins, defaultPlugins...),
 
