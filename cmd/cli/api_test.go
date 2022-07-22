@@ -31,8 +31,6 @@ func TestClear(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Log(bb.String())
-
 	for _, v := range []string{
 		"Plugins loaded (2)",
 	} {

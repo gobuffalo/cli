@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -18,6 +19,7 @@ var DefaultApp = &App{
 
 	overriders: []overrider{
 		projectOverrider,
+		userOverrider,
 	},
 }
 
@@ -39,13 +41,33 @@ func projectOverrider(pwd string) (*exec.Cmd, string) {
 	cmd.Args = append(cmd.Args, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
-	cmd.Stdin = os.Stdout
+	cmd.Stdin = os.Stdin
 
 	return cmd, "cmd/buffalo"
 }
 
-// Here we take care of looking for CLI overriders
-// Overriders are go files to run instead of the CLI,
-// The two main use cases are:
-//  1. Running codebase specific CLI (PWD/cmd/buffalo/main.go) ✅
-//  2. Running user specific CLI ($HOME/buffalo/cmd/main.go)
+func userOverrider(pwd string) (*exec.Cmd, string) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return nil, ""
+	}
+
+	path := filepath.Join(home, ".buffalo", "cmd", "main.go")
+	if _, err = os.Stat(path); err != nil {
+		return nil, ""
+	}
+
+	args := os.Args
+	if len(args) > 0 {
+		args = os.Args[1:]
+	}
+
+	cmd := exec.Command("go")
+	cmd.Args = append(cmd.Args, "run", path)
+	cmd.Args = append(cmd.Args, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stdout
+	cmd.Stdin = os.Stdin
+
+	return cmd, fmt.Sprintf("%v/buffalo", home)
+}
