@@ -112,7 +112,7 @@ func TestCustomCLI(t *testing.T) {
 		t.Cleanup(cleanup)
 
 		bb := bytes.NewBuffer([]byte{})
-		app := cli.DefaultApp
+		app := cli.NewWithDefaults()
 
 		app.IO.Out = bb
 		err := app.Main(context.TODO(), pwd, []string{"plugins"})
@@ -129,7 +129,7 @@ func TestCustomCLI(t *testing.T) {
 		t.Cleanup(setupGlobalOverride())
 
 		bb := bytes.NewBuffer([]byte{})
-		app := cli.DefaultApp
+		app := cli.NewWithDefaults()
 
 		app.IO.Out = bb
 		err := app.Main(context.TODO(), "", []string{"plugins"})
@@ -154,7 +154,7 @@ func TestCustomCLI(t *testing.T) {
 		t.Cleanup(setupProjectOverride(pwd))
 
 		bb := bytes.NewBuffer([]byte{})
-		app := cli.DefaultApp
+		app := cli.NewWithDefaults()
 
 		app.IO.Out = bb
 		err := app.Main(context.TODO(), pwd, []string{"plugins"})
