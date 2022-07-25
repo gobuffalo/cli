@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	cli.DefaultApp.Run()
+	cli.NewWithOverriders().Run()
 }

@@ -153,3 +153,19 @@ func NewWithDefaults(extra ...plugin.Plugin) *app {
 		help:    help.Command,
 	}
 }
+
+// NewWithOverriders returns a pointer to a CLI that
+// will override the CLI with project and user overriders
+// this is for the default Buffalo CLI and not intended to be
+// used in custom CLI's.
+func NewWithOverriders() *app {
+	return &app{
+		help:    help.Command,
+		plugins: append(basePlugins, defaultPlugins...),
+
+		overriders: []overrider{
+			projectOverrider,
+			userOverrider,
+		},
+	}
+}
