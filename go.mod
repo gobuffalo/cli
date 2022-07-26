@@ -3,7 +3,7 @@ module github.com/gobuffalo/cli
 go 1.16
 
 require (
-	github.com/BurntSushi/toml v1.1.0
+	github.com/BurntSushi/toml v1.2.0
 	github.com/fatih/color v1.13.0
 	github.com/gobuffalo/attrs v1.0.2
 	github.com/gobuffalo/buffalo-pop/v3 v3.0.6
