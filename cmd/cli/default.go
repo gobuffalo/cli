@@ -85,19 +85,7 @@ var (
 	}
 )
 
-// DefaultApp is an instance of the CLI application
-// loaded with `default` plugins. The `NewApp` function
-// could be used to create a custom instance of the CLI
-// with custom plugins.
-var DefaultApp = &app{
-	help:    help.Command,
-	plugins: append(basePlugins, defaultPlugins...),
 
-	overriders: []overrider{
-		projectOverrider,
-		userOverrider,
-	},
-}
 
 // projectOverrider returns an exec.Cmd if the user is overriding the CLI within the
 // same module. It looks within the current directory for the cmd/buffalo/main.go
