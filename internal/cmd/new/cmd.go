@@ -25,7 +25,7 @@ func Cmd() *cobra.Command {
 	cmd.Flags().Bool("skip-yarn", false, "use npm instead of yarn for frontend dependencies management")
 	cmd.Flags().Bool("skip-docker", false, "skips generating the Dockerfile")
 	cmd.Flags().String("db-type", "postgres", fmt.Sprintf("specify the type of database you want to use [%s]", strings.Join(pop.AvailableDialects, ", ")))
-	cmd.Flags().String("ci-provider", "none", "specify the type of ci file you would like buffalo to generate [none, travis, gitlab-ci, circleci]")
+	cmd.Flags().String("ci-provider", "none", "specify the type of ci file you would like buffalo to generate [none, circleci, github, gitlab-ci, travis]")
 	cmd.Flags().String("vcs", "git", "specify the Version control system you would like to use [none, git, bzr]")
 	cmd.Flags().String("module", "", "specify the root module (package) name. [defaults to 'automatic']")
 

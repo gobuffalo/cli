@@ -1,0 +1,43 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    {{ if eq .opts.DBType "postgres" -}}
+    services:
+      postgres:
+        image: postgres:9.6-alpine
+        env:
+          POSTGRES_DB: {{.opts.App.Name.File}}_test
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    {{- end }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: ~1.18
+          cache: true
+      - name: setup
+        run: |
+          go install github.com/gobuffalo/cli/cmd/buffalo@latest
+      - name: test
+        {{ if eq .opts.DBType "postgres" -}}
+        env:
+          TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/{{.opts.App.Name.File}}_test?sslmode=disable
+        {{- end }}
+        run: |
+          buffalo test
