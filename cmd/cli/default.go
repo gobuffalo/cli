@@ -85,8 +85,6 @@ var (
 	}
 )
 
-
-
 // projectOverrider returns an exec.Cmd if the user is overriding the CLI within the
 // same module. It looks within the current directory for the cmd/buffalo/main.go
 // and attempts to run that file.
@@ -110,6 +108,8 @@ func projectOverrider(pwd string) (*exec.Cmd, string) {
 	return cmd, "cmd/buffalo"
 }
 
+// userOverrider returns an exec.Cmd if the user is overriding the CLI
+// on $HOME/.buffalo/cmd/main.go
 func userOverrider(pwd string) (*exec.Cmd, string) {
 	home, err := os.UserHomeDir()
 	if err != nil {
