@@ -32,7 +32,7 @@ func TestNew(t *testing.T) {
 		},
 		{
 			name: "skip docker",
-			args: []string{"new", "--api", "--skip-docker", "-f", "--vcs", "none", "nodocker"},
+			args: []string{"new", "nodocker", "--api", "--skip-docker", "-f", "--vcs", "none"},
 			check: func(r *require.Assertions, out string, err error) {
 				r.NoError(err)
 				r.NoFileExists(filepath.Join("nodocker", "Dockerfile"))

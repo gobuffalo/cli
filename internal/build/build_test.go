@@ -25,13 +25,13 @@ func TestBuild(t *testing.T) {
 	}{
 		{
 			name:         "nominal",
-			newargs:      []string{"new", "nominal", "-f", "--skip-webpack", "--vcs", "none"},
+			newargs:      []string{"new", "-f", "--skip-webpack", "--vcs", "none", "nominal"},
 			resourceargs: []string{"g", "resource", "phone", "model"},
 			appname:      "nominal",
 		},
 		{
 			name:         "api",
-			newargs:      []string{"new", "api", "-f", "--api", "--vcs", "none"},
+			newargs:      []string{"new", "-f", "--api", "--vcs", "none", "api"},
 			resourceargs: []string{"g", "resource", "phone", "model"},
 			appname:      "api",
 		},
