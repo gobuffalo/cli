@@ -86,7 +86,7 @@ func TestBuildNoAssets(t *testing.T) {
 	r := require.New(t)
 	r.NoError(testhelpers.EnsureBuffaloCMD(t))
 	testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
-		out, err := testhelpers.RunBuffaloCMD(t, []string{"new", "noassets", "-f", "--skip-webpack", "--vcs", "none"})
+		out, err := testhelpers.RunBuffaloCMD(t, []string{"new", "-f", "--skip-webpack", "--vcs", "none", "noassets"})
 		t.Log(out)
 		r.NoError(err)
 

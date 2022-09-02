@@ -85,7 +85,7 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	c.flagSet.StringVar(&c.dbType, "db", "postgres", fmt.Sprintf("specify the type of database you want to use [%s]", strings.Join(plib.AvailableDialects, ", ")))
 	c.flagSet.StringVar(&c.ciProvider, "ci-provider", "travis", "specify the CI provider you want to use [none, travis, gitlab-ci, circleci]")
 
-	if !strings.HasPrefix(args[0], "-") && len(args) > 1 {
+	if len(args) >= 1 && !strings.HasPrefix(args[0], "-") {
 		fmt.Println("Usage: " + c.Usage())
 
 		return c.flagSet, fmt.Errorf("error: flags must go before the application name")
