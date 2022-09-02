@@ -76,9 +76,9 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	c.flagSet.BoolVar(&c.skipWebpack, "skip-webpack", false, "skip all front-end code and configure for a web server")
 	c.flagSet.BoolVar(&c.skipYarn, "skip-yarn", false, "skip all front-end code and configure for a web server")
 	c.flagSet.BoolVar(&c.skipDocker, "skip-docker", false, "skip all front-end code and configure for a web server")
-	c.flagSet.BoolVar(&c.force, "force", false, "delete and remake if the app already exists")
-	c.flagSet.BoolVar(&c.dryRun, "dry-run", false, "dry run")
-	c.flagSet.BoolVar(&c.verbose, "verbose", false, "verbosely print out the go get commands")
+	c.flagSet.BoolVarP(&c.force, "force", "f", false, "delete and remake if the app already exists")
+	c.flagSet.BoolVarP(&c.dryRun, "dry-run", "d", false, "dry run")
+	c.flagSet.BoolVarP(&c.verbose, "verbose", "v", false, "verbosely print out the go get commands")
 
 	c.flagSet.StringVar(&c.module, "module", "", "module to use for the application")
 	c.flagSet.StringVar(&c.vcs, "vcs", "git", "specify the Version control system you would like to use [none, git, bzr]")
