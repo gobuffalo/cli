@@ -1,17 +1,12 @@
 package core
 
 import (
-	"errors"
-
 	"github.com/gobuffalo/cli/internal/genny/ci"
 	"github.com/gobuffalo/cli/internal/genny/docker"
-	"github.com/gobuffalo/cli/internal/genny/plugins/install"
 	"github.com/gobuffalo/cli/internal/genny/refresh"
 
 	pop "github.com/gobuffalo/buffalo-pop/v3/genny/newapp"
-	"github.com/gobuffalo/cli/internal/plugins/plugdeps"
 	"github.com/gobuffalo/genny/v2"
-	"github.com/gobuffalo/meta"
 )
 
 // New generator for creating a Buffalo application
@@ -25,12 +20,12 @@ func New(opts *Options) (*genny.Group, error) {
 	}
 	gg.Add(g)
 
-	app := opts.App
+	// app := opts.App
 
-	plugs, err := plugdeps.List(app)
-	if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
-		return nil, err
-	}
+	// plugs, err := plugdeps.List(app)
+	// if err != nil && !errors.Is(err, plugdeps.ErrMissingConfig) {
+	// 	return nil, err
+	// }
 
 	if opts.Docker != nil {
 		// add the docker generator
@@ -49,11 +44,11 @@ func New(opts *Options) (*genny.Group, error) {
 		}
 		gg.Merge(gg2)
 
-		// add the plugin
-		plugs.Add(plugdeps.Plugin{
-			Binary: "buffalo-pop",
-			GoGet:  "github.com/gobuffalo/buffalo-pop/v3@latest",
-		})
+		// // add the plugin
+		// plugs.Add(plugdeps.Plugin{
+		// 	Binary: "buffalo-pop",
+		// 	GoGet:  "github.com/gobuffalo/buffalo-pop/v3@latest",
+		// })
 	}
 
 	if opts.CI != nil {
@@ -76,19 +71,19 @@ func New(opts *Options) (*genny.Group, error) {
 	// ---
 
 	// install all of the plugins
-	iopts := &install.Options{
-		App:     app,
-		Plugins: plugs.List(),
-	}
-	if app.WithSQLite {
-		iopts.Tags = meta.BuildTags{"sqlite"}
-	}
+	// iopts := &install.Options{
+	// 	App:     app,
+	// 	Plugins: plugs.List(),
+	// }
+	// if app.WithSQLite {
+	// 	iopts.Tags = meta.BuildTags{"sqlite"}
+	// }
 
-	ig, err := install.New(iopts)
-	if err != nil {
-		return gg, err
-	}
-	gg.Merge(ig)
+	// ig, err := install.New(iopts)
+	// if err != nil {
+	// 	return gg, err
+	// }
+	// gg.Merge(ig)
 
 	return gg, nil
 }

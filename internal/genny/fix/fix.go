@@ -99,11 +99,6 @@ func New(opts *Options) (*genny.Generator, error) {
 
 	g.RunFn(EncodeAppToml(opts))
 
-	// update plugins
-	g.RunFn(RemoveOldPlugins(opts))
-	g.RunFn(CleanPluginCache)
-	g.RunFn(ReinstallPlugins(opts))
-
 	// update plush templates
 	g.RunFn(UpdatePlushTemplates(opts))
 

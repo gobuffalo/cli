@@ -1,0 +1,6 @@
+- id: "resource.created.success"
+  translation: "Resource was successfully created."
+- id: "resource.updated.success"
+  translation: "Resource was successfully updated."
+- id: "resource.destroyed.success"
+  translation: "Resource was successfully destroyed."
