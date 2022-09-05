@@ -9,7 +9,7 @@ require (
 	github.com/gobuffalo/buffalo-pop/v3 v3.0.6
 	github.com/gobuffalo/clara/v2 v2.0.8
 	github.com/gobuffalo/envy v1.10.1
-	github.com/gobuffalo/events v1.4.2
+	github.com/gobuffalo/events v1.4.3
 	github.com/gobuffalo/flect v0.2.5
 	github.com/gobuffalo/genny/v2 v2.0.12
 	github.com/gobuffalo/grift v1.5.1
