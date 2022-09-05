@@ -168,12 +168,14 @@ github.com/gobuffalo/genny/v2 v2.0.12 h1:drZc+LTGk/WtpFqj4CTfQFWPT7VLNggR4e4G7gd
 github.com/gobuffalo/genny/v2 v2.0.12/go.mod h1:KtMtTcR/U2kHbQxhjCVA16ph6rjBnhw39f6aaxl4hMk=
 github.com/gobuffalo/github_flavored_markdown v1.1.1 h1:kUf8ginyBOTRXcKSTPsPAqlA25vQ80+xAspLIYaxmTU=
 github.com/gobuffalo/github_flavored_markdown v1.1.1/go.mod h1:yU32Pen+eorS58oxh/bNZx76zUOCJwmvyV5FBrvzOKQ=
-github.com/gobuffalo/grift v1.5.1 h1:UFlckhvmNKT80uRsG7lRdeYUWJw6ji4RK1CKrj9fFBE=
 github.com/gobuffalo/grift v1.5.1/go.mod h1:2/FfgeX2YoFJs6aP/2NsuQMYZU+P9jUtDpaNsXAclIc=
+github.com/gobuffalo/grift v1.5.2 h1:mC0vHRs+nXz+JhkH3sv+rVnnTQRDXrUrOXOPYpgPjpo=
+github.com/gobuffalo/grift v1.5.2/go.mod h1:Uf/3T2AR1Vv+t84EPmxCjqQ8oyJwXs0FAoLMFUn/JVs=
 github.com/gobuffalo/helpers v0.6.5 h1:Quf1KAUae97sdDmm/QP5V9P/0XYpK+HrhnYXU+nf65M=
 github.com/gobuffalo/helpers v0.6.5/go.mod h1:LA4zcc89tkZsfKpJIWsXLibiqTgZQ4EvDszfxdqr9ZA=
-github.com/gobuffalo/here v0.6.6 h1:/o+jfSwe36pKQ577grsXGoMYql/zheiGwg1XFo3CBJU=
 github.com/gobuffalo/here v0.6.6/go.mod h1:C4JZL5PsXWKzP/CAchaIzuUWlaae6CaAiMYQ0ieY62M=
+github.com/gobuffalo/here v0.6.7 h1:hpfhh+kt2y9JLDfhYUxxCRxQol540jsVfKUZzjlbp8o=
+github.com/gobuffalo/here v0.6.7/go.mod h1:vuCfanjqckTuRlqAitJz6QC4ABNnS27wLb816UhsPcc=
 github.com/gobuffalo/httptest v1.5.1/go.mod h1:uEeEFF2BRyTMNAATqFQAKYvpHrWWPNoJbIB3YPuANNM=
 github.com/gobuffalo/logger v1.0.6 h1:nnZNpxYo0zx+Aj9RfMPBm+x9zAU2OayFh/xrAWi34HU=
 github.com/gobuffalo/logger v1.0.6/go.mod h1:J31TBEHR1QLV2683OXTAItYIg8pv2JMHnF/quuAbMjs=

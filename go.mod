@@ -12,7 +12,7 @@ require (
 	github.com/gobuffalo/events v1.4.2
 	github.com/gobuffalo/flect v0.2.5
 	github.com/gobuffalo/genny/v2 v2.0.12
-	github.com/gobuffalo/grift v1.5.1
+	github.com/gobuffalo/grift v1.5.2
 	github.com/gobuffalo/logger v1.0.6
 	github.com/gobuffalo/meta v0.3.2
 	github.com/gobuffalo/plush/v4 v4.1.14
