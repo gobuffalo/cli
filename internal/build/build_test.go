@@ -46,7 +46,7 @@ func TestBuild(t *testing.T) {
 			// 1. originally this test case is for `--skip-pop`
 			// 2. by using "src" as appname, it covers webpack-copy glob issue (pull/119)
 			name:         "skipop",
-			newargs:      []string{"new", "src", "-f", "--skip-pop", "--vcs", "none"},
+			newargs:      []string{"new", "src", "-f", "--skip-pop", "--vcs", "none", "--db-type=sqlite3"},
 			resourceargs: []string{"g", "action", "phone", "new"},
 			appname:      "src",
 		},
@@ -56,6 +56,7 @@ func TestBuild(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			testhelpers.RunWithinTempFolder(t, func(t *testing.T) {
 				r := require.New(t)
+
 				out, err := testhelpers.RunBuffaloCMD(t, tc.newargs)
 				t.Log(out)
 				r.NoError(err)

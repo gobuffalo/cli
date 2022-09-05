@@ -85,20 +85,12 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 	c.flagSet.StringVar(&c.dbType, "db", "postgres", fmt.Sprintf("specify the type of database you want to use [%s]", strings.Join(plib.AvailableDialects, ", ")))
 	c.flagSet.StringVar(&c.ciProvider, "ci-provider", "travis", "specify the CI provider you want to use [none, travis, gitlab-ci, circleci]")
 
-	// if len(args) >= 1 && !strings.HasPrefix(args[0], "-") {
-	// 	fmt.Println("Usage: " + c.Usage())
-
-	// 	return c.flagSet, fmt.Errorf("error: flags must go before the application name")
-	// }
-
 	_ = c.flagSet.Parse(args)
 
 	return c.flagSet, nil
 }
 
 func (c *command) Main(ctx context.Context, pwd string, args []string) error {
-	fmt.Println(args)
-
 	args = c.flagSet.Args()
 
 	if len(args) == 0 {
@@ -238,7 +230,7 @@ func (c *command) setOptions() {
 			DBType:   c.dbType,
 		}
 	}
-
+	c.options.Pop = nil
 	if c.options.App.WithPop {
 		c.options.Pop = &pop.Options{
 			Prefix:  c.options.App.Name.File().String(),

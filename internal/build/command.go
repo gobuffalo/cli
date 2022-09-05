@@ -73,6 +73,7 @@ func (c *command) ParseFlags(args []string) (*flag.FlagSet, error) {
 
 	c.flagSet.BoolVar(&c.options.ExtractAssets, "extract-assets", false, "extract the assets and put them in a distinct archive")
 	c.flagSet.BoolVar(&c.skipAssets, "skip-assets", false, "skip running webpack and building assets")
+
 	c.flagSet.BoolVar(&c.skipBuildDeps, "skip-build-deps", false, "skip building dependencies")
 	c.flagSet.BoolVar(&c.options.Static, "static", false, "build a static binary using  --ldflags '-linkmode external -extldflags \"-static\"'")
 	c.flagSet.StringVar(&c.options.LDFlags, "ldflags", "", "set any ldflags to be passed to the go build")
