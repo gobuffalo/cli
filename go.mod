@@ -17,7 +17,7 @@ require (
 	github.com/gobuffalo/meta v0.3.2
 	github.com/gobuffalo/plush/v4 v4.1.14
 	github.com/gobuffalo/pop/v6 v6.0.6
-	github.com/gobuffalo/refresh v1.13.1
+	github.com/gobuffalo/refresh v1.13.2
 	github.com/google/go-cmp v0.5.8
 	github.com/psanford/memfs v0.0.0-20210214183328-a001468d78ef
 	github.com/sirupsen/logrus v1.8.1
