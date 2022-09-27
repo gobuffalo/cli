@@ -2,6 +2,7 @@ package resource
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gobuffalo/flect/name"
 	"github.com/gobuffalo/genny/v2"
@@ -14,11 +15,22 @@ func addResource(pres presenter) genny.RunFn {
 		if err != nil {
 			return err
 		}
+
 		stmt := fmt.Sprintf("app.Resource(\"/%s\", %sResource{})", pres.Name.URL(), pres.Name.Resource())
 		f, err = gogen.AddInsideBlock(f, "appOnce.Do(func() {", stmt)
 		if err != nil {
-			return err
+			if strings.Contains(err.Error(), "could not find desired block") {
+				f, err = gogen.AddInsideBlock(f, "if app == nil {", stmt)
+				if err != nil {
+					return err
+				} else {
+					r.Logger.Warnf("This app was built with CLI v0.18.8 or older. See https://gobuffalo.io/documentation/known-issues/#cli-v0.18.8")
+				}
+			} else {
+				return err
+			}
 		}
+
 		return r.File(f)
 	}
 }
