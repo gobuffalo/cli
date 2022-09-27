@@ -15,7 +15,7 @@ func addResource(pres presenter) genny.RunFn {
 			return err
 		}
 		stmt := fmt.Sprintf("app.Resource(\"/%s\", %sResource{})", pres.Name.URL(), pres.Name.Resource())
-		f, err = gogen.AddInsideBlock(f, "if app == nil {", stmt)
+		f, err = gogen.AddInsideBlock(f, "appOnce.Do(func() {", stmt)
 		if err != nil {
 			return err
 		}

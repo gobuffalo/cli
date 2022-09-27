@@ -76,7 +76,7 @@ func updateApp(pres *presenter) genny.RunFn {
 				lines = append(lines, e)
 			}
 		}
-		f, err = gogen.AddInsideBlock(f, "app == nil", strings.Join(lines, "\n\t\t"))
+		f, err = gogen.AddInsideBlock(f, "appOnce.Do(func() {", strings.Join(lines, "\n\t\t"))
 		if err != nil {
 			return err
 		}

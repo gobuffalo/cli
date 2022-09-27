@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"sync"
+
 	{{ if .opts.App.WithPop -}}
 	"{{ .opts.App.ModelsPkg }}"
 	{{ end -}}
@@ -24,8 +26,9 @@ import (
 var ENV = envy.Get("GO_ENV", "development")
 
 var (
-	app *buffalo.App
-	T   *i18n.Translator
+	app     *buffalo.App
+	appOnce sync.Once
+	T       *i18n.Translator
 )
 
 // App is where all routes and middleware for buffalo
@@ -42,7 +45,7 @@ var (
 // placed last in the route declarations, as it will prevent routes
 // declared after it to never be called.
 func App() *buffalo.App {
-	if app == nil {
+	appOnce.Do(func() {
 		app = buffalo.New(buffalo.Options{
 			Env:          ENV,
 			SessionStore: sessions.Null{},
@@ -69,7 +72,7 @@ func App() *buffalo.App {
 		{{ end -}}
 
 		app.GET("/", HomeHandler)
-	}
+	})
 
 	return app
 }

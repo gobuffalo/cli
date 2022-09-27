@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"sync"
+
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
 	forcessl "github.com/gobuffalo/mw-forcessl"
@@ -11,7 +13,11 @@ import (
 // ENV is used to help switch settings based on where the
 // application is being run. Default is "development".
 var ENV = envy.Get("GO_ENV", "development")
-var app *buffalo.App
+
+var (
+	app     *buffalo.App
+	appOnce sync.Once
+)
 
 // App is where all routes and middleware for buffalo
 // should be defined. This is the nerve center of your
@@ -27,7 +33,7 @@ var app *buffalo.App
 // placed last in the route declarations, as it will ensure routes
 // declared after it will never be called.
 func App() *buffalo.App {
-	if app == nil {
+	appOnce.Do(func() {
 		app = buffalo.New(buffalo.Options{
 			Env:         ENV,
 			SessionName: "_{{.opts.App.Name.File}}_session",
@@ -40,7 +46,7 @@ func App() *buffalo.App {
 		app.Use(paramlogger.ParameterLogger)
 
 		app.GET("/", HomeHandler)
-	}
+	})
 
 	return app
 }
