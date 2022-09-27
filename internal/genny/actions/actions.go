@@ -68,6 +68,7 @@ func updateApp(pres *presenter) genny.RunFn {
 		if err != nil {
 			return err
 		}
+
 		var lines []string
 		body := f.String()
 		for _, a := range pres.Actions {
@@ -76,9 +77,19 @@ func updateApp(pres *presenter) genny.RunFn {
 				lines = append(lines, e)
 			}
 		}
+
 		f, err = gogen.AddInsideBlock(f, "appOnce.Do(func() {", strings.Join(lines, "\n\t\t"))
 		if err != nil {
-			return err
+			if strings.Contains(err.Error(), "could not find desired block") {
+				f, err = gogen.AddInsideBlock(f, "if app == nil {", strings.Join(lines, "\n\t\t"))
+				if err != nil {
+					return err
+				} else {
+					r.Logger.Warnf("This app was built with CLI v0.18.8 or older. See https://gobuffalo.io/documentation/known-issues/#cli-v0.18.8")
+				}
+			} else {
+				return err
+			}
 		}
 		return r.File(f)
 	}
