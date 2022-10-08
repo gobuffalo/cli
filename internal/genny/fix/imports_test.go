@@ -19,15 +19,9 @@ func Test_Imports(t *testing.T) {
 	tt := []struct {
 		Name string
 	}{
-		{
-			Name: "buffalo0_11",
-		},
-		{
-			Name: "buffaloPre0_18api",
-		},
-		{
-			Name: "buffaloPre0_18web",
-		},
+		{"buffalo0_11"},
+		{"buffaloPre0_18api"},
+		{"buffaloPre0_18web"},
 	}
 
 	for _, tc := range tt {
@@ -40,7 +34,7 @@ func Test_Imports(t *testing.T) {
 			opts := &Options{
 				App: meta.Named("coke", "."),
 			}
-			g := ReplaceOldImports(opts)
+			g := RewriteImports(opts)
 			run.WithRun(g)
 
 			r.NoError(run.Run())
@@ -76,7 +70,7 @@ import "github.com/markbates/grift"
 	r.NoError(err)
 	r.NotNil(file)
 
-	err = rewriteFile(file)
+	err = rewriteImports(file)
 	r.NoError(err)
 	r.Equal(`package main
 
@@ -96,7 +90,7 @@ import gr "github.com/markbates/grift"
 	r.NoError(err)
 	r.NotNil(file)
 
-	err = rewriteFile(file)
+	err = rewriteImports(file)
 	r.NoError(err)
 	r.Equal(`package main
 
@@ -116,7 +110,7 @@ import . "github.com/markbates/grift"
 	r.NoError(err)
 	r.NotNil(file)
 
-	err = rewriteFile(file)
+	err = rewriteImports(file)
 	r.NoError(err)
 	r.Equal(`package main
 
