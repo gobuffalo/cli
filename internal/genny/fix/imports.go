@@ -41,10 +41,10 @@ var replace = map[string]string{
 	"github.com/shurcooL/github_flavored_markdown":  "github.com/gobuffalo/github_flavored_markdown",
 }
 
-// ReplaceOldImports walks all the .go files in an application
+// RewriteImports walks all the .go files in an application
 // It will then attempt to convert any old import paths to any new import paths
 // used by this version Buffalo.
-func ReplaceOldImports(opts *Options) genny.RunFn {
+func RewriteImports(opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
 		fmt.Println("~~~ Rewriting Imports ~~~")
 		return walkDisk(r.Disk, ".", func(path string, info os.FileInfo, err error) error {
@@ -64,7 +64,7 @@ func ReplaceOldImports(opts *Options) genny.RunFn {
 			if err != nil {
 				return err
 			}
-			if err := rewriteFile(f); err != nil {
+			if err := rewriteImports(f); err != nil {
 				return err
 			}
 			return r.File(f)
@@ -72,7 +72,7 @@ func ReplaceOldImports(opts *Options) genny.RunFn {
 	}
 }
 
-func rewriteFile(file genny.File) error {
+func rewriteImports(file genny.File) error {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, file.Name(), file.String(), parser.ParseComments)
 	if err != nil {

@@ -75,8 +75,10 @@ func New(opts *Options) (*genny.Generator, error) {
 	g.RunFn(MoveMain(opts))
 	g.RunFn(Refresh(opts))
 
+	g.RunFn(ReplaceAppOnce(opts))
+
 	// replace old imports with new ones
-	g.RunFn(ReplaceOldImports(opts))
+	g.RunFn(RewriteImports(opts))
 	g.Command(tidyCmd())
 
 	// check webpack.config.json and package.json for updates
