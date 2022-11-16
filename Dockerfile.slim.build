@@ -2,6 +2,8 @@ FROM golang:1.18-alpine
 
 EXPOSE 3000
 
+ARG DOCKER_TAG
+
 ENV GOPROXY=https://proxy.golang.org 
 
 RUN apk add --no-cache --upgrade apk-tools \
@@ -19,7 +21,7 @@ RUN npm i -g --no-progress yarn \
 # Installing buffalo binary
 WORKDIR /cli
 ADD . .
-RUN go install ./cmd/buffalo
+RUN go install -ldflags="-X 'github.com/gobuffalo/cli/internal/runtime.Version=${DOCKER_TAG}'" ./cmd/buffalo 
 
 WORKDIR /
 RUN go install github.com/gobuffalo/buffalo-pop/v3@latest
