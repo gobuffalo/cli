@@ -46,7 +46,7 @@ dockers:
   - 
     image_templates:
     - gobuffalo/buffalo:{{ .Tag }}
-    dockerfile: 'Dockefile.build'
+    dockerfile: 'Dockerfile.build'
     use: docker
 
     build_flag_templates:
@@ -55,7 +55,7 @@ dockers:
   - 
     image_templates:
     - gobuffalo/buffalo:{{ .Tag }}-slim
-    dockerfile: 'Dockefile.slim.build'
+    dockerfile: 'Dockerfile.slim.build'
     use: docker
     
     build_flag_templates:
