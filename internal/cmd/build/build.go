@@ -1,13 +1,11 @@
 package build
 
 import (
-	"bytes"
 	"context"
 	"log"
 	"os"
-	"os/exec"
 	"os/signal"
-	"strings"
+	"runtime/debug"
 	"time"
 
 	"github.com/gobuffalo/cli/internal/genny/build"
@@ -95,48 +93,14 @@ func buildVersion(version string) string {
 		return version
 	}
 
-	ctx := context.Background()
-	run := genny.WetRunner(ctx)
-	if buildOptions.DryRun {
-		run = genny.DryRunner(ctx)
-	}
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for _, setting := range info.Settings {
+			if setting.Key != "vcs.revision" {
+				continue
+			}
 
-	_, err := exec.LookPath(vcs)
-	if err != nil {
-		run.Logger.Warnf("could not find %s; defaulting to version %s", vcs, version)
-		return vcs
-	}
-
-	var cmd *exec.Cmd
-	switch vcs {
-	case "git":
-		// If .git folder does not exist return default version
-		if stat, err := os.Stat(".git"); err != nil || !stat.IsDir() {
-			run.Logger.Warnf("could not find .git folder; defaulting to version %s", version)
-			return version
+			return setting.Value
 		}
-
-		cmd = exec.Command("git", "rev-parse", "--short", "HEAD")
-	case "bzr":
-		cmd = exec.Command("bzr", "revno")
-	default:
-		run.Logger.Warnf("could not find %s; defaulting to version %s", vcs, version)
-		return vcs
-	}
-
-	out := &bytes.Buffer{}
-	cmd.Stdout = out
-	run.WithRun(func(r *genny.Runner) error {
-		return r.Exec(cmd)
-	})
-
-	if err := run.Run(); err != nil {
-		run.Logger.Error(err)
-		return version
-	}
-
-	if out.String() != "" {
-		return strings.TrimSpace(out.String())
 	}
 
 	return version
