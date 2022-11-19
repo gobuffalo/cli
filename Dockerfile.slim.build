@@ -2,7 +2,7 @@ FROM golang:1.18-alpine
 
 EXPOSE 3000
 
-ENV GOPROXY=https://proxy.golang.org 
+ARG DOCKER_TAG
 
 RUN apk add --no-cache --upgrade apk-tools \
     && apk add --no-cache bash curl openssl git build-base nodejs npm sqlite sqlite-dev mysql-client vim postgresql libpq postgresql-contrib libc6-compat
@@ -19,7 +19,7 @@ RUN npm i -g --no-progress yarn \
 # Installing buffalo binary
 WORKDIR /cli
 ADD . .
-RUN go install ./cmd/buffalo
+RUN go install -ldflags="-X 'github.com/gobuffalo/cli/internal/runtime.Version=${DOCKER_TAG}'" ./cmd/buffalo 
 
 WORKDIR /
 RUN go install github.com/gobuffalo/buffalo-pop/v3@latest
