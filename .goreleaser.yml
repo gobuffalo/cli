@@ -55,7 +55,7 @@ dockers:
   - 
     image_templates:
     - gobuffalo/buffalo:{{ .Tag }}-slim
-    dockerfile: 'Dockefile.build.slim'
+    dockerfile: 'Dockefile.slim.build'
     use: docker
     
     build_flag_templates:
