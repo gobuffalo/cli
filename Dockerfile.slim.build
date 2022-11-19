@@ -17,9 +17,7 @@ RUN npm i -g --no-progress yarn \
     && yarn config set yarn-offline-mirror-pruning true
 
 # Installing buffalo binary
-WORKDIR /cli
-ADD . .
-RUN go install -ldflags="-X 'github.com/gobuffalo/cli/internal/runtime.Version=$DOCKER_TAG'" ./cmd/buffalo 
+COPY buffalo /go/bin/buffalo
 
 WORKDIR /
 RUN go install github.com/gobuffalo/buffalo-pop/v3@latest
