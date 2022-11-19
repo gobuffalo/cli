@@ -2,7 +2,6 @@ FROM golang:1.18
 
 EXPOSE 3000
 ARG DOCKER_TAG
-ENV DOCKER_TAG=$DOCKER_TAG
 
 RUN apt-get update \
     && apt-get install -y -q build-essential sqlite3 libsqlite3-dev postgresql libpq-dev vim
@@ -32,7 +31,7 @@ RUN curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.s
 # Installing buffalo binary
 WORKDIR /cli
 ADD . .
-RUN go install -ldflags="-X 'github.com/gobuffalo/cli/internal/runtime.Version=${DOCKER_TAG}'" ./cmd/buffalo 
+RUN go install -ldflags="-X 'github.com/gobuffalo/cli/internal/runtime.Version=$DOCKER_TAG'" ./cmd/buffalo 
 
 WORKDIR /
 RUN go install github.com/gobuffalo/buffalo-pop/v3@latest
