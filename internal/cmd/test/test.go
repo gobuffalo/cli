@@ -122,7 +122,7 @@ func testRunner(args []string) error {
 		}.Run()
 	}
 
-	pkgs, err := testPackages(packageArgs)
+	pkgs, err := findTestPackages(packageArgs)
 	if err != nil {
 		return err
 	}
@@ -143,7 +143,7 @@ func (m mFlagRunner) Run() error {
 	pwd, _ := os.Getwd()
 	defer os.Chdir(pwd)
 
-	pkgs, err := testPackages(m.pargs)
+	pkgs, err := findTestPackages(m.pargs)
 	if err != nil {
 		return err
 	}
@@ -184,29 +184,6 @@ func hasTestify(args []string) bool {
 	cmd.Args = append(cmd.Args, "-unknownflag")
 	b, _ := cmd.Output()
 	return bytes.Contains(b, []byte("-testify.m"))
-}
-
-func testPackages(givenArgs []string) ([]string, error) {
-	// If there are args, then assume these are the packages to test.
-	//
-	// Instead of always returning all packages from 'go list ./...', just
-	// return the given packages in this case
-	if len(givenArgs) > 0 {
-		return givenArgs, nil
-	}
-
-	args := []string{}
-	out, err := exec.Command(envy.Get("GO_BIN", "go"), "list", "./...").Output()
-	if err != nil {
-		return args, err
-	}
-	pkgs := bytes.Split(bytes.TrimSpace(out), []byte("\n"))
-	for _, p := range pkgs {
-		if !strings.Contains(string(p), "/vendor/") {
-			args = append(args, string(p))
-		}
-	}
-	return args, nil
 }
 
 func newTestCmd(args []string) *exec.Cmd {
