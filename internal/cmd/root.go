@@ -100,7 +100,7 @@ func cmd() *cobra.Command {
 	generateCmd := generate.Cmd()
 	destroyCmd := destroy.Cmd()
 	versionCmd := version.Cmd()
-	testCmd := test.Cmd()
+	testCmd := test.Cmd
 	devCmd := dev.Cmd()
 	taskCmd := task.Cmd()
 	routesCmd := routes.Cmd()

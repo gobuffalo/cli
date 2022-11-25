@@ -1,0 +1,13 @@
+Runs the Buffalo tests. This command sets the GO_ENV to be `test`
+and sets up the database in preparation for the tests.
+
+    --force-migrations  forces the migrations to run even if the schema.sql is found
+                        in the migrations folder
+
+    -testify.m          Only run tests matching the regular expression
+    -m                  Only run tests matching the regular expression
+
+The value passed to the -run flag is also passed to the -testify.m flag. 
+Any other flag is directly passed to the `go test` command.
+
+    
