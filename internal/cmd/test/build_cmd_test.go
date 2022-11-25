@@ -55,9 +55,17 @@ func TestBuildCmd(t *testing.T) {
 		},
 
 		{
-			name: "force migrations should be removed",
-			args: []string{"--force-migrations", "-m", "Something"},
-			want: []string{"go", "test", "-p", "1", "-tags", "development"},
+			name:     "testify.m through -m",
+			args:     []string{"--force-migrations", "-m", "Something"},
+			want:     []string{"go", "test", "-p", "1", "-tags", "development"},
+			contains: "-testify.m Something",
+		},
+
+		{
+			name:     "testify.m through -run",
+			args:     []string{"--force-migrations", "-run", "Something"},
+			want:     []string{"go", "test", "-p", "1", "-tags", "development", "-run", "Something"},
+			contains: "-testify.m Something",
 		},
 
 		{
