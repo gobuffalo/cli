@@ -22,12 +22,7 @@ func findPackages() ([]string, error) {
 
 	xx := []string{}
 	for _, pkg := range pkgs {
-		xx = append(
-			xx,
-
-			// Trim the prefix of the application root module
-			pkg.ID,
-		)
+		xx = append(xx, pkg.ID)
 	}
 
 	return xx, nil
