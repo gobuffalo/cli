@@ -103,7 +103,7 @@ func extraArgs(args []string) []string {
 			continue
 		}
 
-		if v == "-m" || v == "-testify.m" || v == "--run" {
+		if v == "-m" || v == "-testify.m" || v == "-run" {
 			extra = append(extra, "-testify.m", args[ix+1])
 		}
 	}
