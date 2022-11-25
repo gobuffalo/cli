@@ -1,7 +1,9 @@
 package test
 
 import (
+	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -27,7 +29,13 @@ var cmd = &cobra.Command{
 			return err
 		}
 
-		return buildCmd(args).Run()
+		tcmd, err := buildCmd(args)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("[INFO]", strings.Join(tcmd.Args, " "))
+		return tcmd.Run()
 	},
 }
 

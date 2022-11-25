@@ -1,8 +1,10 @@
 package test
 
-import "golang.org/x/tools/go/packages"
+import (
+	"golang.org/x/tools/go/packages"
+)
 
-// findPackages in the current directory using the x/tools/go/packages API.
+// findPackages in the current directory using the x/tools/go/packages API
 func findPackages() ([]string, error) {
 	cfg := &packages.Config{
 		Mode: packages.NeedName,
@@ -20,7 +22,12 @@ func findPackages() ([]string, error) {
 
 	xx := []string{}
 	for _, pkg := range pkgs {
-		xx = append(xx, pkg.ID)
+		xx = append(
+			xx,
+
+			// Trim the prefix of the application root module
+			pkg.ID,
+		)
 	}
 
 	return xx, nil

@@ -1,20 +1,21 @@
 package test
 
 import (
-	"reflect"
+	"strings"
 	"testing"
 )
 
 func TestBuildCmd(t *testing.T) {
 	tcases := []struct {
-		name string
-		args []string
-		want []string
+		name     string
+		args     []string
+		want     []string
+		contains string
 	}{
 		{
 			name: "no args",
 			args: []string{},
-			want: []string{"go", "test", "-p", "1", "-tags", "development", "./..."},
+			want: []string{"go", "test", "-p", "1", "-tags", "development"},
 		},
 
 		{
@@ -32,37 +33,58 @@ func TestBuildCmd(t *testing.T) {
 		{
 			name: "flags but no path",
 			args: []string{"--count=1", "-v"},
-			want: []string{"go", "test", "-p", "1", "-tags", "development", "--count=1", "-v", "./..."},
+			want: []string{"go", "test", "-p", "1", "-tags", "development", "--count=1", "-v"},
 		},
 
 		{
 			name: "flags but no path",
 			args: []string{"--count=1", "-v"},
-			want: []string{"go", "test", "-p", "1", "-tags", "development", "--count=1", "-v", "./..."},
+			want: []string{"go", "test", "-p", "1", "-tags", "development", "--count=1", "-v"},
 		},
 
 		{
 			name: "flags no path with -tags",
 			args: []string{"--count=1", "-tags", "foo,bar"},
-			want: []string{"go", "test", "-p", "1", "-tags", "development", "--count=1", "-tags", "foo,bar", "./..."},
+			want: []string{"go", "test", "-p", "1", "-tags", "development", "--count=1", "-tags", "foo,bar"},
 		},
 
 		{
 			name: "force migrations should be removed",
 			args: []string{"--force-migrations", "-tags", "foo,bar"},
-			want: []string{"go", "test", "-p", "1", "-tags", "development", "-tags", "foo,bar", "./..."},
+			want: []string{"go", "test", "-p", "1", "-tags", "development", "-tags", "foo,bar"},
+		},
+
+		{
+			name: "force migrations should be removed",
+			args: []string{"--force-migrations", "-m", "Something"},
+			want: []string{"go", "test", "-p", "1", "-tags", "development"},
+		},
+
+		{
+			name:     "testify.m should go at the end",
+			args:     []string{"--force-migrations", "-testify.m", "Something"},
+			want:     []string{"go", "test", "-p", "1", "-tags", "development"},
+			contains: "-testify.m Something",
 		},
 	}
 
 	for _, tc := range tcases {
 		t.Run(tc.name, func(t *testing.T) {
-			cmd := buildCmd(tc.args)
-			if len(cmd.Args) != len(tc.want) {
-				t.Errorf("want %d args, got %d", len(tc.want), len(cmd.Args))
+			cmd, err := buildCmd(tc.args)
+			if err != nil {
+				t.Fatal(err)
 			}
 
-			if !reflect.DeepEqual(cmd.Args, tc.want) {
-				t.Errorf("want %s, got %s", tc.want, cmd.Args)
+			wantcmd := strings.Join(tc.want, " ")
+			resultcmd := strings.Join(cmd.Args, " ")
+
+			prefixMatches := strings.HasPrefix(resultcmd, wantcmd)
+			if !prefixMatches {
+				t.Errorf("prefix `%s` not found in `%s`", wantcmd, resultcmd)
+			}
+
+			if tc.contains != "" && !strings.Contains(resultcmd, tc.contains) {
+				t.Errorf("string `%s` not found in `%s`", tc.contains, resultcmd)
 			}
 		})
 	}
