@@ -47,6 +47,7 @@ dockers:
   - 
     image_templates:
       - gobuffalo/buffalo:{{ .Tag }}
+      - gobuffalo/buffalo:latest
     dockerfile: 'Dockerfile.build'
     goos: linux
     goarch: amd64
@@ -55,6 +56,7 @@ dockers:
   - 
     image_templates:
       - gobuffalo/buffalo:{{ .Tag }}-slim
+      - gobuffalo/buffalo:latest-slim
     dockerfile: 'Dockerfile.slim.build'
     goos: linux
     goarch: amd64
