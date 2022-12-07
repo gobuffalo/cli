@@ -2,8 +2,6 @@ FROM golang:1.18-alpine
 
 EXPOSE 3000
 
-ARG DOCKER_TAG
-
 RUN apk add --no-cache --upgrade apk-tools \
     && apk add --no-cache bash curl openssl git build-base nodejs npm sqlite sqlite-dev mysql-client vim postgresql libpq postgresql-contrib libc6-compat
 
