@@ -42,22 +42,21 @@ brews:
       name: 'homebrew-tap'
     install: |
       bin.install "buffalo"
+
 dockers:
   - 
     image_templates:
-    - gobuffalo/buffalo:{{ .Tag }}
+      - gobuffalo/buffalo:{{ .Tag }}
     dockerfile: 'Dockerfile.build'
+    goos: linux
+    goarch: amd64
     use: docker
-
-    build_flag_templates:
-    - "--build-arg=DOCKER_TAG={{.Tag}}"
 
   - 
     image_templates:
-    - gobuffalo/buffalo:{{ .Tag }}-slim
+      - gobuffalo/buffalo:{{ .Tag }}-slim
     dockerfile: 'Dockerfile.slim.build'
+    goos: linux
+    goarch: amd64
     use: docker
-    
-    build_flag_templates:
-    - "--build-arg=DOCKER_TAG={{.Tag}}"
 

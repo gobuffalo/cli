@@ -1,7 +1,6 @@
 FROM golang:1.18
 
 EXPOSE 3000
-ARG DOCKER_TAG
 
 RUN apt-get update \
     && apt-get install -y -q build-essential sqlite3 libsqlite3-dev postgresql libpq-dev vim
