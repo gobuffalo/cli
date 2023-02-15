@@ -2,7 +2,7 @@
 
 <p align="center">
 <a href="https://pkg.go.dev/github.com/gobuffalo/cli"><img src="https://pkg.go.dev/badge/github.com/gobuffalo/cli" alt="PkgGoDev"></a>
-<img src="https://github.com/gobuffalo/cli/workflows/Tests/badge.svg" alt="Tests Status" />
+<a href="https://github.com/gobuffalo/cli/actions/workflows/standard-go-test.yml"><img src="https://github.com/gobuffalo/cli/actions/workflows/standard-go-test.yml/badge.svg" alt="Standard Test" /></a>
 <a href="https://goreportcard.com/report/github.com/gobuffalo/cli"><img src="https://goreportcard.com/badge/github.com/gobuffalo/cli" alt="Go Report Card" /></a>
 </p>
 
