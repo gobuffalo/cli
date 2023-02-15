@@ -9,10 +9,10 @@ import (
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
-	csrf "github.com/gobuffalo/mw-csrf"
-	forcessl "github.com/gobuffalo/mw-forcessl"
-	i18n "github.com/gobuffalo/mw-i18n/v2"
-	paramlogger "github.com/gobuffalo/mw-paramlogger"
+	"github.com/gobuffalo/middleware/csrf"
+	"github.com/gobuffalo/middleware/forcessl"
+	"github.com/gobuffalo/middleware/i18n"
+	"github.com/gobuffalo/middleware/paramlogger"
 	"github.com/unrolled/secure"
 )
 
