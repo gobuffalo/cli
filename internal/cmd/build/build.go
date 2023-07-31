@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"runtime/debug"
+	"strings"
 	"time"
 
 	"github.com/gobuffalo/cli/internal/genny/build"
@@ -25,6 +26,7 @@ var buildOptions = struct {
 	DryRun                 bool
 	Verbose                bool
 	bin                    string
+	WithCustomModule       bool
 }{
 	Options: &build.Options{
 		BuildTime: time.Now(),
@@ -43,6 +45,27 @@ func runE(cmd *cobra.Command, args []string) error {
 	buildOptions.App = meta.New(pwd)
 	if len(buildOptions.bin) > 0 {
 		buildOptions.App.Bin = buildOptions.bin
+	}
+	if buildOptions.WithCustomModule {
+		buildOptions.App.PackagePkg = buildOptions.App.Name.Original
+		actionsPkg := strings.Split(buildOptions.App.ActionsPkg, "/")
+		if len(actionsPkg) > 1 {
+			buildOptions.App.ActionsPkg = buildOptions.App.Name.Original + "/" + actionsPkg[1]
+		} else {
+			buildOptions.App.ActionsPkg = buildOptions.App.Name.Original + "/" + actionsPkg[0]
+		}
+		modelsPkg := strings.Split(buildOptions.App.ModelsPkg, "/")
+		if len(modelsPkg) > 1 {
+			buildOptions.App.ModelsPkg = buildOptions.App.Name.Original + "/" + modelsPkg[1]
+		} else {
+			buildOptions.App.ModelsPkg = buildOptions.App.Name.Original + "/" + modelsPkg[0]
+		}
+		griftsPkg := strings.Split(buildOptions.App.GriftsPkg, "/")
+		if len(griftsPkg) > 1 {
+			buildOptions.App.GriftsPkg = buildOptions.App.Name.Original + "/" + griftsPkg[1]
+		} else {
+			buildOptions.App.GriftsPkg = buildOptions.App.Name.Original + "/" + griftsPkg[0]
+		}
 	}
 
 	buildOptions.Options.WithAssets = !buildOptions.SkipAssets

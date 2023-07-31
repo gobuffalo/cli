@@ -24,6 +24,7 @@ func Cmd() *cobra.Command {
 	cmd.Flags().StringVarP(&buildOptions.Environment, "environment", "", "development", "set the environment for the binary")
 	cmd.Flags().StringVar(&buildOptions.Mod, "mod", "", "-mod flag for go build")
 	cmd.Flags().StringSliceVar(&buildOptions.BuildFlags, "build-flags", nil, "Additional comma-separated build flags to feed to go build")
+	cmd.Flags().BoolVar(&buildOptions.WithCustomModule, "custom-mod", false, "Build using a custom module name configured in config.json's 'with_custom_module' field")
 
 	return cmd
 }
